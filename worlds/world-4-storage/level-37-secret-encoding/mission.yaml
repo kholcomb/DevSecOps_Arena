@@ -1,0 +1,19 @@
+level: 37
+title: "Secret Not Base64 Encoded"
+world: "Storage & Stateful Apps"
+difficulty: "intermediate"
+xp: 250
+concepts:
+  - secrets
+  - base64-encoding
+  - sensitive-data
+  - secret-management
+description: |
+  A pod is failing because it can't decode a Secret properly. Someone created
+  the Secret with plain text instead of base64-encoded values!
+  
+learning_objectives:
+  - Understand Secret data encoding requirements
+  - Learn to properly encode secret values
+  - Debug secret decoding issues
+  - Handle sensitive data correctly

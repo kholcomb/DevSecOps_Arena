@@ -1,0 +1,21 @@
+level: 33
+title: "Access Mode Mismatch"
+world: "Storage & Stateful Apps"
+difficulty: "intermediate"
+xp: 250
+concepts:
+  - access-modes
+  - readwriteonce
+  - readwritemany
+  - pvc-sharing
+  - multi-pod-access
+description: |
+  Multiple pods are trying to use the same storage, but only one pod is starting.
+  The others are stuck waiting. Something about how the storage can be accessed
+  is preventing them from sharing it!
+  
+learning_objectives:
+  - Understand PV/PVC access modes
+  - Learn when to use ReadWriteOnce vs ReadWriteMany
+  - Configure storage for multi-pod access
+  - Recognize access mode limitations

@@ -1,0 +1,34 @@
+🔍 HINT 1: Observing the Problem
+
+Let's investigate the Secret encoding issue:
+
+1️⃣ Check pod status:
+   kubectl get pod database-client -n k8squest
+   kubectl describe pod database-client -n k8squest
+   
+   Is the pod Running or CrashLoopBackOff?
+
+2️⃣ Check pod logs:
+   kubectl logs database-client -n k8squest
+   
+   What error do you see?
+
+3️⃣ Check the Secret:
+   kubectl get secret db-credentials -n k8squest
+   kubectl get secret db-credentials -n k8squest -o yaml
+   
+   Look at the "data" section - does it look encoded?
+
+4️⃣ Try to decode the values:
+   kubectl get secret db-credentials -n k8squest -o jsonpath='{.data.username}'
+   echo "admin" | base64
+   
+   Do they match? Are the secret values base64 encoded?
+
+📝 Key Observation:
+The Secret data contains plain text instead of base64-encoded values!
+
+🤔 Questions:
+• What format should Secret data be in?
+• How do you base64 encode a value?
+• What happens when the pod tries to use improperly encoded secrets?

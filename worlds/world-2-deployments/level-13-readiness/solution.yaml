@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slow-startup-app
+  namespace: k8squest
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: slow-app
+  template:
+    metadata:
+      labels:
+        app: slow-app
+    spec:
+      containers:
+      - name: app
+        image: hashicorp/http-echo:latest
+        args:
+          - "-text=App ready!"
+          - "-listen=:8080"
+        ports:
+        - containerPort: 8080
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 20"]
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 25
+          periodSeconds: 10
+        # ADDED: Readiness probe
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 22  # After the 20s sleep
+          periodSeconds: 5
+          successThreshold: 1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: slow-app-service
+  namespace: k8squest
+spec:
+  selector:
+    app: slow-app
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: ClusterIP

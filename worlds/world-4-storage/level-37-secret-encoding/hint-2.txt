@@ -1,0 +1,54 @@
+🎯 HINT 2: Understanding Secret Encoding
+
+The problem is the Secret uses plain text instead of base64 encoding!
+
+📚 How Kubernetes Secrets Work:
+
+**Wrong (Plain Text):**
+```yaml
+apiVersion: v1
+kind: Secret
+data:
+  username: admin  # ❌ Plain text!
+  password: secretpass123  # ❌ Not encoded!
+```
+
+Result: Data is corrupted or unreadable by pods
+
+**Correct (Base64 Encoded):**
+```yaml
+apiVersion: v1
+kind: Secret
+data:
+  username: YWRtaW4=  # ✅ Base64 encoded "admin"
+  password: c2VjcmV0cGFzczEyMw==  # ✅ Base64 encoded "secretpass123"
+```
+
+🔧 How to Base64 Encode:
+
+```bash
+# Encode a value
+echo -n "admin" | base64
+# Output: YWRtaW4=
+
+echo -n "secretpass123" | base64
+# Output: c2VjcmV0cGFzczEyMw==
+
+# Decode to verify
+echo "YWRtaW4=" | base64 -d
+# Output: admin
+```
+
+**Important:** Use `-n` flag with echo to avoid encoding newline!
+
+💡 Alternative: Use stringData (Kubernetes encodes for you)
+```yaml
+apiVersion: v1
+kind: Secret
+stringData:  # Plain text input
+  username: admin
+  password: secretpass123
+# Kubernetes automatically converts to base64 in data field
+```
+
+💡 Action: Encode your username and password values with base64!

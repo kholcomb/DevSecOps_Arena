@@ -1,0 +1,37 @@
+level: 50
+title: "CHAOS FINALE: The Perfect Storm"
+difficulty: expert
+xp_reward: 500
+world: 5
+concepts:
+  - rbac
+  - securitycontext
+  - resourcequota
+  - networkpolicy
+  - node-affinity
+  - taints
+  - poddisruptionbudget
+  - pod-security-standards
+  - priorityclass
+description: |
+  🚨 PRODUCTION EMERGENCY! Multiple simultaneous failures! 🚨
+  
+  The production cluster is experiencing a cascade of issues:
+  
+  1. 🔐 RBAC: App can't access Kubernetes API (Permission denied)
+  2. 🛡️  SecurityContext: Running as root, violating security policy
+  3. 💰 ResourceQuota: Exceeding namespace CPU quota
+  4. 🔒 NetworkPolicy: Database unreachable, network blocked
+  5. 📍 Node Affinity: Can't schedule on required node pool
+  6. ⚡ Taints: Nodes tainted, pods have no tolerations
+  7. 🛡️  PDB: Blocking necessary maintenance
+  8. 🔐 Pod Security: Violating restricted standard
+  9. ⭐ Priority: Critical pods stuck behind low-priority workloads
+  
+  Your mission: Fix ALL issues simultaneously. This is the ultimate test!
+
+learning_objectives:
+  - Apply all World 5 concepts together
+  - Debug complex multi-layered failures
+  - Think holistically about Kubernetes security and operations
+  - Demonstrate production-ready expertise

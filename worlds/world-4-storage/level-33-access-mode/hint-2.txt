@@ -1,0 +1,38 @@
+🎯 HINT 2: Understanding Access Modes
+
+The problem is the access mode restricts how many pods can use the storage!
+
+📚 Access Modes Explained:
+
+**ReadWriteOnce (RWO)**
+- Volume can be mounted by ONE node only
+- Multiple pods on SAME node can share it
+- Most common mode, works with most storage types
+```yaml
+accessModes:
+  - ReadWriteOnce  # ❌ Not for multi-node deployments
+```
+
+**ReadWriteMany (RWX)**
+- Volume can be mounted by MULTIPLE nodes
+- All pods can share it simultaneously
+- Requires network storage (NFS, CephFS, etc.)
+```yaml
+accessModes:
+  - ReadWriteMany  # ✅ Perfect for shared content
+```
+
+**ReadOnlyMany (ROX)**
+- Multiple nodes can mount, but read-only
+- Good for static content distribution
+
+🔍 Your Situation:
+
+Deployment has 3 replicas:
+- Kubernetes schedules them across different nodes
+- PVC has ReadWriteOnce
+- Only first pod can mount the volume
+- Other pods stuck: "Volume already in use"
+
+💡 The Solution:
+Change to ReadWriteMany in BOTH PV and PVC!

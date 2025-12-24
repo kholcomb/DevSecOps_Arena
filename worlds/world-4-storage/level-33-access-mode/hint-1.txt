@@ -1,0 +1,32 @@
+🔍 HINT 1: Observing the Problem
+
+Let's see why only one pod is starting:
+
+1️⃣ Check pod status:
+   kubectl get pods -n k8squest -l app=web
+   
+   How many are Running? How many are stuck?
+
+2️⃣ Describe a stuck pod:
+   kubectl describe pod <stuck-pod-name> -n k8squest
+   
+   Look for "Events" section - what does it say about volumes?
+
+3️⃣ Check the PVC:
+   kubectl get pvc shared-pvc -n k8squest
+   kubectl describe pvc shared-pvc -n k8squest
+   
+   What's the access mode?
+
+4️⃣ Check the PV:
+   kubectl get pv -o wide
+   
+   What access mode does it show?
+
+📝 Key Observation:
+The storage has an access mode that only allows ONE pod to mount it at a time!
+
+🤔 Questions:
+• What is ReadWriteOnce?
+• What about ReadWriteMany?
+• Can multiple pods share ReadWriteOnce volumes?
