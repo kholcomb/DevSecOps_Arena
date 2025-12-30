@@ -703,7 +703,11 @@ Look for "2/2" ready replicas!
             # Try to find the current level in the list
             for i, level_path in enumerate(levels):
                 if level_path.name == self.progress["current_level"]:
-                    start_index = i
+                    # If the level is already completed, start from the next one
+                    if self.progress["current_level"] in self.progress["completed_levels"]:
+                        start_index = i + 1
+                    else:
+                        start_index = i
                     break
         
         # Play levels starting from resume point
