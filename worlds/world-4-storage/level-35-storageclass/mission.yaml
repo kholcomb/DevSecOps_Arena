@@ -1,5 +1,7 @@
 level: 35
 title: "StorageClass Not Found"
+objective: "Fix the broken resources and make the validation pass"
+name: "StorageClass Not Found"
 world: "Storage & Stateful Apps"
 difficulty: "intermediate"
 xp: 200

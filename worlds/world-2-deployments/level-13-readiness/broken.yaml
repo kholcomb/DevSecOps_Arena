@@ -15,22 +15,17 @@ spec:
     spec:
       containers:
       - name: app
-        image: hashicorp/http-echo:latest
-        args:
-          - "-text=App ready!"
-          - "-listen=:8080"
+        image: nginx:alpine
         ports:
-        - containerPort: 8080
-        # Simulate slow startup
-        lifecycle:
-          postStart:
-            exec:
-              command: ["/bin/sh", "-c", "sleep 20"]
+        - containerPort: 80
+        # Simulate slow startup with a custom command
+        command: ["/bin/sh", "-c"]
+        args: ["sleep 20 && nginx -g 'daemon off;'"]
         # Has liveness probe but NO readiness probe!
         livenessProbe:
           httpGet:
             path: /
-            port: 8080
+            port: 80
           initialDelaySeconds: 25
           periodSeconds: 10
 ---
@@ -44,5 +39,5 @@ spec:
     app: slow-app
   ports:
   - port: 80
-    targetPort: 8080
+    targetPort: 80
   type: ClusterIP

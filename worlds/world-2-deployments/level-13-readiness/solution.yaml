@@ -15,27 +15,22 @@ spec:
     spec:
       containers:
       - name: app
-        image: hashicorp/http-echo:latest
-        args:
-          - "-text=App ready!"
-          - "-listen=:8080"
+        image: nginx:alpine
         ports:
-        - containerPort: 8080
-        lifecycle:
-          postStart:
-            exec:
-              command: ["/bin/sh", "-c", "sleep 20"]
+        - containerPort: 80
+        command: ["/bin/sh", "-c"]
+        args: ["sleep 20 && nginx -g 'daemon off;'"]
         livenessProbe:
           httpGet:
             path: /
-            port: 8080
+            port: 80
           initialDelaySeconds: 25
           periodSeconds: 10
         # ADDED: Readiness probe
         readinessProbe:
           httpGet:
             path: /
-            port: 8080
+            port: 80
           initialDelaySeconds: 22  # After the 20s sleep
           periodSeconds: 5
           successThreshold: 1
@@ -50,5 +45,5 @@ spec:
     app: slow-app
   ports:
   - port: 80
-    targetPort: 8080
+    targetPort: 80
   type: ClusterIP

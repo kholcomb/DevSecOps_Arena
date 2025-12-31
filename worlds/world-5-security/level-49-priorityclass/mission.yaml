@@ -1,6 +1,9 @@
 level: 49
 title: "PriorityClass: Preemption"
+objective: "Fix the broken resources and make the validation pass"
+name: "PriorityClass: Preemption"
 difficulty: advanced
+xp: 300
 xp_reward: 300
 world: 5
 concepts:

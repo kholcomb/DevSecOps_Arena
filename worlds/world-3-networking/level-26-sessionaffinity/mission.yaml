@@ -1,4 +1,5 @@
 name: "Session Affinity Missing"
+objective: "Configure sessionAffinity on the Service to maintain user sessions"
 world: 3
 level: 26
 xp: 200

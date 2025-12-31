@@ -1,6 +1,9 @@
 id: 29
 title: "LoadBalancer Stuck Pending"
+objective: "Fix the broken resources and make the validation pass"
+name: "LoadBalancer Stuck Pending"
 difficulty: intermediate
+xp: 250
 xp_reward: 250
 estimated_time: "15 minutes"
 

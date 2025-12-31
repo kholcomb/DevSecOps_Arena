@@ -1,6 +1,9 @@
 level: 47
 title: "PodDisruptionBudget: Blocking Drain"
+objective: "Fix the broken resources and make the validation pass"
+name: "PodDisruptionBudget: Blocking Drain"
 difficulty: advanced
+xp: 300
 xp_reward: 300
 world: 5
 concepts:

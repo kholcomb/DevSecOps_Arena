@@ -1,6 +1,9 @@
 id: 32
 title: "Volume Mount Path Error"
+objective: "Fix the broken resources and make the validation pass"
+name: "Volume Mount Path Error"
 difficulty: intermediate
+xp: 200
 xp_reward: 200
 estimated_time: "10 minutes"
 

@@ -1,5 +1,7 @@
 level: 37
 title: "Secret Not Base64 Encoded"
+objective: "Fix the broken resources and make the validation pass"
+name: "Secret Not Base64 Encoded"
 world: "Storage & Stateful Apps"
 difficulty: "intermediate"
 xp: 250

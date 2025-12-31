@@ -1,6 +1,9 @@
 level: 42
 title: "SecurityContext: Privilege Escalation"
+objective: "Fix the broken resources and make the validation pass"
+name: "SecurityContext: Privilege Escalation"
 difficulty: intermediate
+xp: 250
 xp_reward: 250
 world: 5
 concepts:

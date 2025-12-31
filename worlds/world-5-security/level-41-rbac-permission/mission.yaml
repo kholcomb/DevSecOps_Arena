@@ -1,5 +1,7 @@
 level: 41
 title: "RBAC Permission Denied"
+objective: "Fix the broken resources and make the validation pass"
+name: "RBAC Permission Denied"
 world: "Security & Production Ops"
 difficulty: "advanced"
 xp: 300

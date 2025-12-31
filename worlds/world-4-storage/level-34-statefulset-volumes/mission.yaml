@@ -1,5 +1,7 @@
 level: 34
 title: "StatefulSet Volume Templates"
+objective: "Fix the broken resources and make the validation pass"
+name: "StatefulSet Volume Templates"
 world: "Storage & Stateful Apps"
 difficulty: "advanced"
 xp: 300

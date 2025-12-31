@@ -1,5 +1,7 @@
 level: 36
 title: "ConfigMap Missing Key"
+objective: "Fix the broken resources and make the validation pass"
+name: "ConfigMap Missing Key"
 world: "Storage & Stateful Apps"
 difficulty: "beginner"
 xp: 200

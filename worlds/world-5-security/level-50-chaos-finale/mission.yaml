@@ -1,8 +1,11 @@
 level: 50
+name: "CHAOS FINALE: The Perfect Storm"
 title: "CHAOS FINALE: The Perfect Storm"
 difficulty: expert
+xp: 500
 xp_reward: 500
 world: 5
+objective: "Fix all 9 simultaneous production failures and restore the cluster to full operational status"
 concepts:
   - rbac
   - securitycontext

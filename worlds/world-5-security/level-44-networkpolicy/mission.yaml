@@ -1,6 +1,9 @@
 level: 44
 title: "NetworkPolicy: Traffic Blocked"
+objective: "Fix the broken resources and make the validation pass"
+name: "NetworkPolicy: Traffic Blocked"
 difficulty: advanced
+xp: 350
 xp_reward: 350
 world: 5
 concepts:

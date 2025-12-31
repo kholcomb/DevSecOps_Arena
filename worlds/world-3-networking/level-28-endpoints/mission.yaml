@@ -1,4 +1,5 @@
 name: "Service Endpoints Not Updating"
+objective: "Add readiness probes so Service endpoints update correctly"
 world: 3
 level: 28
 xp: 200

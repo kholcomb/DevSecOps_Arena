@@ -1,6 +1,9 @@
 level: 48
 title: "Pod Security Standards: Restricted"
+objective: "Fix the broken resources and make the validation pass"
+name: "Pod Security Standards: Restricted"
 difficulty: advanced
+xp: 350
 xp_reward: 350
 world: 5
 concepts:

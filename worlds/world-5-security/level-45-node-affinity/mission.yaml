@@ -1,6 +1,9 @@
 level: 45
 title: "Node Affinity: Scheduling Mismatch"
+objective: "Fix the broken resources and make the validation pass"
+name: "Node Affinity: Scheduling Mismatch"
 difficulty: advanced
+xp: 300
 xp_reward: 300
 world: 5
 concepts:

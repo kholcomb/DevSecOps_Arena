@@ -1,4 +1,5 @@
 name: "NetworkPolicy Too Restrictive"
+objective: "Fix the overly restrictive NetworkPolicy to allow frontend-to-backend communication"
 world: 3
 level: 25
 xp: 250

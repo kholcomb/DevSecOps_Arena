@@ -1,6 +1,9 @@
 id: 31
 title: "PVC Stuck in Pending"
+objective: "Fix the broken resources and make the validation pass"
+name: "PVC Stuck in Pending"
 difficulty: intermediate
+xp: 250
 xp_reward: 250
 estimated_time: "15 minutes"
 

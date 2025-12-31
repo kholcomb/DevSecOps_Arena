@@ -1,6 +1,9 @@
 level: 46
 title: "Taints & Tolerations: NoSchedule"
+objective: "Fix the broken resources and make the validation pass"
+name: "Taints & Tolerations: NoSchedule"
 difficulty: advanced
+xp: 350
 xp_reward: 350
 world: 5
 concepts:

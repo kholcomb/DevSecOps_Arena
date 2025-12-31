@@ -692,7 +692,7 @@ Look for "2/2" ready replicas!
         
         if not world_path.exists():
             console.print(f"[red]Error: World '{world_name}' not found[/red]")
-            return
+            return False
         
         # Get all level directories with natural sorting (level-1, level-2, ..., level-10)
         import re
@@ -722,10 +722,11 @@ Look for "2/2" ready replicas!
             
             # Save current level before playing
             self.progress["current_level"] = level_name
+            self.progress["current_world"] = world_name
             self.save_progress()
             
             if not self.play_level(level_path, level_name):
-                break
+                return False  # Player quit or stopped
         
         # World complete!
         console.clear()
@@ -735,6 +736,9 @@ Look for "2/2" ready replicas!
             border_style="green",
             box=box.DOUBLE
         ))
+        time.sleep(2)
+        
+        return True  # World completed successfully
 
 def main():
     game = K8sQuest()
@@ -749,11 +753,21 @@ def main():
     
     game.show_welcome()
     
+    # All 5 worlds in order
+    all_worlds = [
+        "world-1-basics",
+        "world-2-deployments",
+        "world-3-networking",
+        "world-4-storage",
+        "world-5-security"
+    ]
+    
     # Check if there's progress to resume
     has_progress = len(game.progress["completed_levels"]) > 0 or game.progress.get("current_level")
     
     if has_progress:
         current_level = game.progress.get("current_level", "None")
+        current_world = game.progress.get("current_world", "world-1-basics")
         completed_count = len(game.progress["completed_levels"])
         
         console.print(Panel(
@@ -767,16 +781,36 @@ def main():
         console.print()
         
         if Confirm.ask("Continue from where you left off?", default=True):
-            game.play_world(game.progress["current_world"])
+            # Find which world to start from
+            start_world_index = 0
+            for i, world in enumerate(all_worlds):
+                if world == current_world:
+                    start_world_index = i
+                    break
+            
+            # Play from current world through to the end
+            for world in all_worlds[start_world_index:]:
+                if not game.play_world(world):
+                    break  # Player quit
+                    
         elif Confirm.ask("Start from the beginning instead?", default=False):
             game.progress["current_level"] = None
+            game.progress["completed_levels"] = []
+            game.progress["total_xp"] = 0
             game.save_progress()
-            game.play_world("world-1-basics")
+            
+            # Play all worlds from the beginning
+            for world in all_worlds:
+                if not game.play_world(world):
+                    break  # Player quit
         else:
             console.print("\n[yellow]See you later, Padawan![/yellow]\n")
     else:
         if Confirm.ask("Ready to start your training?", default=True):
-            game.play_world("world-1-basics")
+            # Play all worlds from the beginning
+            for world in all_worlds:
+                if not game.play_world(world):
+                    break  # Player quit
         else:
             console.print("\n[yellow]See you later, Padawan![/yellow]\n")
 

@@ -1,4 +1,5 @@
 name: "Cross-namespace Service Communication"
+objective: "Fix cross-namespace service communication using proper DNS FQDN"
 world: 3
 level: 27
 xp: 250

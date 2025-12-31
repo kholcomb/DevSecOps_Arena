@@ -1,5 +1,7 @@
 level: 40
 title: "EmptyDir Lost on Restart"
+objective: "Fix the broken resources and make the validation pass"
+name: "EmptyDir Lost on Restart"
 world: "Storage & Stateful Apps"
 difficulty: "intermediate"
 xp: 250

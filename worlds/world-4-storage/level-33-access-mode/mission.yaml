@@ -1,5 +1,7 @@
 level: 33
 title: "Access Mode Mismatch"
+objective: "Fix the broken resources and make the validation pass"
+name: "Access Mode Mismatch"
 world: "Storage & Stateful Apps"
 difficulty: "intermediate"
 xp: 250
