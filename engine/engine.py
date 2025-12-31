@@ -694,8 +694,14 @@ Look for "2/2" ready replicas!
             console.print(f"[red]Error: World '{world_name}' not found[/red]")
             return
         
-        # Get all level directories
-        levels = sorted([d for d in world_path.iterdir() if d.is_dir()])
+        # Get all level directories with natural sorting (level-1, level-2, ..., level-10)
+        import re
+        def natural_sort_key(path):
+            """Extract numbers from path for natural sorting"""
+            parts = re.split(r'(\d+)', path.name)
+            return [int(part) if part.isdigit() else part for part in parts]
+        
+        levels = sorted([d for d in world_path.iterdir() if d.is_dir()], key=natural_sort_key)
         
         # Find where to resume from
         start_index = 0
