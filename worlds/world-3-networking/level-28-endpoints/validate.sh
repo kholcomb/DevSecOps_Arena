@@ -141,17 +141,21 @@ echo ""
 
 # Stage 6: Verify endpoints match ready pods
 echo "Stage 6: Verifying endpoints match ready pods..."
-READY_PODS=$(kubectl get pods -n $NAMESPACE -l app=web -o jsonpath='{range .items[?(@.status.conditions[?(@.type=="Ready")].status=="True")]}{.status.podIP}{" "}{end}' 2>/dev/null)
 
-if [ -n "$READY_PODS" ] && [ -n "$ENDPOINTS" ]; then
-    READY_COUNT=$(echo "$READY_PODS" | wc -w | tr -d ' ')
-    ENDPOINT_COUNT=$(echo "$ENDPOINTS" | wc -w | tr -d ' ')
-    
-    if [ "$READY_COUNT" -eq "$ENDPOINT_COUNT" ]; then
-        echo "✅ Endpoint count matches ready pod count ($ENDPOINT_COUNT)"
+# Robust comparison: sort and compare IPs, ignore whitespace/order
+READY_PODS=$(kubectl get pods -n $NAMESPACE -l app=web -o jsonpath='{range .items[?(@.status.conditions[?(@.type=="Ready")].status=="True")]}{.status.podIP}{"\n"}{end}' 2>/dev/null | sort)
+ENDPOINTS_SORTED=$(echo "$ENDPOINTS" | tr ' ' '\n' | sort)
+
+if [ -n "$READY_PODS" ] && [ -n "$ENDPOINTS_SORTED" ]; then
+    DIFF=$(diff <(echo "$READY_PODS") <(echo "$ENDPOINTS_SORTED"))
+    if [ -z "$DIFF" ]; then
+        echo "✅ Endpoints exactly match ready pod IPs"
     else
-        echo "⚠️  Endpoint count ($ENDPOINT_COUNT) != Ready pod count ($READY_COUNT)"
-        echo "   This might be temporary during pod startup"
+        echo "❌ Endpoint IPs do not match ready pod IPs!"
+        echo "Ready pods: $READY_PODS"
+        echo "Endpoints: $ENDPOINTS_SORTED"
+        echo "$DIFF"
+        exit 1
     fi
 else
     echo "ℹ️  Pods still initializing, endpoints will update when ready"

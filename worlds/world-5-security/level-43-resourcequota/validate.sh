@@ -36,17 +36,27 @@ echo "✅ Pod is Running"
 
 echo ""
 echo "🔍 VALIDATION STAGE 4: Verifying CPU request is within quota..."
+
 CPU_REQUEST=$(kubectl get pod $POD_NAME -n $NAMESPACE -o jsonpath='{.spec.containers[0].resources.requests.cpu}')
 QUOTA_CPU=$(kubectl get resourcequota $QUOTA_NAME -n $NAMESPACE -o jsonpath='{.spec.hard.requests\.cpu}')
 
-# Convert to millicores for comparison
-CPU_REQUEST_MILLI=$(echo $CPU_REQUEST | sed 's/m$//' | awk '{if ($1 ~ /^[0-9]+$/) print $1; else print $1 * 1000}')
-QUOTA_CPU_MILLI=$(echo $QUOTA_CPU | sed 's/m$//' | awk '{if ($1 ~ /^[0-9]+$/) print $1; else print $1 * 1000}')
+# Convert both to millicores for comparison
+to_millicores() {
+    local val="$1"
+    if [[ $val == *m ]]; then
+        echo "${val%m}"
+    else
+        echo $((val * 1000))
+    fi
+}
+
+CPU_REQUEST_MILLI=$(to_millicores "$CPU_REQUEST")
+QUOTA_CPU_MILLI=$(to_millicores "$QUOTA_CPU")
 
 if [ "$CPU_REQUEST_MILLI" -gt "$QUOTA_CPU_MILLI" ]; then
-    echo "❌ FAILED: CPU request ($CPU_REQUEST) exceeds quota ($QUOTA_CPU)"
-    echo "💡 Hint: Reduce resources.requests.cpu to fit within quota"
-    exit 1
+        echo "❌ FAILED: CPU request ($CPU_REQUEST) exceeds quota ($QUOTA_CPU)"
+        echo "💡 Hint: Reduce resources.requests.cpu to fit within quota"
+        exit 1
 fi
 echo "✅ CPU request ($CPU_REQUEST) within quota ($QUOTA_CPU)"
 
