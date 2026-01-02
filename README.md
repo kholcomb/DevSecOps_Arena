@@ -1,7 +1,7 @@
-# K8sQuest
+# DevSecOps_Arena
 Learn Kubernetes by fixing it.
 
-K8sQuest is a **local, game-based Kubernetes training platform** with an interactive GUI-like terminal interface. Each mission breaks something in Kubernetes. Your job is to fix it.
+DevSecOps_Arena is a **local, game-based Kubernetes training platform** with an interactive GUI-like terminal interface. Each mission breaks something in Kubernetes. Your job is to fix it.
 
 **50 progressive challenges across 5 worlds** - from beginner to advanced.
 
@@ -21,10 +21,10 @@ No cloud. No AWS. No costs.
 
 ## Safety First
 
-K8sQuest includes **comprehensive safety guards** (enabled by default):
+DevSecOps_Arena includes **comprehensive safety guards** (enabled by default):
 - Prevents deletion of critical namespaces (kube-system, default, etc.)
 - Blocks destructive cluster-wide operations
-- Limits operations to `k8squest` namespace via RBAC
+- Limits operations to `DevSecOps_Arena` namespace via RBAC
 - Confirms risky operations before execution
 - Safe for beginners - hard to break things!
 
@@ -51,7 +51,7 @@ K8sQuest includes **comprehensive safety guards** (enabled by default):
 
 ## Visual Cluster Diagrams
 
-K8sQuest now includes a **real-time web-based visualization** that shows your cluster architecture and highlights issues:
+DevSecOps_Arena now includes a **real-time web-based visualization** that shows your cluster architecture and highlights issues:
 
 - **Auto-refreshes every 3 seconds** showing live cluster state
 - **Level-specific diagrams** that match what you're learning

@@ -194,14 +194,14 @@ K8sQuest protects you from dangerous operations:
 - PersistentVolume operations
 
 ## ✅ Best Practices:
-- Always use `-n k8squest` namespace flag
+- Always use `-n devsecops-arena` namespace flag
 - Avoid cluster-wide operations
 - Test changes before applying
 - Use `kubectl apply` instead of `kubectl create`
 
 ## 🔓 Disabling Safety Guards:
 Safety guards can be bypassed with:
-    export K8SQUEST_SAFETY=off
+    export ARENA_SAFETY=off
 
 But we **strongly recommend** keeping them enabled!
     """

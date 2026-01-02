@@ -11,7 +11,7 @@ echo ""
 
 # Stage 1: Check if PVC exists
 echo "📋 Stage 1: Checking if PVC exists..."
-if ! kubectl get pvc app-storage-claim -n k8squest &>/dev/null; then
+if ! kubectl get pvc app-storage-claim -n devsecops-arena &>/dev/null; then
     echo -e "${RED}❌ PVC 'app-storage-claim' not found in namespace 'k8squest'${NC}"
     echo ""
     echo "💡 Make sure to apply your fixed configuration with the PVC definition."
@@ -22,7 +22,7 @@ echo ""
 
 # Stage 2: Check PVC status
 echo "📋 Stage 2: Checking PVC binding status..."
-PVC_STATUS=$(kubectl get pvc app-storage-claim -n k8squest -o jsonpath='{.status.phase}')
+PVC_STATUS=$(kubectl get pvc app-storage-claim -n devsecops-arena -o jsonpath='{.status.phase}')
 
 if [ "$PVC_STATUS" == "Pending" ]; then
     echo -e "${RED}❌ PVC is still in Pending state${NC}"
@@ -35,19 +35,19 @@ if [ "$PVC_STATUS" == "Pending" ]; then
     echo ""
     echo "🔍 Troubleshooting steps:"
     echo "   • Check PVC requirements:"
-    echo "     kubectl describe pvc app-storage-claim -n k8squest"
+    echo "     kubectl describe pvc app-storage-claim -n devsecops-arena"
     echo ""
     echo "   • Look for available PVs:"
     echo "     kubectl get pv"
     echo ""
     echo "   • Check PVC events:"
-    echo "     kubectl get events -n k8squest | grep app-storage-claim"
+    echo "     kubectl get events -n devsecops-arena | grep app-storage-claim"
     echo ""
     
     # Show what PVC is requesting
-    REQUESTED_STORAGE=$(kubectl get pvc app-storage-claim -n k8squest -o jsonpath='{.spec.resources.requests.storage}')
-    REQUESTED_CLASS=$(kubectl get pvc app-storage-claim -n k8squest -o jsonpath='{.spec.storageClassName}')
-    REQUESTED_MODE=$(kubectl get pvc app-storage-claim -n k8squest -o jsonpath='{.spec.accessModes[0]}')
+    REQUESTED_STORAGE=$(kubectl get pvc app-storage-claim -n devsecops-arena -o jsonpath='{.spec.resources.requests.storage}')
+    REQUESTED_CLASS=$(kubectl get pvc app-storage-claim -n devsecops-arena -o jsonpath='{.spec.storageClassName}')
+    REQUESTED_MODE=$(kubectl get pvc app-storage-claim -n devsecops-arena -o jsonpath='{.spec.accessModes[0]}')
     
     echo "📊 PVC Requirements:"
     echo "   • Storage: $REQUESTED_STORAGE"
@@ -96,7 +96,7 @@ echo ""
 
 # Stage 3: Verify PV exists and is bound
 echo "📋 Stage 3: Checking PersistentVolume..."
-PV_NAME=$(kubectl get pvc app-storage-claim -n k8squest -o jsonpath='{.spec.volumeName}')
+PV_NAME=$(kubectl get pvc app-storage-claim -n devsecops-arena -o jsonpath='{.spec.volumeName}')
 
 if [ -z "$PV_NAME" ]; then
     echo -e "${RED}❌ PVC is not bound to any PV${NC}"
@@ -120,7 +120,7 @@ echo ""
 # Stage 4: Check storage capacity match
 echo "📋 Stage 4: Verifying storage capacity..."
 PV_CAPACITY=$(kubectl get pv "$PV_NAME" -o jsonpath='{.spec.capacity.storage}')
-PVC_REQUEST=$(kubectl get pvc app-storage-claim -n k8squest -o jsonpath='{.spec.resources.requests.storage}')
+PVC_REQUEST=$(kubectl get pvc app-storage-claim -n devsecops-arena -o jsonpath='{.spec.resources.requests.storage}')
 
 echo "   PV capacity: $PV_CAPACITY"
 echo "   PVC request: $PVC_REQUEST"
@@ -135,7 +135,7 @@ echo ""
 
 # Stage 5: Check pod status
 echo "📋 Stage 5: Checking pod status..."
-if ! kubectl get pod database-pod -n k8squest &>/dev/null; then
+if ! kubectl get pod database-pod -n devsecops-arena &>/dev/null; then
     echo -e "${RED}❌ Pod 'database-pod' not found${NC}"
     exit 1
 fi
@@ -143,12 +143,12 @@ fi
 # Wait a bit for pod to start
 sleep 3
 
-POD_STATUS=$(kubectl get pod database-pod -n k8squest -o jsonpath='{.status.phase}')
+POD_STATUS=$(kubectl get pod database-pod -n devsecops-arena -o jsonpath='{.status.phase}')
 if [ "$POD_STATUS" != "Running" ]; then
     echo -e "${RED}❌ Pod is not running (status: $POD_STATUS)${NC}"
     echo ""
     echo "💡 Check pod events:"
-    echo "   kubectl describe pod database-pod -n k8squest"
+    echo "   kubectl describe pod database-pod -n devsecops-arena"
     exit 1
 fi
 
@@ -157,7 +157,7 @@ echo ""
 
 # Stage 6: Verify volume is mounted
 echo "📋 Stage 6: Verifying volume mount..."
-MOUNT_CHECK=$(kubectl exec database-pod -n k8squest -- ls /data 2>&1)
+MOUNT_CHECK=$(kubectl exec database-pod -n devsecops-arena -- ls /data 2>&1)
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Volume not properly mounted at /data${NC}"
     echo "   Error: $MOUNT_CHECK"

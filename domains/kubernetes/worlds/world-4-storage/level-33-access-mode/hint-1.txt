@@ -3,18 +3,18 @@
 Let's see why only one pod is starting:
 
 1️⃣ Check pod status:
-   kubectl get pods -n k8squest -l app=web
+   kubectl get pods -n devsecops-arena -l app=web
    
    How many are Running? How many are stuck?
 
 2️⃣ Describe a stuck pod:
-   kubectl describe pod <stuck-pod-name> -n k8squest
+   kubectl describe pod <stuck-pod-name> -n devsecops-arena
    
    Look for "Events" section - what does it say about volumes?
 
 3️⃣ Check the PVC:
-   kubectl get pvc shared-pvc -n k8squest
-   kubectl describe pvc shared-pvc -n k8squest
+   kubectl get pvc shared-pvc -n devsecops-arena
+   kubectl describe pvc shared-pvc -n devsecops-arena
    
    What's the access mode?
 

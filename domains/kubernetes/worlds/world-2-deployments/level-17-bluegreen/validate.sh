@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Check service selector
-SELECTOR=$(kubectl get service app-service -n k8squest -o jsonpath='{.spec.selector.version}' 2>/dev/null)
+SELECTOR=$(kubectl get service app-service -n devsecops-arena -o jsonpath='{.spec.selector.version}' 2>/dev/null)
 
 # Get endpoint IPs to see which pods are behind the service
-ENDPOINTS=$(kubectl get endpoints app-service -n k8squest -o jsonpath='{.subsets[*].addresses[*].ip}' 2>/dev/null | wc -w | tr -d ' ')
+ENDPOINTS=$(kubectl get endpoints app-service -n devsecops-arena -o jsonpath='{.subsets[*].addresses[*].ip}' 2>/dev/null | wc -w | tr -d ' ')
 
 if [ "$SELECTOR" = "green" ] && [ "$ENDPOINTS" -gt 0 ]; then
     echo "✅ Service is correctly pointing to GREEN version"

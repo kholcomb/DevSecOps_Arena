@@ -1,36 +1,36 @@
 #!/bin/bash
 set -e
 
-echo "🛡️  Setting up K8sQuest Safety Guards"
+echo "🛡️  Setting up DevSecOps Arena Safety Guards"
 echo "======================================"
 echo ""
 
-# Check if k8squest namespace exists
-if ! kubectl get namespace k8squest >/dev/null 2>&1; then
-  echo "Creating k8squest namespace..."
-  kubectl create namespace k8squest
+# Check if devsecops-arena namespace exists
+if ! kubectl get namespace devsecops-arena >/dev/null 2>&1; then
+  echo "Creating devsecops-arena namespace..."
+  kubectl create namespace devsecops-arena
 fi
 
 # Apply RBAC configuration
 echo "Applying RBAC policies..."
-kubectl apply -f rbac/k8squest-rbac.yaml
+kubectl apply -f rbac/devsecops-arena-rbac.yaml
 
 echo ""
 echo "✅ RBAC Setup Complete!"
 echo ""
 echo "📋 What was configured:"
-echo "  • ServiceAccount: k8squest-player"
-echo "  • Role: Full access within k8squest namespace"
+echo "  • ServiceAccount: devsecops-arena-player"
+echo "  • Role: Full access within devsecops-arena namespace"
 echo "  • ClusterRole: Read-only cluster-wide access"
 echo ""
 echo "🔒 Safety Features:"
-echo "  ✓ Cannot modify resources outside k8squest namespace"
+echo "  ✓ Cannot modify resources outside devsecops-arena namespace"
 echo "  ✓ Cannot delete nodes or critical namespaces"
 echo "  ✓ Cannot modify cluster-level resources"
 echo "  ✓ Read-only access to cluster info (nodes, storage classes)"
 echo ""
 echo "💡 To use this ServiceAccount:"
-echo "   kubectl --as=system:serviceaccount:k8squest:k8squest-player <command>"
+echo "   kubectl --as=system:serviceaccount:devsecops-arena:devsecops-arena-player <command>"
 echo ""
 echo "Or configure your context to use it by default."
 echo ""

@@ -4,7 +4,7 @@ Convert the Deployment to a StatefulSet.
 
 Steps:
 1. Delete the existing Deployment:
-   `kubectl delete deployment database -n k8squest`
+   `kubectl delete deployment database -n devsecops-arena`
 
 2. Create a StatefulSet instead:
    `kubectl apply -f - <<EOF
@@ -35,9 +35,9 @@ spec:
 EOF`
 
 3. Watch pods start in order (0, then 1, then 2):
-   `kubectl get pods -n k8squest -l app=database -w`
+   `kubectl get pods -n devsecops-arena -l app=database -w`
 
 4. Verify stable names:
-   `kubectl get pods -n k8squest -l app=database`
+   `kubectl get pods -n devsecops-arena -l app=database`
 
 Should see: database-0, database-1, database-2 (not random hashes)!

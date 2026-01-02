@@ -2,13 +2,13 @@
 
 ## Check Pod Status
 ```bash
-kubectl get pod regular-app -n k8squest
+kubectl get pod regular-app -n devsecops-arena
 ```
 Status: **Pending**
 
 ## Check Events
 ```bash
-kubectl describe pod regular-app -n k8squest
+kubectl describe pod regular-app -n devsecops-arena
 ```
 Error: `node(s) had untolerated taint {dedicated: gpu}`
 

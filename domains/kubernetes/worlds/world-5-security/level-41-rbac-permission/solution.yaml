@@ -44,7 +44,7 @@ spec:
     - -c
     - |
       echo "Attempting to list pods..."
-      kubectl get pods -n k8squest
+      kubectl get pods -n devsecops-arena
       
       if [ $? -eq 0 ]; then
         echo "✅ Success! Can list pods"

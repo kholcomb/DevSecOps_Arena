@@ -223,7 +223,7 @@ K8sQuest protects you from dangerous kubectl operations:
 
 ## 🔓 Disabling Safety Guards:
 Safety guards can be bypassed with:
-    export K8SQUEST_SAFETY=off
+    export ARENA_SAFETY=off
 
 But we **strongly recommend** keeping them enabled!
         """

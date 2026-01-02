@@ -57,13 +57,13 @@ spec:
 🚀 How to Apply:
 
 1️⃣ Delete the existing service:
-   kubectl delete service web-cluster -n k8squest
+   kubectl delete service web-cluster -n devsecops-arena
 
 2️⃣ Apply the fixed configuration:
    kubectl apply -f solution.yaml
 
 3️⃣ Verify the service is headless:
-   kubectl get service web-cluster -n k8squest
+   kubectl get service web-cluster -n devsecops-arena
    
    Output should show:
    NAME          TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
@@ -72,7 +72,7 @@ spec:
    Notice: CLUSTER-IP is "None" (headless!)
 
 4️⃣ Wait for StatefulSet pods:
-   kubectl get pods -n k8squest -l app=web-cluster -w
+   kubectl get pods -n devsecops-arena -l app=web-cluster -w
    
    Pods will come up in order:
    • web-0 (first)
@@ -81,7 +81,7 @@ spec:
 
 5️⃣ Test per-pod DNS resolution:
    # Start a debug pod
-   kubectl run -it --rm debug --image=busybox:1.28 -n k8squest -- sh
+   kubectl run -it --rm debug --image=busybox:1.28 -n devsecops-arena -- sh
    
    # Inside the debug pod, test DNS:
    nslookup web-0.web-cluster.k8squest.svc.cluster.local
@@ -310,14 +310,14 @@ spec:
 ✅ Apply this solution and your StatefulSet will have stable network identities!
 
 After applying, verify with:
-   kubectl get service web-cluster -n k8squest
+   kubectl get service web-cluster -n devsecops-arena
    # Should show: CLUSTER-IP = None
    
-   kubectl get pods -n k8squest -l app=web-cluster
+   kubectl get pods -n devsecops-arena -l app=web-cluster
    # Should show: web-0, web-1, web-2
    
    # Test DNS from a debug pod:
-   kubectl run -it --rm debug --image=busybox:1.28 -n k8squest -- \
+   kubectl run -it --rm debug --image=busybox:1.28 -n devsecops-arena -- \
      nslookup web-0.web-cluster.k8squest.svc.cluster.local
 
 The key change is just one line: clusterIP: None

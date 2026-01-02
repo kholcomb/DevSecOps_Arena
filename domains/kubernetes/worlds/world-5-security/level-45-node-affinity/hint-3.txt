@@ -51,12 +51,12 @@ spec:
 kubectl apply -f solution.yaml
 
 # Watch pod status
-kubectl get pod gpu-workload -n k8squest --watch
+kubectl get pod gpu-workload -n devsecops-arena --watch
 
 # Should transition: Pending → Running
 
 # Verify it's on the right node
-kubectl get pod gpu-workload -n k8squest -o wide
+kubectl get pod gpu-workload -n devsecops-arena -o wide
 ```
 
 ## Complete Commands
@@ -69,8 +69,8 @@ kubectl label nodes kind-control-plane accelerator=gpu
 kubectl apply -f solution.yaml
 
 # 3. Verify
-kubectl get pod gpu-workload -n k8squest
-kubectl describe pod gpu-workload -n k8squest | grep "Node:"
+kubectl get pod gpu-workload -n devsecops-arena
+kubectl describe pod gpu-workload -n devsecops-arena | grep "Node:"
 
 # 4. Run validation
 ./validate.sh

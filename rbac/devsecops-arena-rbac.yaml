@@ -1,20 +1,20 @@
 ---
-# ServiceAccount for K8sQuest players
+# ServiceAccount for DevSecOps Arena players
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: k8squest-player
-  namespace: k8squest
+  name: devsecops-arena-player
+  namespace: devsecops-arena
 
 ---
-# Role with permissions only in k8squest namespace
+# Role with permissions only in devsecops-arena namespace
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: k8squest-player-role
-  namespace: k8squest
+  name: devsecops-arena-player-role
+  namespace: devsecops-arena
 rules:
-  # Allow all operations on common resources within k8squest namespace
+  # Allow all operations on common resources within devsecops-arena namespace
   - apiGroups: [""]
     resources:
       - pods
@@ -62,15 +62,15 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: k8squest-player-binding
-  namespace: k8squest
+  name: devsecops-arena-player-binding
+  namespace: devsecops-arena
 subjects:
   - kind: ServiceAccount
-    name: k8squest-player
-    namespace: k8squest
+    name: devsecops-arena-player
+    namespace: devsecops-arena
 roleRef:
   kind: Role
-  name: k8squest-player-role
+  name: devsecops-arena-player-role
   apiGroup: rbac.authorization.k8s.io
 
 ---
@@ -79,7 +79,7 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: k8squest-viewer
+  name: devsecops-arena-viewer
 rules:
   # View nodes (for understanding cluster)
   - apiGroups: [""]
@@ -106,12 +106,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: k8squest-viewer-binding
+  name: devsecops-arena-viewer-binding
 subjects:
   - kind: ServiceAccount
-    name: k8squest-player
-    namespace: k8squest
+    name: devsecops-arena-player
+    namespace: devsecops-arena
 roleRef:
   kind: ClusterRole
-  name: k8squest-viewer
+  name: devsecops-arena-viewer
   apiGroup: rbac.authorization.k8s.io

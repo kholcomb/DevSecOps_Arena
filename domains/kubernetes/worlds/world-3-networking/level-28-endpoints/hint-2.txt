@@ -175,9 +175,9 @@ spec:
 
 Then apply:
 ```bash
-kubectl delete pod web-app-1 web-app-2 -n k8squest
+kubectl delete pod web-app-1 web-app-2 -n devsecops-arena
 kubectl apply -f broken.yaml
-kubectl get pods -n k8squest -w
+kubectl get pods -n devsecops-arena -w
 ```
 
 Watch pods transition: Pending → Running (0/1) → Running (1/1)

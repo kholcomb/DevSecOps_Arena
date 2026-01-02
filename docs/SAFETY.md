@@ -56,7 +56,7 @@ K8sQuest includes comprehensive safety guards to protect you from accidentally b
 2. **Delete All Resources**
    ```bash
    # Asks for confirmation
-   kubectl delete pods --all -n k8squest
+   kubectl delete pods --all -n devsecops-arena
    ```
 
 3. **PersistentVolume Operations**
@@ -129,7 +129,7 @@ Test if a command would be blocked:
 python3 engine/safety.py kubectl delete namespace kube-system
 # Output: BLOCKED: Cannot delete critical system namespaces!
 
-python3 engine/safety.py kubectl get pods -n k8squest
+python3 engine/safety.py kubectl get pods -n devsecops-arena
 # Output: Command passed safety checks
 ```
 
@@ -145,13 +145,13 @@ python3 engine/safety.py info
 
 ```bash
 # Temporary (current session only)
-export K8SQUEST_SAFETY=off
+export ARENA_SAFETY=off
 ./play.sh
 
 # To re-enable
-unset K8SQUEST_SAFETY
+unset ARENA_SAFETY
 # or
-export K8SQUEST_SAFETY=on
+export ARENA_SAFETY=on
 ```
 
 ## Why Safety Guards Matter
@@ -161,7 +161,7 @@ export K8SQUEST_SAFETY=on
 **Scenario 1: The Accidental Namespace Delete**
 ```bash
 # Developer meant to type:
-kubectl delete deployment myapp -n k8squest
+kubectl delete deployment myapp -n devsecops-arena
 
 # But accidentally typed:
 kubectl delete namespace k8squest
@@ -220,7 +220,7 @@ metadata:
 
 This is working as intended! The command you tried is dangerous. Options:
 1. Review what you're trying to do
-2. Make sure you're using `-n k8squest` namespace
+2. Make sure you're using `-n devsecops-arena` namespace
 3. Check if you have a typo
 4. If you really need this operation, see "Disabling Safety Guards" (not recommended)
 
@@ -233,35 +233,35 @@ You may be trying to access resources outside the `k8squest` namespace:
 kubectl get pods -n default
 
 # Works
-kubectl get pods -n k8squest
+kubectl get pods -n devsecops-arena
 ```
 
 ### Safety guards not working
 
 Check if they're enabled:
 ```bash
-echo $K8SQUEST_SAFETY
+echo $ARENA_SAFETY
 # Should be empty or "on"
 
 # If it says "off", re-enable:
-unset K8SQUEST_SAFETY
+unset ARENA_SAFETY
 ```
 
 ## Best Practices
 
-1. **Always use `-n k8squest` flag**
+1. **Always use `-n devsecops-arena` flag**
    ```bash
-   kubectl get pods -n k8squest
-   kubectl apply -f myapp.yaml -n k8squest
+   kubectl get pods -n devsecops-arena
+   kubectl apply -f myapp.yaml -n devsecops-arena
    ```
 
 2. **Test changes before applying**
    ```bash
    # Dry-run first
-   kubectl apply -f deployment.yaml --dry-run=client -n k8squest
+   kubectl apply -f deployment.yaml --dry-run=client -n devsecops-arena
 
    # Then apply for real
-   kubectl apply -f deployment.yaml -n k8squest
+   kubectl apply -f deployment.yaml -n devsecops-arena
    ```
 
 3. **Use `kubectl apply` instead of `kubectl create`**
@@ -276,7 +276,7 @@ unset K8SQUEST_SAFETY
 4. **Check what will be deleted**
    ```bash
    # See what would be deleted
-   kubectl delete pod <name> --dry-run=client -n k8squest
+   kubectl delete pod <name> --dry-run=client -n devsecops-arena
    ```
 
 5. **Keep safety guards enabled**

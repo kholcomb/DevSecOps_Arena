@@ -7,60 +7,60 @@
 ### Investigation & Debugging
 ```bash
 # Check pod status
-kubectl get pods -n k8squest
+kubectl get pods -n devsecops-arena
 
 # Detailed pod information
-kubectl describe pod <pod-name> -n k8squest
+kubectl describe pod <pod-name> -n devsecops-arena
 
 # View container logs
-kubectl logs <pod-name> -n k8squest
+kubectl logs <pod-name> -n devsecops-arena
 
 # View logs for specific container in multi-container pod
-kubectl logs <pod-name> -c <container-name> -n k8squest
+kubectl logs <pod-name> -c <container-name> -n devsecops-arena
 
 # Stream logs in real-time
-kubectl logs -f <pod-name> -n k8squest
+kubectl logs -f <pod-name> -n devsecops-arena
 
 # Get previous container logs (after crash)
-kubectl logs <pod-name> --previous -n k8squest
+kubectl logs <pod-name> --previous -n devsecops-arena
 
 # Check events (critical for debugging!)
-kubectl get events -n k8squest --sort-by='.lastTimestamp'
+kubectl get events -n devsecops-arena --sort-by='.lastTimestamp'
 
 # Interactive shell into running container
-kubectl exec -it <pod-name> -n k8squest -- /bin/sh
+kubectl exec -it <pod-name> -n devsecops-arena -- /bin/sh
 ```
 
 ### Resource Management
 ```bash
 # List all resources in namespace
-kubectl get all -n k8squest
+kubectl get all -n devsecops-arena
 
 # Delete and recreate pod
-kubectl delete pod <pod-name> -n k8squest
-kubectl apply -f <file.yaml> -n k8squest
+kubectl delete pod <pod-name> -n devsecops-arena
+kubectl apply -f <file.yaml> -n devsecops-arena
 
 # Force delete stuck pod
-kubectl delete pod <pod-name> -n k8squest --grace-period=0 --force
+kubectl delete pod <pod-name> -n devsecops-arena --grace-period=0 --force
 
 # Check resource quotas
-kubectl get resourcequota -n k8squest
-kubectl describe resourcequota -n k8squest
+kubectl get resourcequota -n devsecops-arena
+kubectl describe resourcequota -n devsecops-arena
 ```
 
 ### YAML Editing
 ```bash
 # Apply changes from file
-kubectl apply -f broken.yaml -n k8squest
+kubectl apply -f broken.yaml -n devsecops-arena
 
 # Edit live resource (dangerous!)
-kubectl edit pod <pod-name> -n k8squest
+kubectl edit pod <pod-name> -n devsecops-arena
 
 # View current YAML
-kubectl get pod <pod-name> -n k8squest -o yaml
+kubectl get pod <pod-name> -n devsecops-arena -o yaml
 
 # Dry-run to test changes
-kubectl apply -f solution.yaml -n k8squest --dry-run=client
+kubectl apply -f solution.yaml -n devsecops-arena --dry-run=client
 ```
 
 ---
@@ -158,8 +158,8 @@ resources:
 **Symptoms:** Service has no endpoints, pods not selected  
 **First Check:** 
 ```bash
-kubectl get pods --show-labels -n k8squest
-kubectl describe svc <service> -n k8squest
+kubectl get pods --show-labels -n devsecops-arena
+kubectl describe svc <service> -n devsecops-arena
 ```
 
 **Common Causes:**
@@ -192,21 +192,21 @@ metadata:
 ### Tip 1: Events Are Your Friend
 **Always check events when stuck:**
 ```bash
-kubectl get events -n k8squest --sort-by='.lastTimestamp' | tail -20
+kubectl get events -n devsecops-arena --sort-by='.lastTimestamp' | tail -20
 ```
 Events show you what Kubernetes tried to do and why it failed.
 
 ### Tip 2: Previous Logs After Crash
 **Container crashed? Get the logs from before it died:**
 ```bash
-kubectl logs <pod> --previous -n k8squest
+kubectl logs <pod> --previous -n devsecops-arena
 ```
 Without `--previous`, you only see logs from current (crashed) container.
 
 ### Tip 3: Describe Everything
 **`kubectl describe` is more detailed than `kubectl get`:**
 ```bash
-kubectl describe pod <pod> -n k8squest
+kubectl describe pod <pod> -n devsecops-arena
 # Shows: Events, status, conditions, volumes, QoS, more
 ```
 
@@ -222,7 +222,7 @@ kubectl get ns    # namespaces
 ### Tip 5: Watch Mode
 **See changes in real-time:**
 ```bash
-kubectl get pods -n k8squest -w
+kubectl get pods -n devsecops-arena -w
 # Press Ctrl+C to stop watching
 ```
 
@@ -293,11 +293,11 @@ By completing World 1, you should be able to:
 
 When stuck on a level, try these in order:
 
-- [ ] `kubectl get pods -n k8squest` - What's the status?
-- [ ] `kubectl describe pod <pod> -n k8squest` - Check Events section
-- [ ] `kubectl logs <pod> -n k8squest` - Any application errors?
-- [ ] `kubectl logs <pod> --previous -n k8squest` - If crashed, check previous logs
-- [ ] `kubectl get events -n k8squest --sort-by='.lastTimestamp'` - Recent events
+- [ ] `kubectl get pods -n devsecops-arena` - What's the status?
+- [ ] `kubectl describe pod <pod> -n devsecops-arena` - Check Events section
+- [ ] `kubectl logs <pod> -n devsecops-arena` - Any application errors?
+- [ ] `kubectl logs <pod> --previous -n devsecops-arena` - If crashed, check previous logs
+- [ ] `kubectl get events -n devsecops-arena --sort-by='.lastTimestamp'` - Recent events
 - [ ] Compare `broken.yaml` with expected behavior - What's different?
 - [ ] Use `hints` in game - Get nudge in right direction
 - [ ] Use `guide` in game - Step-by-step solution if really stuck

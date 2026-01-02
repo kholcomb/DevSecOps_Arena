@@ -11,7 +11,7 @@ for LEVEL in "$WORLD_DIR"/*; do
   kubectl delete namespace k8squest --ignore-not-found
   kubectl create namespace k8squest
 
-  kubectl apply -n k8squest -f "$LEVEL/broken.yaml"
+  kubectl apply -n devsecops-arena -f "$LEVEL/broken.yaml"
 
   echo "❌ Mission deployed. Fix the issue."
   echo "Press ENTER when ready to validate"

@@ -63,11 +63,11 @@ except ImportError:
 # Import safety guards
 try:
     from engine.safety import validate_kubectl_command, print_safety_info
-    SAFETY_ENABLED = os.environ.get("K8SQUEST_SAFETY", "on").lower() != "off"
+    SAFETY_ENABLED = os.environ.get("ARENA_SAFETY", "on").lower() != "off"
 except ImportError:
     try:
         from safety import validate_kubectl_command, print_safety_info
-        SAFETY_ENABLED = os.environ.get("K8SQUEST_SAFETY", "on").lower() != "off"
+        SAFETY_ENABLED = os.environ.get("ARENA_SAFETY", "on").lower() != "off"
     except ImportError:
         SAFETY_ENABLED = False
         print("⚠️  Warning: Safety guards module not found. Running without protection.")
@@ -180,7 +180,7 @@ def select_domain(domains: dict):
     return selected_domain
 
 
-class K8sQuest:
+class Arena:
     def __init__(self, enable_visualizer=True):
         self.base_dir = Path(__file__).parent.parent
         self.progress_file = self.base_dir / "progress.json"
@@ -350,10 +350,10 @@ class K8sQuest:
         """
         
         welcome_panel = Panel(
-            Text(title, style="bold cyan") + 
-            Text("\n Kubernetes Adventure Game \n", style="bold yellow") +
+            Text(title, style="bold cyan") +
+            Text("\n Multi-Domain Security Training \n", style="bold yellow") +
             Text("Contra-Style Learning | Arcade Action | Boss Battles", style="dim"),
-            title="[bold magenta]  K8SQUEST  [/bold magenta]",
+            title="[bold magenta]  DEVSECOPS ARENA  [/bold magenta]",
             border_style="cyan",
             box=box.HEAVY
         )
@@ -514,17 +514,17 @@ class K8sQuest:
         """Show helpful hints based on the level - DEPRECATED, use show_progressive_hints"""
         hints = {
             "level-1-pods": [
-                "Use `kubectl get pod nginx-broken -n k8squest` to check status",
-                "Use `kubectl describe pod nginx-broken -n k8squest` to see events",
-                "Use `kubectl logs nginx-broken -n k8squest` to check logs",
+                "Use `kubectl get pod nginx-broken -n devsecops-arena` to check status",
+                "Use `kubectl describe pod nginx-broken -n devsecops-arena` to see events",
+                "Use `kubectl logs nginx-broken -n devsecops-arena` to check logs",
                 "The pod has a bad command. Check what command is being run.",
                 "Remember: You can't edit a running pod - delete and recreate it!"
             ],
             "level-2-deployments": [
-                "Use `kubectl get deployment web -n k8squest` to check status",
-                "Use `kubectl describe deployment web -n k8squest` for details",
-                "Scale with `kubectl scale deployment web --replicas=N -n k8squest`",
-                "Or edit with `kubectl edit deployment web -n k8squest`"
+                "Use `kubectl get deployment web -n devsecops-arena` to check status",
+                "Use `kubectl describe deployment web -n devsecops-arena` for details",
+                "Scale with `kubectl scale deployment web --replicas=N -n devsecops-arena`",
+                "Or edit with `kubectl edit deployment web -n devsecops-arena`"
             ]
         }
         
@@ -609,8 +609,8 @@ The pod has a bad command `nginxzz` that doesn't exist.
 
 ### Step 1: Check what's wrong
 ```bash
-kubectl get pod nginx-broken -n k8squest
-kubectl describe pod nginx-broken -n k8squest
+kubectl get pod nginx-broken -n devsecops-arena
+kubectl describe pod nginx-broken -n devsecops-arena
 ```
 
 ### Step 2: View the solution
@@ -618,17 +618,17 @@ Look at the file: `worlds/world-1-basics/level-1-pods/solution.yaml`
 
 ### Step 3: Delete the broken pod
 ```bash
-kubectl delete pod nginx-broken -n k8squest
+kubectl delete pod nginx-broken -n devsecops-arena
 ```
 
 ### Step 4: Apply the fix
 ```bash
-kubectl apply -n k8squest -f worlds/world-1-basics/level-1-pods/solution.yaml
+kubectl apply -n devsecops-arena -f worlds/world-1-basics/level-1-pods/solution.yaml
 ```
 
 ### Step 5: Verify it's working
 ```bash
-kubectl get pod nginx-broken -n k8squest
+kubectl get pod nginx-broken -n devsecops-arena
 ```
 Look for "Running" status!
             """,
@@ -642,18 +642,18 @@ The deployment has 0 replicas, so no pods are running.
 
 ### Step 1: Check the deployment
 ```bash
-kubectl get deployment web -n k8squest
+kubectl get deployment web -n devsecops-arena
 ```
 
 ### Step 2: Scale up the replicas
 ```bash
-kubectl scale deployment web --replicas=2 -n k8squest
+kubectl scale deployment web --replicas=2 -n devsecops-arena
 ```
 
 ### Step 3: Verify it's working
 ```bash
-kubectl get deployment web -n k8squest
-kubectl get pods -n k8squest
+kubectl get deployment web -n devsecops-arena
+kubectl get pods -n devsecops-arena
 ```
 Look for "2/2" ready replicas!
             """
@@ -903,7 +903,7 @@ Look for "2/2" ready replicas!
                     return True
                     
             elif action == "quit":
-                console.print("\n[yellow]👋 Thanks for playing K8sQuest! Progress saved.[/yellow]\n")
+                console.print("\n[yellow]👋 Thanks for playing DevSecOps Arena! Progress saved.[/yellow]\n")
                 sys.exit(0)
     
     def play_world(self, world_name):
@@ -962,7 +962,7 @@ Look for "2/2" ready replicas!
 
 def main():
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='K8sQuest - Interactive Kubernetes Learning Game')
+    parser = argparse.ArgumentParser(description='DevSecOps Arena - Multi-Domain Security Training Platform')
     parser.add_argument('--no-viz', action='store_true',
                         help='Disable visualization server for a more realistic terminal-only experience')
     parser.add_argument('--viz-port', type=int, default=8080,
@@ -970,7 +970,7 @@ def main():
     args = parser.parse_args()
 
     # Create game instance
-    game = K8sQuest(enable_visualizer=not args.no_viz)
+    game = Arena(enable_visualizer=not args.no_viz)
 
     # Store for cleanup
     import __main__

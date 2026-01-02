@@ -17,15 +17,15 @@ data:
 
 🚀 Apply:
 ```bash
-kubectl delete pod web-app -n k8squest
+kubectl delete pod web-app -n devsecops-arena
 kubectl apply -f solution.yaml
-kubectl logs web-app -n k8squest -f
+kubectl logs web-app -n devsecops-arena -f
 # Should show all three variables including DATABASE_HOST
 ```
 
 🔍 Verify:
 ```bash
-kubectl exec web-app -n k8squest -- env | grep DATABASE_HOST
+kubectl exec web-app -n devsecops-arena -- env | grep DATABASE_HOST
 # Should output: DATABASE_HOST=postgres.k8squest.svc.cluster.local
 ```
 

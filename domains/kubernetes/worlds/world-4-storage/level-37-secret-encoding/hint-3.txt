@@ -28,7 +28,7 @@ echo -n "secretpass123" | base64
 ```bash
 kubectl delete -f broken.yaml
 kubectl apply -f solution.yaml
-kubectl logs database-client -n k8squest
+kubectl logs database-client -n devsecops-arena
 # Should show "Connected successfully!"
 ```
 

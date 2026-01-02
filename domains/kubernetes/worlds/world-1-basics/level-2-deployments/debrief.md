@@ -39,13 +39,13 @@ Kubernetes did exactly what you asked - but you probably wanted at least 1 repli
 4. **Multiple ways to scale**
    ```bash
    # Imperative (quick fix)
-   kubectl scale deployment web --replicas=3 -n k8squest
+   kubectl scale deployment web --replicas=3 -n devsecops-arena
    
    # Declarative (proper way)
    # Edit the YAML and kubectl apply
    
    # Interactive
-   kubectl edit deployment web -n k8squest
+   kubectl edit deployment web -n devsecops-arena
    ```
 
 ### What You Should Remember:

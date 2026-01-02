@@ -1,6 +1,6 @@
 🔍 Observation Hint:
 
-Check the service details: `kubectl get svc web-nodeport -n k8squest`
+Check the service details: `kubectl get svc web-nodeport -n devsecops-arena`
 
 You'll see a NodePort assigned (random port in 30000-32767 range).
 

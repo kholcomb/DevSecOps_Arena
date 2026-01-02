@@ -3,14 +3,14 @@
 echo "🔍 Checking service and pod status..."
 
 # Check if pod is running
-POD_STATUS=$(kubectl get pod backend-app -n k8squest -o jsonpath='{.status.phase}' 2>/dev/null)
-READY=$(kubectl get pod backend-app -n k8squest -o jsonpath='{.status.containerStatuses[0].ready}' 2>/dev/null)
+POD_STATUS=$(kubectl get pod backend-app -n devsecops-arena -o jsonpath='{.status.phase}' 2>/dev/null)
+READY=$(kubectl get pod backend-app -n devsecops-arena -o jsonpath='{.status.containerStatuses[0].ready}' 2>/dev/null)
 
 echo "   Pod Phase: $POD_STATUS"
 echo "   Pod Ready: $READY"
 
 # Check if service has endpoints
-ENDPOINTS=$(kubectl get endpoints backend-service -n k8squest -o jsonpath='{.subsets[0].addresses[0].ip}' 2>/dev/null)
+ENDPOINTS=$(kubectl get endpoints backend-service -n devsecops-arena -o jsonpath='{.subsets[0].addresses[0].ip}' 2>/dev/null)
 echo "   Endpoints: ${ENDPOINTS:-none}"
 
 if [[ "$POD_STATUS" == "Running" ]] && [[ "$READY" == "true" ]] && [[ -n "$ENDPOINTS" ]]; then
@@ -18,7 +18,7 @@ if [[ "$POD_STATUS" == "Running" ]] && [[ "$READY" == "true" ]] && [[ -n "$ENDPO
     exit 0
 else
     echo "❌ Service has no endpoints (can't find matching pods)"
-    echo "💡 Hint: Check 'kubectl get endpoints backend-service -n k8squest'"
-    echo "💡 Debug: 'kubectl describe service backend-service -n k8squest'"
+    echo "💡 Hint: Check 'kubectl get endpoints backend-service -n devsecops-arena'"
+    echo "💡 Debug: 'kubectl describe service backend-service -n devsecops-arena'"
     exit 1
 fi

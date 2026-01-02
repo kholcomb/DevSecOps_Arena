@@ -57,7 +57,7 @@ Step-by-Step:
 
 2. **Delete the old pod:**
    ```bash
-   kubectl delete pod frontend-app -n k8squest
+   kubectl delete pod frontend-app -n devsecops-arena
    ```
 
 3. **Apply the fixed configuration:**
@@ -75,7 +75,7 @@ Step-by-Step:
 
 4. **Watch the logs:**
    ```bash
-   kubectl logs frontend-app -n k8squest -f
+   kubectl logs frontend-app -n devsecops-arena -f
    ```
 
    Before the fix (DNS failure):
@@ -96,7 +96,7 @@ Step-by-Step:
 
 5. **Verify DNS resolution:**
    ```bash
-   kubectl exec frontend-app -n k8squest -- nslookup api-service.backend-ns.svc.cluster.local
+   kubectl exec frontend-app -n devsecops-arena -- nslookup api-service.backend-ns.svc.cluster.local
    ```
 
    Should return:
@@ -174,13 +174,13 @@ Testing Different Formats:
 
 ```bash
 # Test minimal format (namespace-qualified)
-kubectl exec frontend-app -n k8squest -- wget -q -O- http://api-service.backend-ns
+kubectl exec frontend-app -n devsecops-arena -- wget -q -O- http://api-service.backend-ns
 
 # Test short FQDN
-kubectl exec frontend-app -n k8squest -- wget -q -O- http://api-service.backend-ns.svc
+kubectl exec frontend-app -n devsecops-arena -- wget -q -O- http://api-service.backend-ns.svc
 
 # Test full FQDN (recommended)
-kubectl exec frontend-app -n k8squest -- wget -q -O- http://api-service.backend-ns.svc.cluster.local
+kubectl exec frontend-app -n devsecops-arena -- wget -q -O- http://api-service.backend-ns.svc.cluster.local
 ```
 
 All three should work! The full FQDN is most explicit and works even if cluster 

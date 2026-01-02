@@ -3,18 +3,18 @@
 echo "🔍 Checking pod and service configuration..."
 
 # Check if pod is running
-POD_STATUS=$(kubectl get pod web-server -n k8squest -o jsonpath='{.status.phase}' 2>/dev/null)
-READY=$(kubectl get pod web-server -n k8squest -o jsonpath='{.status.containerStatuses[0].ready}' 2>/dev/null)
+POD_STATUS=$(kubectl get pod web-server -n devsecops-arena -o jsonpath='{.status.phase}' 2>/dev/null)
+READY=$(kubectl get pod web-server -n devsecops-arena -o jsonpath='{.status.containerStatuses[0].ready}' 2>/dev/null)
 
 echo "   Pod Phase: $POD_STATUS"
 echo "   Pod Ready: $READY"
 
 # Check service targetPort
-SERVICE_PORT=$(kubectl get service web-service -n k8squest -o jsonpath='{.spec.ports[0].targetPort}' 2>/dev/null)
+SERVICE_PORT=$(kubectl get service web-service -n devsecops-arena -o jsonpath='{.spec.ports[0].targetPort}' 2>/dev/null)
 echo "   Service targetPort: $SERVICE_PORT"
 
 # Check endpoints
-ENDPOINTS=$(kubectl get endpoints web-service -n k8squest -o jsonpath='{.subsets[0].addresses[0].ip}' 2>/dev/null)
+ENDPOINTS=$(kubectl get endpoints web-service -n devsecops-arena -o jsonpath='{.subsets[0].addresses[0].ip}' 2>/dev/null)
 echo "   Endpoints: ${ENDPOINTS:-none}"
 
 if [[ "$POD_STATUS" == "Running" ]] && [[ "$READY" == "true" ]] && [[ "$SERVICE_PORT" == "80" ]] && [[ -n "$ENDPOINTS" ]]; then
@@ -27,6 +27,6 @@ else
     else
         echo "❌ Configuration issue detected"
     fi
-    echo "💡 Check: kubectl describe service web-service -n k8squest"
+    echo "💡 Check: kubectl describe service web-service -n devsecops-arena"
     exit 1
 fi

@@ -6,7 +6,7 @@ The http-echo app responds on the root path `/`.
 
 Steps to fix:
 1. Edit the deployment:
-   `kubectl edit deployment api-server -n k8squest`
+   `kubectl edit deployment api-server -n devsecops-arena`
 
 2. Find the livenessProbe section and change:
    ```yaml
@@ -20,6 +20,6 @@ Steps to fix:
 3. Save and exit. The deployment will automatically roll out fixed pods.
 
 4. Wait 30 seconds and verify:
-   `kubectl get pods -n k8squest -l app=api`
+   `kubectl get pods -n devsecops-arena -l app=api`
    
 Pods should be Running with low restart counts!

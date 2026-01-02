@@ -7,100 +7,100 @@
 ### Deployment Operations
 ```bash
 # List deployments
-kubectl get deployments -n k8squest
+kubectl get deployments -n devsecops-arena
 
 # Detailed deployment info
-kubectl describe deployment <name> -n k8squest
+kubectl describe deployment <name> -n devsecops-arena
 
 # Check deployment rollout status
-kubectl rollout status deployment/<name> -n k8squest
+kubectl rollout status deployment/<name> -n devsecops-arena
 
 # View rollout history
-kubectl rollout history deployment/<name> -n k8squest
+kubectl rollout history deployment/<name> -n devsecops-arena
 
 # Rollback to previous version
-kubectl rollout undo deployment/<name> -n k8squest
+kubectl rollout undo deployment/<name> -n devsecops-arena
 
 # Rollback to specific revision
-kubectl rollout undo deployment/<name> --to-revision=2 -n k8squest
+kubectl rollout undo deployment/<name> --to-revision=2 -n devsecops-arena
 
 # Pause rollout (for canary/staged deployment)
-kubectl rollout pause deployment/<name> -n k8squest
+kubectl rollout pause deployment/<name> -n devsecops-arena
 
 # Resume rollout
-kubectl rollout resume deployment/<name> -n k8squest
+kubectl rollout resume deployment/<name> -n devsecops-arena
 
 # Restart deployment (rolling restart)
-kubectl rollout restart deployment/<name> -n k8squest
+kubectl rollout restart deployment/<name> -n devsecops-arena
 ```
 
 ### Scaling Operations
 ```bash
 # Scale deployment manually
-kubectl scale deployment <name> --replicas=5 -n k8squest
+kubectl scale deployment <name> --replicas=5 -n devsecops-arena
 
 # Check HorizontalPodAutoscaler
-kubectl get hpa -n k8squest
+kubectl get hpa -n devsecops-arena
 
 # Detailed HPA status
-kubectl describe hpa <name> -n k8squest
+kubectl describe hpa <name> -n devsecops-arena
 
 # Watch HPA in action
-kubectl get hpa -n k8squest -w
+kubectl get hpa -n devsecops-arena -w
 
 # Check metrics (requires metrics-server)
 kubectl top nodes
-kubectl top pods -n k8squest
+kubectl top pods -n devsecops-arena
 ```
 
 ### ReplicaSet Operations
 ```bash
 # List ReplicaSets (usually managed by Deployments)
-kubectl get replicasets -n k8squest
-kubectl get rs -n k8squest
+kubectl get replicasets -n devsecops-arena
+kubectl get rs -n devsecops-arena
 
 # Describe ReplicaSet
-kubectl describe rs <name> -n k8squest
+kubectl describe rs <name> -n devsecops-arena
 
 # See which ReplicaSet owns which pods
-kubectl get pods -n k8squest -o wide --show-labels
+kubectl get pods -n devsecops-arena -o wide --show-labels
 ```
 
 ### StatefulSet Operations
 ```bash
 # List StatefulSets
-kubectl get statefulsets -n k8squest
-kubectl get sts -n k8squest
+kubectl get statefulsets -n devsecops-arena
+kubectl get sts -n devsecops-arena
 
 # Describe StatefulSet
-kubectl describe sts <name> -n k8squest
+kubectl describe sts <name> -n devsecops-arena
 
 # Check PVCs for StatefulSet
-kubectl get pvc -n k8squest
+kubectl get pvc -n devsecops-arena
 ```
 
 ### PodDisruptionBudget
 ```bash
 # List PDBs
-kubectl get pdb -n k8squest
+kubectl get pdb -n devsecops-arena
 
 # Describe PDB (shows allowed disruptions)
-kubectl describe pdb <name> -n k8squest
+kubectl describe pdb <name> -n devsecops-arena
 ```
 
 ### Probes & Health Checks
 ```bash
 # Check pod readiness
-kubectl get pods -n k8squest -o wide
+kubectl get pods -n devsecops-arena -o wide
 
 # See why pod is not ready
-kubectl describe pod <name> -n k8squest | grep -A 10 Conditions
+kubectl describe pod <name> -n devsecops-arena | grep -A 10 Conditions
 
 # Check recent probe failures
-kubectl describe pod <name> -n k8squest | grep -i probe
+kubectl describe pod <name> -n devsecops-arena | grep -i probe
 
 # View events for probe failures
-kubectl get events -n k8squest | grep -i probe
+kubectl get events -n devsecops-arena | grep -i probe
 ```
 
 ---
@@ -111,8 +111,8 @@ kubectl get events -n k8squest | grep -i probe
 Deployment Issues?
     │
     ├─→ Pods not starting
-    │   ├─→ Check: kubectl get pods -n k8squest
-    │   ├─→ Check: kubectl describe deployment -n k8squest
+    │   ├─→ Check: kubectl get pods -n devsecops-arena
+    │   ├─→ Check: kubectl describe deployment -n devsecops-arena
     │   ├─→ Look for: ImagePullBackOff, CrashLoopBackOff
     │   └─→ Fix: Fix image, fix command, check probes
     │
@@ -123,14 +123,14 @@ Deployment Issues?
     │   └─→ Fix: Adjust strategy, check PDB, fix health checks
     │
     ├─→ Old pods still running
-    │   ├─→ Check: kubectl get rs -n k8squest
+    │   ├─→ Check: kubectl get rs -n devsecops-arena
     │   ├─→ Check: kubectl describe deployment (Selector)
     │   ├─→ Look for: Label selector mismatch, manual ReplicaSets
     │   └─→ Fix: Update labels, delete old ReplicaSets
     │
     ├─→ HPA not scaling
-    │   ├─→ Check: kubectl describe hpa -n k8squest
-    │   ├─→ Check: kubectl top pods -n k8squest
+    │   ├─→ Check: kubectl describe hpa -n devsecops-arena
+    │   ├─→ Check: kubectl top pods -n devsecops-arena
     │   ├─→ Look for: metrics-server missing, no resource requests
     │   └─→ Fix: Install metrics-server, add requests to pods
     │
@@ -141,7 +141,7 @@ Deployment Issues?
     │   └─→ Fix: Correct probe config, add initialDelaySeconds
     │
     └─→ Data loss in StatefulSet
-        ├─→ Check: kubectl get pvc -n k8squest
+        ├─→ Check: kubectl get pvc -n devsecops-arena
         ├─→ Check: StatefulSet vs Deployment usage
         ├─→ Look for: Deployment used instead of StatefulSet
         └─→ Fix: Convert to StatefulSet, use volumeClaimTemplates
@@ -162,13 +162,13 @@ Deployment Issues?
 **Quick Fix Template:**
 ```bash
 # See all revisions
-kubectl rollout history deployment/myapp -n k8squest
+kubectl rollout history deployment/myapp -n devsecops-arena
 
 # Check specific revision
-kubectl rollout history deployment/myapp --revision=3 -n k8squest
+kubectl rollout history deployment/myapp --revision=3 -n devsecops-arena
 
 # Rollback to known good revision
-kubectl rollout undo deployment/myapp --to-revision=2 -n k8squest
+kubectl rollout undo deployment/myapp --to-revision=2 -n devsecops-arena
 ```
 
 ### Pattern 2: Liveness Probe Killing Pods
@@ -193,7 +193,7 @@ livenessProbe:
 
 ### Pattern 3: Readiness Probe Missing
 **Symptoms:** Traffic sent to pods before ready, 5xx errors  
-**First Check:** `kubectl get pods -n k8squest` (READY column)  
+**First Check:** `kubectl get pods -n devsecops-arena` (READY column)  
 **Common Causes:**
 - No readiness probe configured
 - Probe always fails
@@ -269,7 +269,7 @@ strategy:
 
 ### Pattern 6: PodDisruptionBudget Blocking
 **Symptoms:** Can't drain node, evictions blocked  
-**First Check:** `kubectl describe pdb -n k8squest`  
+**First Check:** `kubectl describe pdb -n devsecops-arena`  
 **Common Causes:**
 - minAvailable too high for number of replicas
 - maxUnavailable too low (0)
@@ -322,7 +322,7 @@ spec:
 
 ### Pattern 8: Canary Imbalance
 **Symptoms:** Wrong traffic split between versions  
-**First Check:** `kubectl get pods -n k8squest --show-labels`  
+**First Check:** `kubectl get pods -n devsecops-arena --show-labels`  
 **Common Causes:**
 - Wrong replica counts
 - Labels not matching service selector
@@ -331,8 +331,8 @@ spec:
 **Quick Fix Template:**
 ```bash
 # 90% stable, 10% canary:
-kubectl scale deployment/stable --replicas=9 -n k8squest
-kubectl scale deployment/canary --replicas=1 -n k8squest
+kubectl scale deployment/stable --replicas=9 -n devsecops-arena
+kubectl scale deployment/canary --replicas=1 -n devsecops-arena
 
 # Both MUST have same service selector labels
 # Service distributes evenly across ALL matching pods
@@ -345,10 +345,10 @@ kubectl scale deployment/canary --replicas=1 -n k8squest
 ### Tip 1: Check Rollout Progress
 ```bash
 # Watch rollout in real-time
-kubectl rollout status deployment/myapp -n k8squest -w
+kubectl rollout status deployment/myapp -n devsecops-arena -w
 
 # See which ReplicaSets are active
-kubectl get rs -n k8squest -l app=myapp
+kubectl get rs -n devsecops-arena -l app=myapp
 
 # Old ReplicaSets have 0 pods
 ```
@@ -356,34 +356,34 @@ kubectl get rs -n k8squest -l app=myapp
 ### Tip 2: Debug Probe Failures
 ```bash
 # Test liveness/readiness endpoint manually
-kubectl exec -it <pod> -n k8squest -- wget -O- http://localhost:8080/healthz
+kubectl exec -it <pod> -n devsecops-arena -- wget -O- http://localhost:8080/healthz
 
 # Check probe configuration
-kubectl get pod <pod> -n k8squest -o yaml | grep -A 10 livenessProbe
+kubectl get pod <pod> -n devsecops-arena -o yaml | grep -A 10 livenessProbe
 ```
 
 ### Tip 3: Force Immediate Rollout
 ```bash
 # Change something to trigger rollout
-kubectl set image deployment/myapp app=myapp:v2 -n k8squest
+kubectl set image deployment/myapp app=myapp:v2 -n devsecops-arena
 
 # Or force restart
-kubectl rollout restart deployment/myapp -n k8squest
+kubectl rollout restart deployment/myapp -n devsecops-arena
 ```
 
 ### Tip 4: Check HPA Metrics
 ```bash
 # Current CPU/memory usage
-kubectl top pods -n k8squest
+kubectl top pods -n devsecops-arena
 
 # HPA decision-making info
-kubectl describe hpa -n k8squest | grep -A 5 Metrics
+kubectl describe hpa -n devsecops-arena | grep -A 5 Metrics
 ```
 
 ### Tip 5: Understand ReplicaSet Ownership
 ```bash
 # See which Deployment owns which ReplicaSet
-kubectl get rs -n k8squest -o wide
+kubectl get rs -n devsecops-arena -o wide
 
 # ReplicaSet name format: <deployment-name>-<template-hash>
 ```
@@ -472,12 +472,12 @@ By completing World 2, you should be able to:
 
 When stuck on a level, try these in order:
 
-- [ ] `kubectl get deployments,rs,pods -n k8squest` - See the full picture
-- [ ] `kubectl describe deployment <name> -n k8squest` - Check strategy, events
-- [ ] `kubectl rollout status deployment/<name> -n k8squest` - Is it progressing?
-- [ ] `kubectl get events -n k8squest --sort-by='.lastTimestamp'` - Recent activity
-- [ ] `kubectl describe pod <pod> -n k8squest` - Check probe failures, resources
-- [ ] `kubectl logs <pod> -n k8squest` - Application errors?
+- [ ] `kubectl get deployments,rs,pods -n devsecops-arena` - See the full picture
+- [ ] `kubectl describe deployment <name> -n devsecops-arena` - Check strategy, events
+- [ ] `kubectl rollout status deployment/<name> -n devsecops-arena` - Is it progressing?
+- [ ] `kubectl get events -n devsecops-arena --sort-by='.lastTimestamp'` - Recent activity
+- [ ] `kubectl describe pod <pod> -n devsecops-arena` - Check probe failures, resources
+- [ ] `kubectl logs <pod> -n devsecops-arena` - Application errors?
 - [ ] Compare `broken.yaml` vs expected behavior - What's misconfigured?
 - [ ] Use `hints` in game - Progressive guidance
 - [ ] Use `guide` in game - Complete walkthrough if needed
