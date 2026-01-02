@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K8sQuest - Cluster Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-title">
+                    <span class="header-icon" aria-hidden="true">🎮</span>
+                    <h1>K8sQuest Cluster Visualizer</h1>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item world-level">
+                        <span class="stat-label">Current Level</span>
+                        <span class="stat-value" id="world-level">Loading...</span>
+                    </div>
+                    <div class="stat-item xp">
+                        <span class="stat-label">Experience</span>
+                        <span class="stat-value" id="xp-display">XP: 0</span>
+                    </div>
+                    <div class="stat-item status">
+                        <span class="status-indicator" id="status-indicator" aria-label="Cluster status"></span>
+                        <span class="status-text">Monitoring</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel: Cluster State -->
+            <aside class="sidebar" role="complementary" aria-label="Cluster resources">
+                <h2>📊 Cluster State</h2>
+                <div id="cluster-stats">
+                    <div class="stat-group">
+                        <h3>Pods</h3>
+                        <div id="pods-list" role="list"></div>
+                    </div>
+                    <div class="stat-group">
+                        <h3>Services</h3>
+                        <div id="services-list" role="list"></div>
+                    </div>
+                    <div class="stat-group">
+                        <h3>Deployments</h3>
+                        <div id="deployments-list" role="list"></div>
+                    </div>
+                    <div class="stat-group">
+                        <h3>Other Resources</h3>
+                        <div id="other-resources" role="list"></div>
+                    </div>
+                </div>
+                <div id="issues-panel" role="alert" aria-live="polite">
+                    <h3>🚨 Issues Detected</h3>
+                    <div id="issues-list"></div>
+                </div>
+            </aside>
+
+            <!-- Center: Architecture Diagram -->
+            <main class="diagram-container" role="main" aria-label="Architecture diagram">
+                <div id="diagram-title"></div>
+                <svg id="architecture-diagram" role="img" aria-label="Kubernetes cluster architecture diagram"></svg>
+                <div id="legend" role="list" aria-label="Status legend">
+                    <div class="legend-item" role="listitem">
+                        <span class="legend-color healthy" aria-hidden="true"></span>
+                        <span>Healthy</span>
+                    </div>
+                    <div class="legend-item" role="listitem">
+                        <span class="legend-color warning" aria-hidden="true"></span>
+                        <span>Warning</span>
+                    </div>
+                    <div class="legend-item" role="listitem">
+                        <span class="legend-color error" aria-hidden="true"></span>
+                        <span>Error</span>
+                    </div>
+                    <div class="legend-item" role="listitem">
+                        <span class="legend-color unknown" aria-hidden="true"></span>
+                        <span>Unknown</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <span class="footer-icon" aria-hidden="true">🔄</span>
+                    <span>Auto-refresh: <strong>3s</strong></span>
+                </div>
+                <div class="footer-update">
+                    <span>Last update: <time id="last-update">Never</time></span>
+                </div>
+                <div class="footer-connection">
+                    <span class="connection-dot" aria-hidden="true"></span>
+                    <span>Connected</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Tooltip Container -->
+    <div class="tooltip" id="tooltip" role="tooltip"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

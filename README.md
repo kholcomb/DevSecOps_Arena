@@ -42,9 +42,38 @@ K8sQuest includes **comprehensive safety guards** (enabled by default):
 # One-time setup
 ./install.sh
 
-# Start playing
+# Start playing (with visual diagrams)
 ./play.sh
+
+# Or start in terminal-only mode
+./play.sh --no-viz
 ```
+
+## 🌐 Visual Cluster Diagrams (NEW!)
+
+K8sQuest now includes a **real-time web-based visualization** that shows your cluster architecture and highlights issues:
+
+- **Auto-refreshes every 3 seconds** showing live cluster state
+- **Level-specific diagrams** that match what you're learning
+- **Color-coded health status** (green=healthy, orange=warning, red=error)
+- **Interactive D3.js diagrams** with zoom and pan
+- **Issue detection panel** showing what's broken and why
+
+### Usage
+```bash
+# Default - visualizer auto-starts and opens in browser
+./play.sh
+
+# Disable for terminal-only experience (more realistic)
+./play.sh --no-viz
+
+# Use custom port
+./play.sh --viz-port 9000
+```
+
+The visualizer runs on `http://localhost:8080` and provides a heads-up display for your cluster, making it easier to understand architecture and track your progress.
+
+[Learn more about the visualizer →](visualizer/README.md)
 
 ## 🎮 How to Play
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 # Quick launcher for K8sQuest
+# Usage: ./play.sh [--no-viz] [--viz-port PORT]
 
 cd "$(dirname "$0")"
 
@@ -9,4 +10,5 @@ if [ ! -d "venv" ]; then
 fi
 
 source venv/bin/activate
-python3 engine/engine.py
+# Pass all command line arguments to engine.py
+python3 engine/engine.py "$@"

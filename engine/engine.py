@@ -10,6 +10,8 @@ import json
 import yaml
 import subprocess
 import time
+import argparse
+import webbrowser
 from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
@@ -34,32 +36,60 @@ try:
     )
     RETRO_UI_ENABLED = True
 except ImportError:
-    RETRO_UI_ENABLED = False
-    print("ℹ️  Retro UI not available, using standard interface")
+    try:
+        from retro_ui import (
+            show_retro_welcome, show_level_start, show_victory,
+            show_command_menu, show_power_up_notification,
+            show_retro_header, show_xp_bar, show_world_entry,
+            show_game_complete, celebrate_milestone
+        )
+        RETRO_UI_ENABLED = True
+    except ImportError:
+        RETRO_UI_ENABLED = False
+        print("Retro UI not available, using standard interface")
 
 # Import player name generator
 try:
     from engine.player_name import get_player_name
 except ImportError:
-    def get_player_name(console, current_name=None):
-        from rich.prompt import Prompt
-        return Prompt.ask("Enter your name", default="K8s Explorer")
+    try:
+        from player_name import get_player_name
+    except ImportError:
+        def get_player_name(console, current_name=None):
+            from rich.prompt import Prompt
+            return Prompt.ask("Enter your name", default="K8s Explorer")
 
 # Import safety guards
 try:
     from engine.safety import validate_kubectl_command, print_safety_info
     SAFETY_ENABLED = os.environ.get("K8SQUEST_SAFETY", "on").lower() != "off"
 except ImportError:
-    SAFETY_ENABLED = False
-    print("⚠️  Warning: Safety guards module not found. Running without protection.")
+    try:
+        from safety import validate_kubectl_command, print_safety_info
+        SAFETY_ENABLED = os.environ.get("K8SQUEST_SAFETY", "on").lower() != "off"
+    except ImportError:
+        SAFETY_ENABLED = False
+        print("⚠️  Warning: Safety guards module not found. Running without protection.")
+
+# Import visualization server
+try:
+    sys.path.insert(0, str(Path(__file__).parent.parent / "visualizer"))
+    from server import VisualizationServer
+    VISUALIZER_ENABLED = True
+except ImportError as e:
+    VISUALIZER_ENABLED = False
+    print(f"ℹ️  Visualization server not available: {e}")
 
 console = Console()
 
 class K8sQuest:
-    def __init__(self):
+    def __init__(self, enable_visualizer=True):
         self.base_dir = Path(__file__).parent.parent
         self.progress_file = self.base_dir / "progress.json"
         self.progress = self.load_progress()
+        self.current_mission = None
+        self.visualizer = None
+        self.enable_visualizer = enable_visualizer and VISUALIZER_ENABLED
         
     def load_progress(self):
         """Load player progress from JSON file"""
@@ -82,7 +112,60 @@ class K8sQuest:
         """Save player progress"""
         with open(self.progress_file, 'w') as f:
             json.dump(self.progress, indent=2, fp=f)
-    
+
+    def get_game_state(self):
+        """Get current game state for visualization"""
+        return {
+            'total_xp': self.progress.get('total_xp', 0),
+            'completed_levels': self.progress.get('completed_levels', []),
+            'current_world': self.progress.get('current_world', 'world-1-basics'),
+            'current_level': self.progress.get('current_level'),
+            'player_name': self.progress.get('player_name', 'Padawan'),
+            'current_mission': self.current_mission.get('name', '') if self.current_mission else None
+        }
+
+    def start_visualizer(self, port=8080):
+        """Start the visualization server"""
+        if not self.enable_visualizer:
+            return None
+
+        try:
+            self.visualizer = VisualizationServer(
+                port=port,
+                game_state_callback=self.get_game_state,
+                verbose=False
+            )
+            url = self.visualizer.start()
+
+            console.print()
+            console.print(Panel(
+                f"[green]Visualization Server Started[/green]\n\n"
+                f"[cyan]Open in browser:[/cyan] [yellow]{url}[/yellow]\n"
+                f"[dim]View real-time cluster architecture and issues[/dim]",
+                title="[bold cyan]VISUAL MODE[/bold cyan]",
+                border_style="cyan"
+            ))
+            console.print()
+
+            # Try to open browser automatically
+            try:
+                webbrowser.open(url)
+            except:
+                pass  # If it fails, user can open manually
+
+            return url
+        except Exception as e:
+            console.print(f"[yellow]Could not start visualizer: {e}[/yellow]")
+            return None
+
+    def stop_visualizer(self):
+        """Stop the visualization server"""
+        if self.visualizer:
+            try:
+                self.visualizer.stop()
+            except:
+                pass
+
     def show_welcome(self):
         """Display welcome screen with retro gaming style"""
         if RETRO_UI_ENABLED:
@@ -100,9 +183,9 @@ class K8sQuest:
         
         welcome_panel = Panel(
             Text(title, style="bold cyan") + 
-            Text("\n🎮 Kubernetes Adventure Game 🎮\n", style="bold yellow") +
+            Text("\n Kubernetes Adventure Game \n", style="bold yellow") +
             Text("Contra-Style Learning | Arcade Action | Boss Battles", style="dim"),
-            title="[bold magenta]⚔️  K8SQUEST  ⚔️[/bold magenta]",
+            title="[bold magenta]  K8SQUEST  [/bold magenta]",
             border_style="cyan",
             box=box.HEAVY
         )
@@ -131,6 +214,11 @@ class K8sQuest:
         safety_status = "🛡️  ACTIVE" if SAFETY_ENABLED else "⚠️  DISABLED"
         safety_color = "green" if SAFETY_ENABLED else "red"
         stats.add_row("🛡️  SHIELDS", f"[{safety_color}]{safety_status}[/{safety_color}]")
+
+        # Add visualizer status
+        viz_status = "📊 ENABLED" if self.enable_visualizer else "⚙️  DISABLED"
+        viz_color = "cyan" if self.enable_visualizer else "dim"
+        stats.add_row("🌐 VISUAL MODE", f"[{viz_color}]{viz_status}[/{viz_color}]")
         
         console.print(Panel(stats, title="[bold yellow]⚡ PLAYER STATUS ⚡[/bold yellow]", border_style="yellow", box=box.HEAVY))
         
@@ -143,14 +231,13 @@ class K8sQuest:
         if SAFETY_ENABLED:
             console.print()
             console.print(Panel(
-                "[green]🛡️  DEFENSE SYSTEMS ONLINE[/green]\n"
+                "[green]DEFENSE SYSTEMS ONLINE[/green]\n"
                 "[dim]✓ Prevents cluster destruction\n"
                 "✓ Namespace protection active\n"
-                "✓ Safe mode engaged\n"
                 "Type 'safety info' for shield details[/dim]",
                 border_style="green",
                 box=box.HEAVY,
-                title="[bold green]🔰 SAFETY PROTOCOLS[/bold green]"
+                title="[bold green]SAFETY PROTOCOLS[/bold green]"
             ))
         console.print()
     
@@ -510,7 +597,8 @@ Look for "2/2" ready replicas!
     def play_level(self, level_path, level_name):
         """Play a single level with retro gaming UI"""
         mission = self.load_mission(level_path)
-        
+        self.current_mission = mission  # Set for visualizer
+
         # Show retro level start screen
         if RETRO_UI_ENABLED:
             level_num = int(level_name.split('-')[1]) if 'level-' in level_name else 0
@@ -741,8 +829,21 @@ Look for "2/2" ready replicas!
         return True  # World completed successfully
 
 def main():
-    game = K8sQuest()
-    
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='K8sQuest - Interactive Kubernetes Learning Game')
+    parser.add_argument('--no-viz', action='store_true',
+                        help='Disable visualization server for a more realistic terminal-only experience')
+    parser.add_argument('--viz-port', type=int, default=8080,
+                        help='Port for visualization server (default: 8080)')
+    args = parser.parse_args()
+
+    # Create game instance
+    game = K8sQuest(enable_visualizer=not args.no_viz)
+
+    # Store for cleanup
+    import __main__
+    __main__.game_instance = game
+
     # First time setup - get player name
     if game.progress["player_name"] == "Padawan":
         console.print()
@@ -750,8 +851,13 @@ def main():
         game.save_progress()
         console.print(f"\n[green]✨ Welcome, {game.progress['player_name']}![/green]\n")
         time.sleep(1)
-    
+
     game.show_welcome()
+
+    # Start visualizer if enabled
+    if game.enable_visualizer:
+        game.start_visualizer(port=args.viz_port)
+        time.sleep(1)
     
     # All 5 worlds in order
     all_worlds = [
@@ -815,8 +921,17 @@ def main():
             console.print("\n[yellow]See you later, Padawan![/yellow]\n")
 
 if __name__ == "__main__":
+    game_instance = None
     try:
+        # Store reference to game for cleanup
+        import __main__
+        __main__.game_instance = None
+
         main()
     except KeyboardInterrupt:
         console.print("\n\n[yellow]👋 Game interrupted. Progress saved![/yellow]\n")
         sys.exit(0)
+    finally:
+        # Clean up visualizer if it was started
+        if hasattr(__main__, 'game_instance') and __main__.game_instance:
+            __main__.game_instance.stop_visualizer()
