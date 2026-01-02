@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test suite for K8sQuest Safety Guards
+Test suite for DevSecOps Arena Safety Guards
 """
 
 import sys
@@ -50,7 +50,7 @@ def test_safety_guards():
     passed = 0
     failed = 0
     
-    console.print("\n[bold cyan]🧪 Testing K8sQuest Safety Guards[/bold cyan]\n")
+    console.print("\n[bold cyan]Testing DevSecOps Arena Safety Guards[/bold cyan]\n")
     console.print("="*70)
     
     for command, should_be_safe, description in tests:

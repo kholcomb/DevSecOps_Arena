@@ -535,4 +535,4 @@ New levels should fit logically into existing worlds or propose a new themed wor
 - Open an issue for discussion
 - Join community discussions
 
-**Thank you for contributing to K8sQuest!** 
+**Thank you for contributing to DevSecOps Arena!** 

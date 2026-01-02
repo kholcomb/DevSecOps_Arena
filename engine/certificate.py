@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 World Completion Certificate Generator
-Generates achievement certificates for completing K8sQuest worlds
+Generates achievement certificates for completing DevSecOps Arena worlds
 """
 
 import sys

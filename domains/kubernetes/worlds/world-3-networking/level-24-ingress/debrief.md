@@ -733,7 +733,7 @@ You've mastered Ingress path-based routing! You now understand:
 
 In the next levels, you'll explore more advanced networking concepts like NetworkPolicy for controlling traffic between pods, session affinity for stateful applications, and cross-namespace service communication.
 
-**Continue your K8sQuest journey to unlock the next challenge!** 🚀
+**Continue your DevSecOps Arena journey to unlock the next challenge!** 🚀
 
 ---
 

@@ -282,7 +282,7 @@ By completing World 1, you should be able to:
 - [Debug Pods](https://kubernetes.io/docs/tasks/debug/debug-application/)
 - [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-### K8sQuest Resources
+### DevSecOps Arena Resources
 - Use `guide` command in game for step-by-step walkthroughs
 - Use `hints` command for progressive hints (3 levels)
 - Read `debrief.md` after completing each level for deep learning

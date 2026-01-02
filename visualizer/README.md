@@ -1,6 +1,6 @@
-# K8sQuest Cluster Visualizer
+# DevSecOps Arena Cluster Visualizer
 
-A real-time web-based visualization tool for the K8sQuest Kubernetes learning game. This component provides an interactive architecture diagram that shows the current state of your Kubernetes cluster and highlights issues you need to fix.
+A real-time web-based visualization tool for the DevSecOps Arena Kubernetes learning game. This component provides an interactive architecture diagram that shows the current state of your Kubernetes cluster and highlights issues you need to fix.
 
 ## Features
 
@@ -62,7 +62,7 @@ For a more realistic, terminal-only experience:
 
 ```
 ┌─────────────────┐
-│   K8sQuest      │
+│   DevSecOps Arena      │
 │   Engine        │ ← Main game loop
 │   (engine.py)   │
 └────────┬────────┘

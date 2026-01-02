@@ -1,1 +1,1 @@
-# Templates package for K8sQuest visualizer
+# Templates package for DevSecOps Arena visualizer

@@ -1,1 +1,1 @@
-# K8sQuest Visualizer Package
+# DevSecOps Arena Visualizer Package

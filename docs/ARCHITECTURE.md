@@ -1,10 +1,10 @@
-# K8sQuest Architecture Overview
+# DevSecOps Arena Architecture Overview
 
 ## Platform Architecture
 
 ```mermaid
 graph TD
-    A[K8sQuest Platform<br/>Kubernetes Training Game System]
+    A[DevSecOps Arena Platform<br/>Kubernetes Training Game System]
     B[User Interaction Layer<br/>• ./play.sh Game Launcher<br/>• Rich TUI Colorful Terminal Interface<br/>• Interactive Menus & Commands]
     C[Game Engine engine.py<br/>• Mission Management<br/>• Progressive Hint System 3 tiers<br/>• XP Tracking & Persistence<br/>• Real-time Resource Monitoring<br/>• Command Validation]
     D[Safety Module<br/>safety.py<br/>• Pattern Match<br/>• RBAC Check<br/>• Confirmation]
@@ -116,7 +116,7 @@ graph TD
 
 ## Key Metrics Dashboard
 
-**K8sQuest Statistics**
+**DevSecOps Arena Statistics**
 
 | Metric                  | Value                               |
 |------------------------|-------------------------------------|

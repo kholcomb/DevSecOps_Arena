@@ -187,7 +187,7 @@ kubectl get pods
 ```
 
 **Why it fails:**
-By default, kubectl looks in the `default` namespace. K8sQuest uses the `k8squest` namespace.
+By default, kubectl looks in the `default` namespace. DevSecOps Arena uses the `k8squest` namespace.
 
 **Correct approach:**
 ```bash

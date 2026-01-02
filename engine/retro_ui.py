@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-K8sQuest Retro Gaming UI - Contra/Mario Style
+DevSecOps Arena Retro Gaming UI - Contra/Mario Style
 ASCII art, animations, and classic arcade aesthetics
 """
 

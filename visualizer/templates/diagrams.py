@@ -1,5 +1,5 @@
 """
-Diagram templates for each K8sQuest level
+Diagram templates for each DevSecOps Arena level
 Defines the architecture components and connections for visualization
 """
 
@@ -431,7 +431,7 @@ def get_world_5_diagram(level):
 def get_default_diagram():
     """Default generic Kubernetes diagram"""
     return {
-        'title': 'K8sQuest Cluster',
+        'title': 'DevSecOps Arena Cluster',
         'nodes': [
             {'id': 'deployment', 'type': 'deployment', 'label': 'Deployment', 'x': 300, 'y': 100},
             {'id': 'service', 'type': 'service', 'label': 'Service', 'x': 150, 'y': 200},

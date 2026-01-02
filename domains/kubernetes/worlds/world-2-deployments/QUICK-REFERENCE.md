@@ -461,7 +461,7 @@ By completing World 2, you should be able to:
 - [Configure Liveness/Readiness Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)
 - [HPA Walkthrough](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/)
 
-### K8sQuest Resources
+### DevSecOps Arena Resources
 - World 1 Quick Reference (basic kubectl commands)
 - Use `guide` for deployment-specific walkthroughs
 - Read debriefs for production incident case studies

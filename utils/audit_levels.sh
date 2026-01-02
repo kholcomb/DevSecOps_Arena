@@ -2,7 +2,7 @@
 
 # Audit all 50 levels for validation and namespace issues
 
-echo "🔍 Auditing all 50 K8sQuest levels..."
+echo "🔍 Auditing all 50 DevSecOps Arena levels..."
 echo "======================================"
 echo ""
 

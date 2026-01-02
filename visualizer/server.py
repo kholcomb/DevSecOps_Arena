@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-K8sQuest Visualization Server
+DevSecOps Arena Visualization Server
 Provides real-time cluster state visualization with architecture diagrams
 """
 
@@ -13,8 +13,8 @@ from urllib.parse import parse_qs, urlparse
 import os
 
 
-class K8sQuestVisualizerHandler(SimpleHTTPRequestHandler):
-    """HTTP handler for K8sQuest visualization server"""
+class DevSecOps ArenaVisualizerHandler(SimpleHTTPRequestHandler):
+    """HTTP handler for DevSecOps Arena visualization server"""
 
     def __init__(self, *args, game_state_callback=None, **kwargs):
         self.game_state_callback = game_state_callback
@@ -261,7 +261,7 @@ class K8sQuestVisualizerHandler(SimpleHTTPRequestHandler):
 
 
 class VisualizationServer:
-    """K8sQuest visualization server manager"""
+    """DevSecOps Arena visualization server manager"""
 
     def __init__(self, port=8080, game_state_callback=None, verbose=False):
         self.port = port
@@ -281,7 +281,7 @@ class VisualizationServer:
 
         # Create handler with game state callback
         def handler(*args, **kwargs):
-            return K8sQuestVisualizerHandler(
+            return DevSecOps ArenaVisualizerHandler(
                 *args,
                 game_state_callback=self.game_state_callback,
                 **kwargs
@@ -308,7 +308,7 @@ def main():
     """Standalone server for testing"""
     server = VisualizationServer(port=8080, verbose=True)
     url = server.start()
-    print(f"K8sQuest Visualization Server running at {url}")
+    print(f"DevSecOps Arena Visualization Server running at {url}")
     print("Press Ctrl+C to stop")
 
     try:

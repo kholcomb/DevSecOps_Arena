@@ -1,5 +1,5 @@
 #!/bin/bash
-# K8sQuest - Quick Level Creation Script
+# DevSecOps Arena - Quick Level Creation Script
 # Usage: ./create_level.sh <world-number> <level-number> <level-name> <short-description>
 
 set -e

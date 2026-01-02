@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🎮 K8sQuest Installation"
+echo "🎮 DevSecOps Arena Installation"
 echo "========================"
 echo ""
 

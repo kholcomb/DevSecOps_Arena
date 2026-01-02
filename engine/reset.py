@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-K8sQuest Reset Tool - Clean level state
+DevSecOps Arena Reset Tool - Clean level state
 """
 
 import sys
@@ -82,7 +82,7 @@ def reset_all():
 
 def main():
     if len(sys.argv) < 2:
-        console.print("[bold]K8sQuest Reset Tool[/bold]\n")
+        console.print("[bold]DevSecOps Arena Reset Tool[/bold]\n")
         console.print("Usage:")
         console.print("  python3 engine/reset.py <level-name>")
         console.print("  python3 engine/reset.py all")

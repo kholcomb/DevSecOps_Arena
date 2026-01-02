@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-K8sQuest Safety Guards
+DevSecOps Arena Safety Guards
 Prevents destructive commands and enforces namespace restrictions
 """
 
@@ -64,7 +64,7 @@ DANGEROUS_PATTERNS = [
     },
 ]
 
-# Namespaces that should be used in K8sQuest
+# Namespaces that should be used in DevSecOps Arena
 ALLOWED_NAMESPACES = ["k8squest", "default"]
 
 # Commands that require confirmation
@@ -100,7 +100,7 @@ def check_command_safety(command: str) -> tuple[bool, str, str]:
             if namespace not in ALLOWED_NAMESPACES:
                 return (
                     False,
-                    f"⚠️  WARNING: K8sQuest should use namespace 'k8squest', not '{namespace}'",
+                    f"⚠️  WARNING: DevSecOps Arena should use namespace 'k8squest', not '{namespace}'",
                     "warning"
                 )
     
@@ -137,7 +137,7 @@ def validate_kubectl_command(command: str, interactive: bool = True) -> bool:
             console.print(Panel(
                 f"[bold red]{message}[/bold red]\n\n"
                 "[yellow]This command is blocked for your safety.[/yellow]\n"
-                "[dim]K8sQuest limits operations to the 'k8squest' namespace.[/dim]",
+                "[dim]DevSecOps Arena limits operations to the 'k8squest' namespace.[/dim]",
                 title="[bold red]⛔ Safety Guard Activated[/bold red]",
                 border_style="red"
             ))
@@ -176,9 +176,9 @@ def validate_kubectl_command(command: str, interactive: bool = True) -> bool:
 def print_safety_info():
     """Print information about safety guards"""
     info = """
-# 🛡️  K8sQuest Safety Guards
+# DevSecOps Arena Safety Guards
 
-K8sQuest protects you from dangerous operations:
+DevSecOps Arena protects you from dangerous operations:
 
 ## 🚫 Blocked Commands:
 - Deleting critical namespaces (kube-system, default, etc.)

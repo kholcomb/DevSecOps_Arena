@@ -961,7 +961,7 @@ You've mastered cross-namespace service communication! You now understand:
 
 In the next levels, you'll explore service endpoint management with readiness probes, LoadBalancer vs NodePort services, and headless services for StatefulSets.
 
-**Continue your K8sQuest journey to unlock the next challenge!** 🚀
+**Continue your DevSecOps Arena journey to unlock the next challenge!** 🚀
 
 ---
 

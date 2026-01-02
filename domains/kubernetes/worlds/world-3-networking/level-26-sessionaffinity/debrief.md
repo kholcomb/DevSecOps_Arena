@@ -854,7 +854,7 @@ You've mastered session affinity and understand stateful vs stateless design! Yo
 
 In the next levels, you'll explore cross-namespace service communication, service endpoint updates, and more advanced networking patterns.
 
-**Continue your K8sQuest journey to unlock the next challenge!** 🚀
+**Continue your DevSecOps Arena journey to unlock the next challenge!** 🚀
 
 ---
 

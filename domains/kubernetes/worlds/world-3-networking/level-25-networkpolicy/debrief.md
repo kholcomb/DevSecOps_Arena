@@ -905,7 +905,7 @@ You've mastered NetworkPolicy fundamentals! You now understand:
 
 In the next levels, you'll explore session affinity for stateful applications, cross-namespace service communication, and more advanced networking patterns.
 
-**Continue your K8sQuest journey to unlock the next challenge!** 🚀
+**Continue your DevSecOps Arena journey to unlock the next challenge!** 🚀
 
 ---
 

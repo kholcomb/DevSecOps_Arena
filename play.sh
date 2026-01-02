@@ -1,5 +1,5 @@
 #!/bin/bash
-# Quick launcher for K8sQuest
+# Quick launcher for DevSecOps Arena
 # Usage: ./play.sh [--no-viz] [--viz-port PORT]
 
 cd "$(dirname "$0")"

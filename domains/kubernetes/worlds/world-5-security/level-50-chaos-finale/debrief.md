@@ -137,7 +137,7 @@ You started with a simple Pod and ended by fixing a production emergency with 9 
 
 ## 🎉 Thank You!
 
-Thank you for completing **K8sQuest**! You've demonstrated exceptional dedication and skill.
+Thank you for completing **DevSecOps Arena**! You've demonstrated exceptional dedication and skill.
 
 May your clusters be stable, your pods always Running, and your deployments forever successful!
 

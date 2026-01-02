@@ -2,7 +2,7 @@
 """
 DevSecOps Arena - Multi-Domain Security Training Platform
 (formerly K8sQuest - Interactive Kubernetes Learning Game)
-🎮 Now with Retro Gaming UI & Domain Plugin System! 🎮
+Now with Retro Gaming UI & Domain Plugin System
 """
 
 import os

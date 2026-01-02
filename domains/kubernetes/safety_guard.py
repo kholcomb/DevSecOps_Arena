@@ -140,7 +140,7 @@ class K8sSafetyGuard(SafetyGuard):
                         console.print(Panel(
                             f"[bold red]{pattern_obj.message}[/bold red]\n\n"
                             "[yellow]This command is blocked for your safety.[/yellow]\n"
-                            "[dim]K8sQuest limits operations to the 'k8squest' namespace.[/dim]"
+                            "[dim]DevSecOps Arena limits operations to the 'k8squest' namespace.[/dim]"
                             + (f"\n\n💡 Suggestion: {pattern_obj.suggestion}" if pattern_obj.suggestion else ""),
                             title="[bold red]⛔ Safety Guard Activated[/bold red]",
                             border_style="red"
@@ -172,7 +172,7 @@ class K8sSafetyGuard(SafetyGuard):
             if namespace_match:
                 namespace = namespace_match.group(2)
                 if namespace not in self.allowed_namespaces and namespace != "k8squest":
-                    message = f"⚠️  WARNING: K8sQuest should use namespace 'k8squest', not '{namespace}'"
+                    message = f"⚠️  WARNING: DevSecOps Arena should use namespace 'k8squest', not '{namespace}'"
 
                     if interactive:
                         console.print(Panel(
@@ -198,9 +198,9 @@ class K8sSafetyGuard(SafetyGuard):
             Markdown-formatted safety documentation
         """
         return """
-# 🛡️  Kubernetes Safety Guards
+# Kubernetes Safety Guards
 
-K8sQuest protects you from dangerous kubectl operations:
+DevSecOps Arena protects you from dangerous kubectl operations:
 
 ## 🚫 Blocked Commands:
 - Deleting critical namespaces (kube-system, default, etc.)
