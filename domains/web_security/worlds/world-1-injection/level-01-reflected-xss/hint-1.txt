@@ -1,0 +1,3 @@
+The search parameter is directly reflected in the HTML response without any encoding or sanitization.
+
+Try searching for some HTML or JavaScript code and see what happens.

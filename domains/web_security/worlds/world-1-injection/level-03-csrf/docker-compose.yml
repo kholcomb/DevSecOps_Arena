@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  bank:
+    build: ./app/bank
+    ports:
+      - "3003:5000"
+    environment:
+      - FLAG=ARENA{CSRF_f0rc3d_tr4nsf3r}
+    restart: unless-stopped
+
+  attacker:
+    build: ./app/attacker
+    ports:
+      - "3004:5000"
+    restart: unless-stopped

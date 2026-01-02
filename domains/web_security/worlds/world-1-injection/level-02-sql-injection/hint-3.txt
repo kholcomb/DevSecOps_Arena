@@ -1,0 +1,8 @@
+Complete SQL injection payload:
+
+Username: admin'--
+Password: anything
+
+This will log you in as the admin user and display the secret flag in the user information section.
+
+Copy the flag and validate the challenge.

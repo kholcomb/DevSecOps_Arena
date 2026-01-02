@@ -1,0 +1,11 @@
+You can bypass authentication by commenting out the password check:
+
+Username: admin'--
+Password: (anything)
+
+The '--' comments out the rest of the SQL query, so the password check is ignored.
+
+The resulting query becomes:
+SELECT * FROM users WHERE username = 'admin'-- AND password = 'anything'
+
+Everything after '--' is ignored by the database.

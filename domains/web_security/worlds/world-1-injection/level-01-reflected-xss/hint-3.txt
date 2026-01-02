@@ -1,0 +1,7 @@
+Complete XSS payload to extract the flag:
+
+http://localhost:3001/search?q=<script>alert(document.cookie)</script>
+
+This will inject JavaScript that displays the cookie containing the flag in an alert box.
+
+Copy the flag from the alert and use it to validate the challenge.

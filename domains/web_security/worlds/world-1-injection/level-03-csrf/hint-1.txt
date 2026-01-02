@@ -1,0 +1,5 @@
+The banking application's /transfer endpoint accepts POST requests without checking for a CSRF token.
+
+If a user is logged in to the banking app, their browser will automatically include their session cookie with ANY request to that domain, even requests initiated from other websites.
+
+Visit the attacker's website at http://localhost:3004 for step-by-step instructions.

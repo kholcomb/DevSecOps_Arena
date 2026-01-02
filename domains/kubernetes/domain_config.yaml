@@ -1,0 +1,76 @@
+# Kubernetes Security & Operations Domain Configuration
+
+metadata:
+  id: kubernetes
+  name: "Kubernetes Security & Operations"
+  icon: "⎈"
+  description: |
+    Master Kubernetes operations and security through hands-on challenges.
+    Learn pod debugging, deployments, networking, storage, and security best practices.
+
+# World definitions (in order)
+worlds:
+  - world-1-basics
+  - world-2-deployments
+  - world-3-networking
+  - world-4-storage
+  - world-5-security
+
+# Domain capabilities and requirements
+capabilities:
+  # Deployment backend
+  deployment_backend: kubectl
+
+  # Requires Kubernetes cluster (kind, Docker Desktop, etc.)
+  requires_cluster: true
+
+  # Default namespace for challenges
+  namespace: k8squest
+
+  # Safety guards enabled
+  safety_enabled: true
+
+  # Cluster requirements
+  cluster:
+    min_version: "1.20"
+    required_features:
+      - namespaces
+      - pods
+      - deployments
+      - services
+
+# Learning progression
+progression:
+  total_challenges: 50
+  total_xp: 10200
+
+  worlds_info:
+    world-1-basics:
+      name: "Kubernetes Basics"
+      challenges: 10
+      xp: 1000
+      description: "Pods, deployments, and core concepts"
+
+    world-2-deployments:
+      name: "Advanced Deployments"
+      challenges: 10
+      xp: 2000
+      description: "Rollouts, scaling, health checks, and strategies"
+
+    world-3-networking:
+      name: "Networking & Services"
+      challenges: 10
+      xp: 2200
+      description: "Services, ingress, network policies"
+
+    world-4-storage:
+      name: "Storage & Persistence"
+      challenges: 10
+      xp: 2400
+      description: "Volumes, PVCs, StatefulSets, storage classes"
+
+    world-5-security:
+      name: "Security & RBAC"
+      challenges: 10
+      xp: 2600
+      description: "RBAC, security contexts, policies, secrets"

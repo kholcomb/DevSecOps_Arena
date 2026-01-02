@@ -1,0 +1,26 @@
+name: "SQL Injection in Login"
+description: |
+  A web application has a login form that is vulnerable to SQL injection.
+  The application uses unsanitized user input in SQL queries, allowing you to bypass authentication.
+
+  Your mission is to exploit this SQL injection vulnerability to retrieve the admin's secret flag.
+
+  The vulnerable application is accessible at http://localhost:3002
+
+  Vulnerability: User input is directly concatenated into SQL queries without parameterization.
+
+objective: "Extract the admin flag using SQL injection"
+xp: 140
+difficulty: beginner
+expected_time: "25m"
+
+concepts:
+  - sql-injection
+  - authentication-bypass
+  - union-based-injection
+  - database-extraction
+
+hints_cost:
+  hint_1: 0
+  hint_2: 15
+  hint_3: 30

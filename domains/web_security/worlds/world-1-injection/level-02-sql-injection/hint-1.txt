@@ -1,0 +1,6 @@
+The login form constructs a SQL query using string concatenation:
+
+SELECT * FROM users WHERE username = 'user_input' AND password = 'password_input'
+
+Try injecting SQL syntax into the username field to manipulate the query logic.
+Think about how you could make the WHERE clause always evaluate to true.

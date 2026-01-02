@@ -1,0 +1,10 @@
+Steps to execute the CSRF attack:
+
+1. Open http://localhost:3003 in your browser
+2. Login as alice (password: password123)
+3. Keep that tab open (stay logged in)
+4. Open http://localhost:3004 in a new tab
+5. Click the "Claim Your Prize!" button
+6. Go back to the banking app tab and refresh
+
+The hidden form on the attacker's page will submit a transfer request using alice's session.

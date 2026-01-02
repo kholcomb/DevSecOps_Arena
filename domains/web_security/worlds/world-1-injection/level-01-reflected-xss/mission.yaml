@@ -1,0 +1,24 @@
+name: "Reflected XSS in Search"
+description: |
+  A simple web application has a search feature that reflects user input without proper sanitization.
+  Your mission is to exploit this XSS vulnerability to extract the secret flag stored in a cookie.
+
+  The vulnerable application is accessible at http://localhost:3001
+
+  Vulnerability: The search parameter is reflected directly in the HTML response without encoding.
+
+objective: "Extract the flag using reflected XSS"
+xp: 120
+difficulty: beginner
+expected_time: "20m"
+
+concepts:
+  - reflected-xss
+  - cookie-theft
+  - client-side-injection
+  - javascript-payloads
+
+hints_cost:
+  hint_1: 0
+  hint_2: 10
+  hint_3: 25

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-DevSecOps Arena - Multi-Domain Security Training Platform
-(formerly K8sQuest - Interactive Kubernetes Learning Game)
-🎮 Now with Retro Gaming UI & Domain Plugin System! 🎮
+K8sQuest - Interactive Kubernetes Learning Game
+🎮 Now with Retro Gaming UI! 🎮
 """
 
 import os
@@ -83,186 +82,30 @@ except ImportError as e:
 
 console = Console()
 
-
-def discover_domains(base_dir: Path) -> dict:
-    """
-    Discover available domain plugins by scanning domains/ directory.
-
-    Each domain must have:
-    - domain_config.yaml with metadata
-    - domain.py with load_domain() function
-
-    Returns:
-        Dict mapping domain_id -> Domain instance
-    """
-    domains = {}
-    domains_dir = base_dir / "domains"
-
-    if not domains_dir.exists():
-        console.print("[yellow]Warning: domains/ directory not found[/yellow]")
-        return domains
-
-    # Scan for domain directories (skip _base)
-    for domain_path in sorted(domains_dir.iterdir()):
-        if not domain_path.is_dir() or domain_path.name.startswith('_'):
-            continue
-
-        # Check for required files
-        config_file = domain_path / "domain_config.yaml"
-        domain_module = domain_path / "domain.py"
-
-        if not config_file.exists() or not domain_module.exists():
-            continue
-
-        try:
-            # Dynamically import the domain module
-            import importlib.util
-            spec = importlib.util.spec_from_file_location(
-                f"domains.{domain_path.name}",
-                domain_module
-            )
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-
-            # Load domain using load_domain() function
-            if hasattr(module, 'load_domain'):
-                domain = module.load_domain(domain_path)
-                domains[domain.config.id] = domain
-                console.print(f"[dim]Discovered domain: {domain.config.icon} {domain.config.name}[/dim]")
-            else:
-                console.print(f"[yellow]Warning: {domain_path.name}/domain.py missing load_domain() function[/yellow]")
-
-        except Exception as e:
-            console.print(f"[yellow]Warning: Could not load {domain_path.name} domain: {e}[/yellow]")
-
-    return domains
-
-
-def select_domain(domains: dict):
-    """
-    Select which domain to play.
-
-    If only one domain exists, auto-select it.
-    If multiple domains exist, show selection menu.
-
-    Args:
-        domains: Dict of available domains
-
-    Returns:
-        Selected Domain instance
-    """
-    if len(domains) == 0:
-        console.print("[red]Error: No domains found![/red]")
-        sys.exit(1)
-
-    if len(domains) == 1:
-        # Auto-select single domain (backward compatibility)
-        domain = list(domains.values())[0]
-        return domain
-
-    # Multiple domains - show selection menu
-    console.print("\n[bold cyan]Select Training Domain:[/bold cyan]\n")
-
-    domain_list = list(domains.items())
-    for i, (domain_id, domain) in enumerate(domain_list, 1):
-        console.print(f"  {i}. {domain.config.icon}  {domain.config.name}")
-        console.print(f"     [dim]{domain.config.description}[/dim]\n")
-
-    choice = Prompt.ask(
-        "Choose domain",
-        choices=[str(i) for i in range(1, len(domain_list) + 1)],
-        default="1"
-    )
-
-    selected_domain = domain_list[int(choice) - 1][1]
-    console.print(f"\n[green]Selected: {selected_domain.config.name}[/green]\n")
-
-    return selected_domain
-
-
 class K8sQuest:
     def __init__(self, enable_visualizer=True):
         self.base_dir = Path(__file__).parent.parent
         self.progress_file = self.base_dir / "progress.json"
-
-        # Discover and select domain
-        self.domains = discover_domains(self.base_dir)
-        self.current_domain = select_domain(self.domains)
-
-        # Load progress (will auto-migrate old format)
         self.progress = self.load_progress()
-
         self.current_mission = None
         self.visualizer = None
         self.enable_visualizer = enable_visualizer and VISUALIZER_ENABLED
         
     def load_progress(self):
-        """
-        Load player progress from JSON file.
-
-        Handles migration from old format (flat) to new format (domain-aware).
-        """
-        domain_id = self.current_domain.config.id
-
+        """Load player progress from JSON file"""
         if self.progress_file.exists():
             with open(self.progress_file, 'r') as f:
                 progress = json.load(f)
-
-                # Check if old format (has total_xp at root level)
-                if "total_xp" in progress and "domains" not in progress:
-                    # Migrate old format → domain-aware format
-                    console.print("[yellow]📦 Migrating progress to multi-domain format...[/yellow]")
-
-                    old_progress = progress.copy()
-                    new_progress = {
-                        "player_name": old_progress.get("player_name", "Padawan"),
-                        "domains": {
-                            domain_id: {
-                                "total_xp": old_progress.get("total_xp", 0),
-                                "completed_levels": old_progress.get("completed_levels", []),
-                                "current_world": old_progress.get("current_world", "world-1-basics"),
-                                "current_level": old_progress.get("current_level")
-                            }
-                        }
-                    }
-
-                    # Save migrated version
-                    with open(self.progress_file, 'w') as fw:
-                        json.dump(new_progress, fw, indent=2)
-
-                    console.print("[green]✅ Progress migrated successfully![/green]\n")
-                    return new_progress
-
-                # Already new format
-                # Ensure domain exists in progress
-                if "domains" not in progress:
-                    progress["domains"] = {}
-
-                if domain_id not in progress["domains"]:
-                    progress["domains"][domain_id] = {
-                        "total_xp": 0,
-                        "completed_levels": [],
-                        "current_world": self.current_domain.config.worlds[0] if self.current_domain.config.worlds else "world-1-basics",
-                        "current_level": None
-                    }
-
                 # Ensure current_level exists for resume functionality
-                if "current_level" not in progress["domains"][domain_id]:
-                    progress["domains"][domain_id]["current_level"] = None
-
+                if "current_level" not in progress:
+                    progress["current_level"] = None
                 return progress
-
-        # No existing progress - create new
         return {
-            "player_name": "Padawan",
-            "domains": {
-                domain_id: {
-                    "total_xp": 0,
-                    "completed_levels": [],
-                    "current_world": self.current_domain.config.worlds[0] if self.current_domain.config.worlds else "world-1-basics",
-                    "current_level": None
-                }
-            }
+            "total_xp": 0,
+            "completed_levels": [],
+            "current_world": "world-1-basics",
+            "current_level": None,
+            "player_name": "Padawan"
         }
     
     def save_progress(self):
@@ -270,26 +113,15 @@ class K8sQuest:
         with open(self.progress_file, 'w') as f:
             json.dump(self.progress, indent=2, fp=f)
 
-    @property
-    def domain_progress(self):
-        """
-        Get progress for current domain.
-
-        Returns dictionary with: total_xp, completed_levels, current_world, current_level
-        """
-        domain_id = self.current_domain.config.id
-        return self.progress["domains"][domain_id]
-
     def get_game_state(self):
         """Get current game state for visualization"""
         return {
-            'total_xp': self.domain_progress.get('total_xp', 0),
-            'completed_levels': self.domain_progress.get('completed_levels', []),
-            'current_world': self.domain_progress.get('current_world', 'world-1-basics'),
-            'current_level': self.domain_progress.get('current_level'),
+            'total_xp': self.progress.get('total_xp', 0),
+            'completed_levels': self.progress.get('completed_levels', []),
+            'current_world': self.progress.get('current_world', 'world-1-basics'),
+            'current_level': self.progress.get('current_level'),
             'player_name': self.progress.get('player_name', 'Padawan'),
-            'current_mission': self.current_mission.get('name', '') if self.current_mission else None,
-            'current_domain': self.current_domain.config.id
+            'current_mission': self.current_mission.get('name', '') if self.current_mission else None
         }
 
     def start_visualizer(self, port=8080):
@@ -366,7 +198,7 @@ class K8sQuest:
         stats.add_column("Stat", style="cyan bold")
         stats.add_column("Value", style="yellow bold")
         stats.add_row("🎮 PLAYER", self.progress["player_name"])
-        stats.add_row("💎 TOTAL XP", str(self.domain_progress["total_xp"]))
+        stats.add_row("💎 TOTAL XP", str(self.progress["total_xp"]))
         stats.add_row("⭐ LEVELS CLEARED", f"{len(self.progress['completed_levels'])}/50")
         
         # Calculate completion percentage
@@ -376,7 +208,7 @@ class K8sQuest:
         
         # Show current level if resuming
         if self.progress.get("current_level"):
-            stats.add_row("🎯 CURRENT MISSION", self.domain_progress["current_level"])
+            stats.add_row("🎯 CURRENT MISSION", self.progress["current_level"])
         
         # Add safety status with gaming flair
         safety_status = "🛡️  ACTIVE" if SAFETY_ENABLED else "⚠️  DISABLED"
@@ -393,7 +225,7 @@ class K8sQuest:
         # Show XP progress bar
         if RETRO_UI_ENABLED:
             console.print()
-            console.print(show_xp_bar(self.domain_progress["total_xp"], 10200))
+            console.print(show_xp_bar(self.progress["total_xp"], 10200))
         
         # Show safety reminder if enabled with gaming theme
         if SAFETY_ENABLED:
@@ -546,17 +378,31 @@ class K8sQuest:
                 self.show_solution_file(level_path)
                 console.print("[dim]💡 Tip: You can use this as a reference to fix the issue[/dim]\n")
     
-    def get_resource_status(self, level_name, level_path=None):
-        """Get current status using domain deployer"""
-        if not level_path:
-            # Fallback to generic message
-            return "Status check not available"
-
+    def get_resource_status(self, level_name):
+        """Get current status of the Kubernetes resource"""
         try:
-            status_dict = self.current_domain.deployer.get_status(level_path)
-            return status_dict.get('message', 'Unknown')
-        except Exception as e:
-            return f"Error: {str(e)}"
+            if "pod" in level_name:
+                result = subprocess.run(
+                    ["kubectl", "get", "pod", "nginx-broken", "-n", "k8squest", 
+                     "-o", "jsonpath={.status.phase}"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5
+                )
+                return result.stdout.strip() or "Unknown"
+            elif "deployment" in level_name:
+                result = subprocess.run(
+                    ["kubectl", "get", "deployment", "web", "-n", "k8squest",
+                     "-o", "jsonpath={.status.readyReplicas}"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5
+                )
+                ready = result.stdout.strip() or "0"
+                return f"{ready} replicas ready"
+        except:
+            return "Unknown"
+        return "Unknown"
     
     def show_terminal_instructions(self, level_name):
         """Show clear instructions about opening another terminal"""
@@ -670,30 +516,48 @@ Look for "2/2" ready replicas!
         console.print()
     
     def deploy_mission(self, level_path, level_name):
-        """Deploy the challenge using domain deployer"""
+        """Deploy the broken Kubernetes resources"""
         console.print("\n[yellow]🚀 Deploying mission environment...[/yellow]")
-
+        
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
             BarColumn(),
             console=console
         ) as progress:
-            task = progress.add_task("Deploying challenge...", total=1)
-
-            # Use domain deployer
-            success, message = self.current_domain.deployer.deploy_challenge(level_path)
-
+            task = progress.add_task("Setting up namespace...", total=3)
+            
+            # Delete and recreate namespace
+            subprocess.run(
+                ["kubectl", "delete", "namespace", "k8squest", "--ignore-not-found"],
+                capture_output=True
+            )
             progress.advance(task)
-
-        if not success:
-            console.print(f"\n[red]Deployment failed: {message}[/red]\n")
-            return
-
+            
+            subprocess.run(
+                ["kubectl", "create", "namespace", "k8squest"],
+                capture_output=True
+            )
+            progress.update(task, description="Deploying broken resources...")
+            progress.advance(task)
+            
+            # Apply broken config (without forcing namespace to respect YAML)
+            result = subprocess.run(
+                ["kubectl", "apply", "-f", str(level_path / "broken.yaml")],
+                capture_output=True,
+                text=True
+            )
+            # Log errors for debugging (optional)
+            if result.returncode != 0:
+                console.print(f"[dim red]Warning: {result.stderr}[/dim red]")
+            
+            progress.update(task, description="✅ Environment ready!")
+            progress.advance(task)
+        
         console.print("\n")
         console.print(Panel(
             Text("🔴 MISSION DEPLOYED WITH BUGS! 🔴", style="bold red", justify="center") +
-            Text("\n\nSomething is broken in the challenge environment.", style="yellow") +
+            Text("\n\nSomething is broken in the Kubernetes cluster.", style="yellow") +
             Text("\nYour mission: Find and fix the issue!", style="cyan"),
             border_style="red",
             box=box.DOUBLE
@@ -701,17 +565,21 @@ Look for "2/2" ready replicas!
         console.print()
     
     def validate_mission(self, level_path, level_name):
-        """Validate solution using domain validator"""
+        """Run validation script and show results"""
         console.print("\n[yellow]🔍 Validating your solution...[/yellow]\n")
-
-        # Use domain validator
-        success, message = self.current_domain.validator.validate(level_path)
-
-        if success:
+        
+        validate_script = level_path / "validate.sh"
+        result = subprocess.run(
+            ["bash", str(validate_script)],
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode == 0:
             # Success!
             console.print(Panel(
                 Text("✅ MISSION COMPLETE! ✅", style="bold green", justify="center") +
-                Text(f"\n\n{message}", style="green"),
+                Text(f"\n\n{result.stdout}", style="green"),
                 border_style="green",
                 box=box.DOUBLE
             ))
@@ -720,7 +588,7 @@ Look for "2/2" ready replicas!
             # Failed
             console.print(Panel(
                 Text("❌ Not quite there yet...", style="bold red", justify="center") +
-                Text(f"\n\n{message}", style="red"),
+                Text(f"\n\n{result.stdout}", style="red"),
                 border_style="red",
                 box=box.ROUNDED
             ))
@@ -742,7 +610,7 @@ Look for "2/2" ready replicas!
         
         # Display retro-style header
         if RETRO_UI_ENABLED:
-            console.print(show_retro_header(mission['name'], mission['xp'], self.domain_progress["total_xp"]))
+            console.print(show_retro_header(mission['name'], mission['xp'], self.progress["total_xp"]))
             console.print()
         
         # Display difficulty and time estimate with gaming flair
@@ -844,8 +712,8 @@ Look for "2/2" ready replicas!
                     # Victory with retro UI!
                     if RETRO_UI_ENABLED:
                         xp_earned = mission["xp"]
-                        self.domain_progress["total_xp"] += xp_earned
-                        show_victory(xp_earned, self.domain_progress["total_xp"])
+                        self.progress["total_xp"] += xp_earned
+                        show_victory(xp_earned, self.progress["total_xp"])
                     else:
                         # Standard success animation
                         console.print("\n")
@@ -855,10 +723,10 @@ Look for "2/2" ready replicas!
                         
                         # Award XP
                         xp_earned = mission["xp"]
-                        self.domain_progress["total_xp"] += xp_earned
+                        self.progress["total_xp"] += xp_earned
                     
-                    if level_name not in self.domain_progress["completed_levels"]:
-                        self.domain_progress["completed_levels"].append(level_name)
+                    if level_name not in self.progress["completed_levels"]:
+                        self.progress["completed_levels"].append(level_name)
                     self.save_progress()
                     
                     if not RETRO_UI_ENABLED:
@@ -867,7 +735,7 @@ Look for "2/2" ready replicas!
                     
                     # Check for milestones
                     if RETRO_UI_ENABLED:
-                        completed_count = len(self.domain_progress["completed_levels"])
+                        completed_count = len(self.progress["completed_levels"])
                         if completed_count == 10:
                             celebrate_milestone("world_complete")
                         elif completed_count == 25:
@@ -928,9 +796,9 @@ Look for "2/2" ready replicas!
         if self.progress.get("current_level"):
             # Try to find the current level in the list
             for i, level_path in enumerate(levels):
-                if level_path.name == self.domain_progress["current_level"]:
+                if level_path.name == self.progress["current_level"]:
                     # If the level is already completed, start from the next one
-                    if self.domain_progress["current_level"] in self.domain_progress["completed_levels"]:
+                    if self.progress["current_level"] in self.progress["completed_levels"]:
                         start_index = i + 1
                     else:
                         start_index = i
@@ -941,8 +809,8 @@ Look for "2/2" ready replicas!
             level_name = level_path.name
             
             # Save current level before playing
-            self.domain_progress["current_level"] = level_name
-            self.domain_progress["current_world"] = world_name
+            self.progress["current_level"] = level_name
+            self.progress["current_world"] = world_name
             self.save_progress()
             
             if not self.play_level(level_path, level_name):
@@ -991,27 +859,33 @@ def main():
         game.start_visualizer(port=args.viz_port)
         time.sleep(1)
     
-    # Get worlds from domain configuration
-    all_worlds = game.current_domain.config.worlds
-
+    # All 5 worlds in order
+    all_worlds = [
+        "world-1-basics",
+        "world-2-deployments",
+        "world-3-networking",
+        "world-4-storage",
+        "world-5-security"
+    ]
+    
     # Check if there's progress to resume
-    has_progress = len(game.domain_progress["completed_levels"]) > 0 or game.domain_progress.get("current_level")
-
+    has_progress = len(game.progress["completed_levels"]) > 0 or game.progress.get("current_level")
+    
     if has_progress:
-        current_level = game.domain_progress.get("current_level", "None")
-        current_world = game.domain_progress.get("current_world", all_worlds[0] if all_worlds else "world-1-basics")
-        completed_count = len(game.domain_progress["completed_levels"])
-
+        current_level = game.progress.get("current_level", "None")
+        current_world = game.progress.get("current_world", "world-1-basics")
+        completed_count = len(game.progress["completed_levels"])
+        
         console.print(Panel(
             f"[yellow]📍 Resume Point Detected[/yellow]\n\n"
             f"Current Level: [cyan]{current_level}[/cyan]\n"
             f"Completed: [green]{completed_count}[/green] levels\n"
-            f"Total XP: [yellow]{game.domain_progress['total_xp']}[/yellow]",
+            f"Total XP: [yellow]{game.progress['total_xp']}[/yellow]",
             title="[bold]Continue Your Journey[/bold]",
             border_style="yellow"
         ))
         console.print()
-
+        
         if Confirm.ask("Continue from where you left off?", default=True):
             # Find which world to start from
             start_world_index = 0
@@ -1019,18 +893,18 @@ def main():
                 if world == current_world:
                     start_world_index = i
                     break
-
+            
             # Play from current world through to the end
             for world in all_worlds[start_world_index:]:
                 if not game.play_world(world):
                     break  # Player quit
-
+                    
         elif Confirm.ask("Start from the beginning instead?", default=False):
-            game.domain_progress["current_level"] = None
-            game.domain_progress["completed_levels"] = []
-            game.domain_progress["total_xp"] = 0
+            game.progress["current_level"] = None
+            game.progress["completed_levels"] = []
+            game.progress["total_xp"] = 0
             game.save_progress()
-
+            
             # Play all worlds from the beginning
             for world in all_worlds:
                 if not game.play_world(world):

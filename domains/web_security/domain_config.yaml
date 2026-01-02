@@ -1,0 +1,42 @@
+# Web Security Domain Configuration
+
+metadata:
+  id: web_security
+  name: "Web Application Security"
+  icon: "🌐"
+  description: |
+    Master web application security through hands-on exploitation challenges.
+    Learn to identify and exploit XSS, SQL injection, CSRF, and other OWASP Top 10 vulnerabilities.
+
+# World definitions (in order)
+worlds:
+  - world-1-injection
+
+# Domain capabilities and requirements
+capabilities:
+  # Deployment backend
+  deployment_backend: docker-compose
+
+  # Requires Docker
+  requires_cluster: false
+
+  # Safety guards enabled
+  safety_enabled: true
+
+  # Docker requirements
+  docker:
+    min_version: "20.10"
+    required_features:
+      - compose
+
+# Learning progression
+progression:
+  total_challenges: 3
+  total_xp: 360
+
+  worlds_info:
+    world-1-injection:
+      name: "Injection Attacks"
+      challenges: 3
+      xp: 360
+      description: "XSS, SQL injection, and CSRF vulnerabilities"

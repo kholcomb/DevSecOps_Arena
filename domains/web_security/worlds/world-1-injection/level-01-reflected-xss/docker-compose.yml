@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./app
+    ports:
+      - "3001:5000"
+    environment:
+      - FLAG=ARENA{xss_c00k13_th3ft_FTW}
+    restart: unless-stopped
