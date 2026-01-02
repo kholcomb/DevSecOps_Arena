@@ -138,24 +138,24 @@ Returns diagram configuration for the current level:
 
 The visualizer supports various Kubernetes resource types with custom icons and shapes:
 
-| Type | Icon | Shape | Description |
-|------|------|-------|-------------|
-| pod | 📦 | Circle | Individual pod |
-| deployment | 🚀 | Rectangle | Deployment controller |
-| service | ⚖️ | Rectangle | Service load balancer |
-| ingress | 🌐 | Circle | Ingress controller |
-| statefulset | 💾 | Cylinder | StatefulSet |
-| pvc | 💿 | Cylinder | PersistentVolumeClaim |
-| configmap | ⚙️ | Rectangle | ConfigMap |
-| secret | 🔐 | Rectangle | Secret |
-| networkpolicy | 🔒 | Circle | NetworkPolicy |
+| Type | Shape | Description |
+|------|-------|-------------|
+| pod | Circle | Individual pod |
+| deployment | Rectangle | Deployment controller |
+| service | Rectangle | Service load balancer |
+| ingress | Circle | Ingress controller |
+| statefulset | Cylinder | StatefulSet |
+| pvc | Cylinder | PersistentVolumeClaim |
+| configmap | Rectangle | ConfigMap |
+| secret | Rectangle | Secret |
+| networkpolicy | Circle | NetworkPolicy |
 
 ## Status Colors
 
-- **Green** (🟢): Healthy - resource is running correctly
-- **Orange** (🟡): Warning - degraded state (e.g., fewer replicas than desired)
-- **Red** (🔴): Error - critical failure (e.g., CrashLoopBackOff, no endpoints)
-- **Gray** (⚪): Unknown - resource not found or state unclear
+- **Green**: Healthy - resource is running correctly
+- **Orange**: Warning - degraded state (e.g., fewer replicas than desired)
+- **Red**: Error - critical failure (e.g., CrashLoopBackOff, no endpoints)
+- **Gray**: Unknown - resource not found or state unclear
 
 ## Issue Detection
 
@@ -231,10 +231,10 @@ Then open `http://localhost:8080` in your browser.
 
 ## Browser Compatibility
 
-- ✅ Chrome/Chromium (recommended)
-- ✅ Firefox
-- ✅ Safari
-- ✅ Edge
+- Chrome/Chromium (recommended)
+- Firefox
+- Safari
+- Edge
 
 ## Performance
 

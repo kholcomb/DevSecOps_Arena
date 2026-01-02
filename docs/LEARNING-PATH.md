@@ -1,16 +1,16 @@
-# 🗺️ K8sQuest Learning Path
+# K8sQuest Learning Path
 
-> **Your journey from Kubernetes beginner to production-ready engineer**
+**Your journey from Kubernetes beginner to production-ready engineer**
 
-## 📊 Complete Skill Tree
+## Complete Skill Tree
 
 ```
 K8sQuest Learning Path
 │
-├─ WORLD 1: Core Kubernetes Basics ⭐
+├─ WORLD 1: Core Kubernetes Basics
 │  │  Difficulty: Beginner | Time: 3-5 hours | XP: 1,450
-│  │  
-│  ├─ Level 1: CrashLoopBackOff (150 XP) ★ START HERE
+│  │
+│  ├─ Level 1: CrashLoopBackOff (150 XP) - START HERE
 │  │  Prerequisites: None
 │  │  Skills: kubectl logs, pod debugging, exit codes
 │  │  
@@ -49,10 +49,10 @@ K8sQuest Learning Path
 │  └─ Level 10: Namespace Quotas (200 XP)
 │     Prerequisites: Level 4
 │     Skills: Resource management, multi-tenancy
-│     
-│     🏆 WORLD 1 COMPLETE! You can now debug basic Kubernetes issues!
 │
-├─ WORLD 2: Deployments & Scaling ⭐⭐
+│     WORLD 1 COMPLETE! You can now debug basic Kubernetes issues!
+│
+├─ WORLD 2: Deployments & Scaling
 │  │  Difficulty: Intermediate | Time: 4-6 hours | XP: 2,000
 │  │  Prerequisites: Complete World 1 (Levels 1-10)
 │  │  
@@ -95,49 +95,49 @@ K8sQuest Learning Path
 │  └─ Level 20: ReplicaSet Management (150 XP)
 │     Prerequisites: Level 11
 │     Skills: Workload controllers, abstraction layers
-│     
-│     🏆 WORLD 2 COMPLETE! You can now manage production deployments!
 │
-├─ WORLD 3: Networking & Services ⭐⭐
+│     WORLD 2 COMPLETE! You can now manage production deployments!
+│
+├─ WORLD 3: Networking & Services
 │  │  Difficulty: Intermediate | Time: 4-6 hours | XP: ~2,000
 │  │  Prerequisites: Complete World 2 (Levels 1-20)
 │  │  Coming Soon!
-│  │  
+│  │
 │  └─ Planned Topics:
-│     • Service types (ClusterIP, NodePort, LoadBalancer)
-│     • Ingress controllers
-│     • Network policies
-│     • DNS debugging
-│     • Service mesh basics
+│     - Service types (ClusterIP, NodePort, LoadBalancer)
+│     - Ingress controllers
+│     - Network policies
+│     - DNS debugging
+│     - Service mesh basics
 │
-├─ WORLD 4: Storage & StatefulSets ⭐⭐⭐
+├─ WORLD 4: Storage & StatefulSets
 │  │  Difficulty: Advanced | Time: 5-7 hours | XP: ~2,500
 │  │  Prerequisites: Complete World 3
 │  │  Coming Soon!
-│  │  
+│  │
 │  └─ Planned Topics:
-│     • PersistentVolumes and claims
-│     • Storage classes
-│     • StatefulSet deep dive
-│     • Volume snapshots
-│     • Data migration
+│     - PersistentVolumes and claims
+│     - Storage classes
+│     - StatefulSet deep dive
+│     - Volume snapshots
+│     - Data migration
 │
-└─ WORLD 5: Security & RBAC ⭐⭐⭐
+└─ WORLD 5: Security & RBAC
    │  Difficulty: Advanced | Time: 5-7 hours | XP: ~2,500
    │  Prerequisites: Complete World 4
    │  Coming Soon!
-   │  
+   │
    └─ Planned Topics:
-      • RBAC troubleshooting
-      • Service accounts
-      • Pod security policies
-      • Network policies
-      • Secret management
+      - RBAC troubleshooting
+      - Service accounts
+      - Pod security policies
+      - Network policies
+      - Secret management
 ```
 
 ---
 
-## 🎯 Recommended Learning Paths
+## Recommended Learning Paths
 
 ### Path A: Absolute Beginner (Never used Kubernetes)
 ```
@@ -191,7 +191,7 @@ Result: Exam-ready in 2 weeks
 
 ---
 
-## 📋 Prerequisite Map
+## Prerequisite Map
 
 ### Visual Dependencies
 
@@ -226,9 +226,9 @@ Level 1 (CrashLoopBackOff)
 
 ---
 
-## 🎓 Skill Progression
+## Skill Progression
 
-### After World 1: Core Basics ✅
+### After World 1: Core Basics
 **You can:**
 - Debug common pod failures independently
 - Navigate kubectl commands confidently
@@ -241,7 +241,7 @@ Level 1 (CrashLoopBackOff)
 - Platform Engineer (entry level)
 - SRE Intern
 
-### After World 2: Deployments & Scaling ✅
+### After World 2: Deployments & Scaling
 **You can:**
 - Manage production deployments
 - Configure autoscaling
@@ -278,7 +278,7 @@ Level 1 (CrashLoopBackOff)
 
 ---
 
-## 📊 Time Estimates by Experience Level
+## Time Estimates by Experience Level
 
 | World | Beginner | Intermediate | Advanced |
 |-------|----------|--------------|----------|
@@ -292,31 +292,31 @@ Level 1 (CrashLoopBackOff)
 
 ---
 
-## 🎯 Certification Alignment
+## Certification Alignment
 
 ### CKAD (Certified Kubernetes Application Developer)
 **K8sQuest Coverage:**
-- ✅ Core Concepts (World 1)
-- ✅ Multi-Container Pods (Level 7-9)
-- ✅ Pod Design (World 2)
-- ⏳ Services & Networking (World 3)
-- ⏳ State Persistence (World 4)
+- Core Concepts (World 1)
+- Multi-Container Pods (Level 7-9)
+- Pod Design (World 2)
+- Services & Networking (World 3)
+- State Persistence (World 4)
 
 **Recommendation:** Complete Worlds 1-4 for full CKAD readiness
 
 ### CKA (Certified Kubernetes Administrator)
 **K8sQuest Coverage:**
-- ✅ Workloads & Scheduling (Worlds 1-2)
-- ⏳ Services & Networking (World 3)
-- ⏳ Storage (World 4)
-- ⏳ Security (World 5)
-- ⏳ Cluster Maintenance (World 6 planned)
+- Workloads & Scheduling (Worlds 1-2)
+- Services & Networking (World 3)
+- Storage (World 4)
+- Security (World 5)
+- Cluster Maintenance (World 6 planned)
 
 **Recommendation:** Complete all worlds + official CKA labs
 
 ---
 
-## 💡 Tips for Maximum Learning
+## Tips for Maximum Learning
 
 ### 1. Don't Rush
 Each level is designed to teach specific concepts. Spend time understanding WHY, not just HOW.
@@ -338,17 +338,17 @@ After completing a world, explain the concepts to a colleague. Teaching solidifi
 
 ---
 
-## 🏆 Achievement Milestones
+## Achievement Milestones
 
-- 🥉 **Bronze Explorer** - Complete World 1 (1,450 XP)
-- 🥈 **Silver Operator** - Complete World 2 (3,450 total XP)
-- 🥇 **Gold Engineer** - Complete World 3 (5,450+ total XP)
-- 💎 **Platinum Architect** - Complete World 4 (7,950+ total XP)
-- 👑 **K8s Master** - Complete All Worlds (10,000+ total XP)
+- **Bronze Explorer** - Complete World 1 (1,450 XP)
+- **Silver Operator** - Complete World 2 (3,450 total XP)
+- **Gold Engineer** - Complete World 3 (5,450+ total XP)
+- **Platinum Architect** - Complete World 4 (7,950+ total XP)
+- **K8s Master** - Complete All Worlds (10,000+ total XP)
 
 ---
 
-## 🚀 Ready to Start?
+## Ready to Start?
 
 ```bash
 # Begin your journey
@@ -360,7 +360,7 @@ After completing a world, explain the concepts to a colleague. Teaching solidifi
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 ### Before Starting K8sQuest
 - [Kubernetes Basics Tutorial](https://kubernetes.io/docs/tutorials/kubernetes-basics/)
@@ -378,6 +378,6 @@ After completing a world, explain the concepts to a colleague. Teaching solidifi
 
 ---
 
-**Remember:** K8sQuest is designed for learning by fixing. Every broken resource is an opportunity to understand Kubernetes more deeply!
+**Remember:** K8sQuest is designed for learning by fixing. Every broken resource is an opportunity to understand Kubernetes more deeply.
 
-🎮 **Happy Learning!** 🎮
+**Happy Learning!**

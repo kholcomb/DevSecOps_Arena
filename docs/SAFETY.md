@@ -1,4 +1,4 @@
-# K8sQuest Safety Guards 🛡️
+# K8sQuest Safety Guards
 
 ## Overview
 
@@ -6,11 +6,11 @@ K8sQuest includes comprehensive safety guards to protect you from accidentally b
 
 ## What's Protected
 
-### 🚫 Blocked Operations (Cannot Execute)
+### Blocked Operations (Cannot Execute)
 
 1. **Critical Namespace Deletion**
    ```bash
-   # ❌ BLOCKED
+   # BLOCKED
    kubectl delete namespace kube-system
    kubectl delete namespace kube-public
    kubectl delete namespace kube-node-lease
@@ -19,7 +19,7 @@ K8sQuest includes comprehensive safety guards to protect you from accidentally b
 
 2. **Node Operations**
    ```bash
-   # ❌ BLOCKED
+   # BLOCKED
    kubectl delete node <node-name>
    kubectl drain node <node-name>
    kubectl cordon node <node-name>
@@ -27,41 +27,41 @@ K8sQuest includes comprehensive safety guards to protect you from accidentally b
 
 3. **Cluster-Wide Deletions**
    ```bash
-   # ❌ BLOCKED
+   # BLOCKED
    kubectl delete pods --all-namespaces
    kubectl delete deployments --all-namespaces
    ```
 
 4. **CustomResourceDefinitions**
    ```bash
-   # ❌ BLOCKED
+   # BLOCKED
    kubectl delete crd <crd-name>
    ```
 
 5. **Cluster-Level RBAC**
    ```bash
-   # ❌ BLOCKED
+   # BLOCKED
    kubectl delete clusterrole <name>
    kubectl delete clusterrolebinding <name>
    ```
 
-### ⚠️  Operations Requiring Confirmation
+### Operations Requiring Confirmation
 
 1. **Namespace Deletion**
    ```bash
-   # ⚠️  Asks for confirmation
+   # Asks for confirmation
    kubectl delete namespace k8squest
    ```
 
 2. **Delete All Resources**
    ```bash
-   # ⚠️  Asks for confirmation
+   # Asks for confirmation
    kubectl delete pods --all -n k8squest
    ```
 
 3. **PersistentVolume Operations**
    ```bash
-   # ⚠️  Asks for confirmation
+   # Asks for confirmation
    kubectl delete pv <pv-name>
    ```
 
@@ -127,10 +127,10 @@ Safety guards are automatically active when using the Python game engine:
 Test if a command would be blocked:
 ```bash
 python3 engine/safety.py kubectl delete namespace kube-system
-# Output: 🚨 BLOCKED: Cannot delete critical system namespaces!
+# Output: BLOCKED: Cannot delete critical system namespaces!
 
 python3 engine/safety.py kubectl get pods -n k8squest
-# Output: ✅ Command passed safety checks
+# Output: Command passed safety checks
 ```
 
 ### View Safety Information
@@ -141,7 +141,7 @@ python3 engine/safety.py info
 
 ## Disabling Safety Guards
 
-**⚠️  NOT RECOMMENDED** - But if you need to disable safety guards:
+**NOT RECOMMENDED** - But if you need to disable safety guards:
 
 ```bash
 # Temporary (current session only)
@@ -229,10 +229,10 @@ This is working as intended! The command you tried is dangerous. Options:
 You may be trying to access resources outside the `k8squest` namespace:
 
 ```bash
-# ❌ Won't work
+# Won't work
 kubectl get pods -n default
 
-# ✅ Works
+# Works
 kubectl get pods -n k8squest
 ```
 
@@ -259,17 +259,17 @@ unset K8SQUEST_SAFETY
    ```bash
    # Dry-run first
    kubectl apply -f deployment.yaml --dry-run=client -n k8squest
-   
+
    # Then apply for real
    kubectl apply -f deployment.yaml -n k8squest
    ```
 
 3. **Use `kubectl apply` instead of `kubectl create`**
    ```bash
-   # ❌ Fails if exists
+   # Fails if exists
    kubectl create -f deployment.yaml
-   
-   # ✅ Creates or updates
+
+   # Creates or updates
    kubectl apply -f deployment.yaml
    ```
 
@@ -318,4 +318,4 @@ Together, these make K8sQuest safe for beginners while still providing realistic
 
 ---
 
-**Remember:** The goal is learning, not breaking things. Safety guards let you experiment confidently! 🛡️
+**Remember:** The goal is learning, not breaking things. Safety guards let you experiment confidently.
