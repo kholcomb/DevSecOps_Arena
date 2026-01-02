@@ -207,6 +207,7 @@ class Arena:
 
         self.current_mission = None
         self.current_level_path = None
+        self.deployed_level_path = None  # Track deployed level for cleanup
         self.visualizer = None
         self.enable_visualizer = enable_visualizer and VISUALIZER_ENABLED
         
@@ -279,6 +280,25 @@ class Arena:
             }
         }
     
+    def cleanup_current_level(self):
+        """Cleanup currently deployed level resources"""
+        if not self.deployed_level_path:
+            return
+
+        try:
+            console.print("\n[yellow]🧹 Cleaning up challenge environment...[/yellow]")
+            success, message = self.current_domain.deployer.cleanup_challenge(self.deployed_level_path)
+
+            if success:
+                console.print(f"[green]✓ {message}[/green]")
+            else:
+                console.print(f"[yellow]⚠ {message}[/yellow]")
+
+            self.deployed_level_path = None
+
+        except Exception as e:
+            console.print(f"[yellow]⚠ Cleanup error: {str(e)}[/yellow]")
+
     def save_progress(self):
         """Save player progress"""
         with open(self.progress_file, 'w') as f:
@@ -742,6 +762,10 @@ Look for "2/2" ready replicas!
     
     def deploy_mission(self, level_path, level_name):
         """Deploy the challenge using domain deployer"""
+        # Cleanup previous level if one was deployed
+        if self.deployed_level_path and self.deployed_level_path != level_path:
+            self.cleanup_current_level()
+
         console.print("\n[yellow]🚀 Deploying mission environment...[/yellow]")
 
         with Progress(
@@ -756,6 +780,10 @@ Look for "2/2" ready replicas!
             success, message = self.current_domain.deployer.deploy_challenge(level_path)
 
             progress.advance(task)
+
+        # Track deployed level for cleanup
+        if success:
+            self.deployed_level_path = level_path
 
         if not success:
             console.print(f"\n[red]Deployment failed: {message}[/red]\n")
@@ -1004,6 +1032,7 @@ Look for "2/2" ready replicas!
                     return True
                     
             elif action == "quit":
+                self.cleanup_current_level()
                 console.print("\n[yellow]👋 Thanks for playing DevSecOps Arena! Progress saved.[/yellow]\n")
                 sys.exit(0)
     
@@ -1159,9 +1188,13 @@ if __name__ == "__main__":
 
         main()
     except KeyboardInterrupt:
-        console.print("\n\n[yellow]👋 Game interrupted. Progress saved![/yellow]\n")
+        console.print("\n\n[yellow]👋 Game interrupted. Cleaning up...[/yellow]")
+        if hasattr(__main__, 'game_instance') and __main__.game_instance:
+            __main__.game_instance.cleanup_current_level()
+        console.print("[yellow]Progress saved![/yellow]\n")
         sys.exit(0)
     finally:
-        # Clean up visualizer if it was started
+        # Clean up resources if game was started
         if hasattr(__main__, 'game_instance') and __main__.game_instance:
             __main__.game_instance.stop_visualizer()
+            __main__.game_instance.cleanup_current_level()

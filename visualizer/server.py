@@ -53,7 +53,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
             env_state = {}
             if self.domain_visualizer:
                 # Use domain visualizer to get state
-                viz_data = self.domain_visualizer.get_visualization_data(self.current_level_path())
+                level_path = self.current_level_path() if self.current_level_path and callable(self.current_level_path) else None
+                viz_data = self.domain_visualizer.get_visualization_data(level_path)
                 # Extract resources for backward compatibility with frontend
                 env_state = viz_data.get('resources', {})
 
@@ -341,8 +342,12 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
         """Serve hints for current level"""
         try:
             level_path = None
-            if self.current_level_path:
+            if self.current_level_path and callable(self.current_level_path):
                 level_path = self.current_level_path()
+
+            # Debug logging
+            import sys
+            print(f"[DEBUG] serve_hints - level_path: {level_path}", file=sys.stderr)
 
             if not level_path:
                 self.send_response(200)
@@ -376,7 +381,7 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
         """Serve solution for current level"""
         try:
             level_path = None
-            if self.current_level_path:
+            if self.current_level_path and callable(self.current_level_path):
                 level_path = self.current_level_path()
 
             if not level_path:
@@ -387,10 +392,11 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({'solution': '', 'message': 'No level loaded'}).encode())
                 return
 
-            # Try to read solution file (could be .yaml, .md, .txt)
+            # Try to read solution file (could be .yaml, .md, .txt in root or solution/ dir)
             solution_content = ''
             solution_type = 'text'
 
+            # First check root directory
             for ext in ['yaml', 'yml', 'md', 'txt']:
                 solution_file = level_path / f"solution.{ext}"
                 if solution_file.exists():
@@ -398,6 +404,29 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
                         solution_content = f.read()
                     solution_type = 'markdown' if ext == 'md' else 'yaml' if ext in ['yaml', 'yml'] else 'text'
                     break
+
+            # If not found, check solution/ subdirectory
+            if not solution_content:
+                solution_dir = level_path / "solution"
+                if solution_dir.exists() and solution_dir.is_dir():
+                    for ext in ['yaml', 'yml', 'md', 'txt']:
+                        solution_file = solution_dir / f"payload.{ext}"
+                        if solution_file.exists():
+                            with open(solution_file, 'r') as f:
+                                solution_content = f.read()
+                            solution_type = 'markdown' if ext == 'md' else 'yaml' if ext in ['yaml', 'yml'] else 'text'
+                            break
+
+                    # Also try just listing first file in solution dir
+                    if not solution_content:
+                        try:
+                            solution_files = list(solution_dir.glob('*'))
+                            if solution_files and solution_files[0].is_file():
+                                with open(solution_files[0], 'r') as f:
+                                    solution_content = f.read()
+                                solution_type = 'text'
+                        except:
+                            pass
 
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -415,7 +444,7 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
         """Serve debrief/learning content for current level"""
         try:
             level_path = None
-            if self.current_level_path:
+            if self.current_level_path and callable(self.current_level_path):
                 level_path = self.current_level_path()
 
             if not level_path:

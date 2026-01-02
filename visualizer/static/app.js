@@ -91,6 +91,7 @@ let simulation = null;
 document.addEventListener('DOMContentLoaded', () => {
     initializeDiagram();
     initializeTooltip();
+    initHintsPanel();
     startAutoRefresh();
 });
 
@@ -232,10 +233,19 @@ async function fetchLevelDiagram() {
 function updateUI(data) {
     // Update game info
     const game = data.game || {};
+    const currentLevel = game.current_level || 'Level 1';
     document.getElementById('world-level').textContent =
-        `${game.current_world || 'World 1'} - ${game.current_level || 'Level 1'}`;
+        `${game.current_world || 'World 1'} - ${currentLevel}`;
     document.getElementById('xp-display').textContent =
         `${game.total_xp || 0} XP`;
+
+    // Reload hints/solution/debrief when level changes
+    if (currentLevel && currentLevel !== 'Level 1' && currentLevel !== window.lastLoadedLevel) {
+        window.lastLoadedLevel = currentLevel;
+        fetchHints();
+        fetchSolution();
+        fetchDebrief();
+    }
 
     // Update page title and header with domain name
     if (game.current_domain) {
@@ -1340,5 +1350,134 @@ class Tooltip {
     hide() {
         this.element
             .style('opacity', 0);
+    }
+}
+
+// ============================================
+// Hints Panel Functionality
+// ============================================
+
+let hintsVisible = true;
+let currentTab = 'hints';
+
+/**
+ * Initialize hints panel
+ */
+function initHintsPanel() {
+    const toggleButton = document.getElementById('toggle-hints');
+    const hintsPanel = document.getElementById('hints-panel');
+    const toggleIcon = document.getElementById('toggle-icon');
+
+    if (toggleButton) {
+        toggleButton.addEventListener('click', () => {
+            hintsVisible = !hintsVisible;
+            if (hintsVisible) {
+                hintsPanel.classList.remove('collapsed');
+                toggleIcon.textContent = '◀';
+                toggleButton.setAttribute('aria-label', 'Hide hints panel');
+            } else {
+                hintsPanel.classList.add('collapsed');
+                toggleIcon.textContent = '▶';
+                toggleButton.setAttribute('aria-label', 'Show hints panel');
+            }
+        });
+    }
+
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tab = button.getAttribute('data-tab');
+            switchTab(tab);
+        });
+    });
+
+    fetchHints();
+    fetchSolution();
+    fetchDebrief();
+}
+
+function switchTab(tab) {
+    currentTab = tab;
+
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-tab') === tab) {
+            btn.classList.add('active');
+        }
+    });
+
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+async function fetchHints() {
+    try {
+        const response = await fetch('/api/hints');
+        const data = await response.json();
+        const hintsContainer = document.getElementById('hints-list');
+
+        if (!data.hints || data.hints.length === 0) {
+            hintsContainer.textContent = 'No hints available for this level';
+            return;
+        }
+
+        hintsContainer.textContent = '';
+        data.hints.forEach(hint => {
+            const hintDiv = createElement('div', 'hint-item');
+            const hintNumber = createElement('div', 'hint-number', `Hint ${hint.number}`);
+            const hintContent = createElement('div', 'hint-content', hint.content);
+            hintDiv.appendChild(hintNumber);
+            hintDiv.appendChild(hintContent);
+            hintsContainer.appendChild(hintDiv);
+        });
+    } catch (error) {
+        console.error('Error fetching hints:', error);
+        document.getElementById('hints-list').textContent = 'Error loading hints';
+    }
+}
+
+async function fetchSolution() {
+    try {
+        const response = await fetch('/api/solution');
+        const data = await response.json();
+        const solutionContainer = document.getElementById('solution-content');
+
+        if (!data.solution) {
+            solutionContainer.textContent = 'No solution available yet';
+            return;
+        }
+
+        solutionContainer.textContent = '';
+        const pre = document.createElement('pre');
+        const code = document.createElement('code');
+        code.textContent = data.solution;
+        pre.appendChild(code);
+        solutionContainer.appendChild(pre);
+    } catch (error) {
+        console.error('Error fetching solution:', error);
+        document.getElementById('solution-content').textContent = 'Error loading solution';
+    }
+}
+
+async function fetchDebrief() {
+    try {
+        const response = await fetch('/api/debrief');
+        const data = await response.json();
+        const debriefContainer = document.getElementById('debrief-content');
+
+        if (!data.debrief) {
+            debriefContainer.textContent = 'No debrief available yet';
+            return;
+        }
+
+        debriefContainer.textContent = '';
+        const pre = document.createElement('pre');
+        pre.textContent = data.debrief;
+        debriefContainer.appendChild(pre);
+    } catch (error) {
+        console.error('Error fetching debrief:', error);
+        document.getElementById('debrief-content').textContent = 'Error loading debrief';
     }
 }
