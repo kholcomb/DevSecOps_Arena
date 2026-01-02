@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 DevSecOps Arena - Multi-Domain Security Training Platform
-(formerly K8sQuest - Interactive Kubernetes Learning Game)
-Now with Retro Gaming UI & Domain Plugin System
+Master security through hands-on challenges across multiple domains
+Retro Gaming UI | Domain Plugin System | Progressive Learning
 """
 
 import os
@@ -206,6 +206,7 @@ class Arena:
         self.progress = self.load_progress()
 
         self.current_mission = None
+        self.current_level_path = None
         self.visualizer = None
         self.enable_visualizer = enable_visualizer and VISUALIZER_ENABLED
         
@@ -305,6 +306,10 @@ class Arena:
             'current_domain': self.current_domain.config.id
         }
 
+    def get_current_level_path(self):
+        """Get path to current level directory for domain visualizer"""
+        return self.current_level_path
+
     def start_visualizer(self, port=8080):
         """Start the visualization server"""
         if not self.enable_visualizer:
@@ -314,15 +319,22 @@ class Arena:
             self.visualizer = VisualizationServer(
                 port=port,
                 game_state_callback=self.get_game_state,
+                domain_visualizer=self.current_domain.visualizer,
+                current_level_path_callback=self.get_current_level_path,
                 verbose=False
             )
             url = self.visualizer.start()
 
             console.print()
+
+            # Domain-specific visualization message
+            requires_cluster = self.current_domain.config.capabilities.get('requires_cluster', False)
+            viz_desc = "View real-time cluster architecture and issues" if requires_cluster else "View real-time challenge environment and issues"
+
             console.print(Panel(
                 f"[green]Visualization Server Started[/green]\n\n"
                 f"[cyan]Open in browser:[/cyan] [yellow]{url}[/yellow]\n"
-                f"[dim]View real-time cluster architecture and issues[/dim]",
+                f"[dim]{viz_desc}[/dim]",
                 title="[bold cyan]VISUAL MODE[/bold cyan]",
                 border_style="cyan"
             ))
@@ -354,23 +366,27 @@ class Arena:
             time.sleep(1)
         
         console.clear()
-        
+
+        # Domain-specific branding
+        domain_icon = self.current_domain.config.icon
+        domain_name = self.current_domain.config.name
+
         # Retro-style title
         title = """
-    ╦╔═╔═╗╔═╗ ╦ ╦╔═╗╔═╗╔╦╗
-    ╠╩╗╚═╗║═╬╗║ ║║╣ ╚═╗ ║ 
-    ╩ ╩╚═╝╚═╝╚╚═╝╚═╝╚═╝ ╩ 
+    ╔═╗╦═╗╔═╗╔╗╔╔═╗
+    ╠═╣╠╦╝║╣ ║║║╠═╣
+    ╩ ╩╩╚═╚═╝╝╚╝╩ ╩
         """
-        
+
         welcome_panel = Panel(
             Text(title, style="bold cyan") +
-            Text("\n Multi-Domain Security Training \n", style="bold yellow") +
+            Text(f"\n {domain_icon}  {domain_name} \n", style="bold yellow") +
             Text("Contra-Style Learning | Arcade Action | Boss Battles", style="dim"),
             title="[bold magenta]  DEVSECOPS ARENA  [/bold magenta]",
             border_style="cyan",
             box=box.HEAVY
         )
-        
+
         console.print(welcome_panel)
         console.print()
         
@@ -378,17 +394,25 @@ class Arena:
         stats = Table(show_header=False, box=box.HEAVY, border_style="yellow")
         stats.add_column("Stat", style="cyan bold")
         stats.add_column("Value", style="yellow bold")
+
+        # Get domain-specific info
+        domain_icon = self.current_domain.config.icon
+        domain_name = self.current_domain.config.name
+        total_challenges = self.current_domain.config.progression.get('total_challenges', 50)
+        total_xp = self.current_domain.config.progression.get('total_xp', 10200)
+
         stats.add_row("🎮 PLAYER", self.progress["player_name"])
+        stats.add_row(f"{domain_icon} DOMAIN", domain_name)
         stats.add_row("💎 TOTAL XP", str(self.domain_progress["total_xp"]))
-        stats.add_row("⭐ LEVELS CLEARED", f"{len(self.progress['completed_levels'])}/50")
-        
+        stats.add_row("⭐ LEVELS CLEARED", f"{len(self.domain_progress['completed_levels'])}/{total_challenges}")
+
         # Calculate completion percentage
-        completion = (len(self.progress['completed_levels']) / 50) * 100
+        completion = (len(self.domain_progress['completed_levels']) / total_challenges) * 100 if total_challenges > 0 else 0
         progress_bar = "█" * int(completion / 5) + "░" * (20 - int(completion / 5))
         stats.add_row("📊 PROGRESS", f"[{progress_bar}] {completion:.0f}%")
-        
+
         # Show current level if resuming
-        if self.progress.get("current_level"):
+        if self.domain_progress.get("current_level"):
             stats.add_row("🎯 CURRENT MISSION", self.domain_progress["current_level"])
         
         # Add safety status with gaming flair
@@ -406,16 +430,32 @@ class Arena:
         # Show XP progress bar
         if RETRO_UI_ENABLED:
             console.print()
-            console.print(show_xp_bar(self.domain_progress["total_xp"], 10200))
+            total_xp = self.current_domain.config.progression.get('total_xp', 10200)
+            console.print(show_xp_bar(self.domain_progress["total_xp"], total_xp))
         
-        # Show safety reminder if enabled with gaming theme
+        # Show safety reminder if enabled with gaming theme (domain-aware)
         if SAFETY_ENABLED:
             console.print()
+
+            # Domain-specific safety messages
+            requires_cluster = self.current_domain.config.capabilities.get('requires_cluster', False)
+            if requires_cluster:
+                safety_msg = (
+                    "[green]DEFENSE SYSTEMS ONLINE[/green]\n"
+                    "[dim]✓ Prevents cluster destruction\n"
+                    "✓ Namespace protection active\n"
+                    "Type 'safety info' for shield details[/dim]"
+                )
+            else:
+                safety_msg = (
+                    "[green]DEFENSE SYSTEMS ONLINE[/green]\n"
+                    "[dim]✓ Prevents destructive operations\n"
+                    "✓ Environment protection active\n"
+                    "Type 'safety info' for shield details[/dim]"
+                )
+
             console.print(Panel(
-                "[green]DEFENSE SYSTEMS ONLINE[/green]\n"
-                "[dim]✓ Prevents cluster destruction\n"
-                "✓ Namespace protection active\n"
-                "Type 'safety info' for shield details[/dim]",
+                safety_msg,
                 border_style="green",
                 box=box.HEAVY,
                 title="[bold green]SAFETY PROTOCOLS[/bold green]"
@@ -573,16 +613,34 @@ class Arena:
     
     def show_terminal_instructions(self, level_name):
         """Show clear instructions about opening another terminal"""
-        instructions = Panel(
-            Text.from_markup(
+        # Get domain-specific instructions
+        requires_cluster = self.current_domain.config.capabilities.get('requires_cluster', False)
+
+        if requires_cluster:
+            # Kubernetes-specific instructions
+            instructions_text = (
                 "[bold yellow]📟 OPEN A NEW TERMINAL WINDOW[/bold yellow]\n\n"
                 "[cyan]While this game is running:[/cyan]\n"
                 "1️⃣  Open a NEW terminal window/tab\n"
                 "2️⃣  Navigate to this directory\n"
-                f"3️⃣  Use kubectl commands to fix the issue\n"
+                "3️⃣  Use kubectl commands to fix the issue\n"
                 "4️⃣  Come back here and choose 'validate' or 'check'\n\n"
                 "[dim]💡 Tip: Use Cmd+T (Mac) or Ctrl+Shift+T (Linux) to open a new tab[/dim]"
-            ),
+            )
+        else:
+            # Web security / other domain instructions
+            instructions_text = (
+                "[bold yellow]🌐 OPEN YOUR BROWSER[/bold yellow]\n\n"
+                "[cyan]Challenge is ready:[/cyan]\n"
+                "1️⃣  Open your web browser\n"
+                "2️⃣  Navigate to the vulnerable application URL shown above\n"
+                "3️⃣  Exploit the vulnerability to extract the flag\n"
+                "4️⃣  Come back here and choose 'validate' to submit your solution\n\n"
+                "[dim]💡 Tip: Check the visualizer at http://localhost:8080 for direct links[/dim]"
+            )
+
+        instructions = Panel(
+            Text.from_markup(instructions_text),
             title="[bold red]⚠️  IMPORTANT[/bold red]",
             border_style="red",
             box=box.DOUBLE
@@ -704,11 +762,28 @@ Look for "2/2" ready replicas!
             return
 
         console.print("\n")
+
+        # Domain-specific deployment message
+        requires_cluster = self.current_domain.config.capabilities.get('requires_cluster', False)
+
+        if requires_cluster:
+            # Kubernetes challenges - fixing broken resources
+            deployment_msg = (
+                Text("🔴 MISSION DEPLOYED WITH BUGS! 🔴", style="bold red", justify="center") +
+                Text("\n\nSomething is broken in the challenge environment.", style="yellow") +
+                Text("\nYour mission: Find and fix the issue!", style="cyan")
+            )
+        else:
+            # Web security / exploitation challenges
+            deployment_msg = (
+                Text("🎯 VULNERABLE APPLICATION DEPLOYED! 🎯", style="bold yellow", justify="center") +
+                Text("\n\nThe vulnerable application is now running.", style="green") +
+                Text("\nYour mission: Exploit the vulnerability and capture the flag!", style="cyan")
+            )
+
         console.print(Panel(
-            Text("🔴 MISSION DEPLOYED WITH BUGS! 🔴", style="bold red", justify="center") +
-            Text("\n\nSomething is broken in the challenge environment.", style="yellow") +
-            Text("\nYour mission: Find and fix the issue!", style="cyan"),
-            border_style="red",
+            deployment_msg,
+            border_style="red" if requires_cluster else "yellow",
             box=box.DOUBLE
         ))
         console.print()
@@ -743,6 +818,7 @@ Look for "2/2" ready replicas!
         """Play a single level with retro gaming UI"""
         mission = self.load_mission(level_path)
         self.current_mission = mission  # Set for visualizer
+        self.current_level_path = level_path  # Set for domain visualizer
 
         # Show retro level start screen
         if RETRO_UI_ENABLED:
@@ -805,14 +881,26 @@ Look for "2/2" ready replicas!
             if RETRO_UI_ENABLED:
                 console.print(show_command_menu())
             else:
+                # Domain-specific action descriptions
+                requires_cluster = self.current_domain.config.capabilities.get('requires_cluster', False)
+
                 console.print("="*60)
                 console.print("[bold cyan]🎮 What would you like to do?[/bold cyan]")
                 console.print("="*60)
-                console.print("  [cyan]check[/cyan]     - 👁️  Monitor the resource status")
-                console.print("  [cyan]guide[/cyan]     - 📖 Step-by-step instructions")
-                console.print("  [cyan]hints[/cyan]     - 💡 Helpful kubectl commands")
-                console.print("  [cyan]solution[/cyan]  - 📄 View the solution.yaml file")
-                console.print("  [cyan]validate[/cyan]  - ✅ Test if you've fixed it")
+
+                if requires_cluster:
+                    console.print("  [cyan]check[/cyan]     - 👁️  Monitor the resource status")
+                    console.print("  [cyan]guide[/cyan]     - 📖 Step-by-step instructions")
+                    console.print("  [cyan]hints[/cyan]     - 💡 Helpful kubectl commands")
+                    console.print("  [cyan]solution[/cyan]  - 📄 View the solution.yaml file")
+                    console.print("  [cyan]validate[/cyan]  - ✅ Test if you've fixed it")
+                else:
+                    console.print("  [cyan]check[/cyan]     - 👁️  Check challenge status")
+                    console.print("  [cyan]guide[/cyan]     - 📖 Step-by-step exploitation guide")
+                    console.print("  [cyan]hints[/cyan]     - 💡 Progressive hints for exploitation")
+                    console.print("  [cyan]solution[/cyan]  - 📄 View the solution walkthrough")
+                    console.print("  [cyan]validate[/cyan]  - ✅ Submit your captured flag")
+
                 console.print("  [cyan]skip[/cyan]      - ⏭️  Skip this level")
                 console.print("  [cyan]quit[/cyan]      - 🚪 Exit the game")
                 console.print("="*60)
@@ -875,7 +963,7 @@ Look for "2/2" ready replicas!
                     self.save_progress()
                     
                     if not RETRO_UI_ENABLED:
-                        console.print(f"\n[bold yellow]🌟 +{xp_earned} XP! Total: {self.progress['total_xp']} XP[/bold yellow]")
+                        console.print(f"\n[bold yellow]🌟 +{xp_earned} XP! Total: {self.domain_progress['total_xp']} XP[/bold yellow]")
                     console.print(f"[dim]⚡ Cleared in {attempts} attempt(s)[/dim]\n")
                     
                     # Check for milestones
@@ -921,10 +1009,11 @@ Look for "2/2" ready replicas!
     
     def play_world(self, world_name):
         """Play all levels in a world"""
-        world_path = self.base_dir / "worlds" / world_name
-        
+        # Use domain-specific worlds directory
+        world_path = self.current_domain.path / "worlds" / world_name
+
         if not world_path.exists():
-            console.print(f"[red]Error: World '{world_name}' not found[/red]")
+            console.print(f"[red]Error: World '{world_name}' not found at {world_path}[/red]")
             return False
         
         # Get all level directories with natural sorting (level-1, level-2, ..., level-10)
@@ -965,7 +1054,7 @@ Look for "2/2" ready replicas!
         console.clear()
         console.print(Panel(
             Text("🎉 WORLD COMPLETE! 🎉", style="bold green", justify="center") +
-            Text(f"\n\nTotal XP: {self.progress['total_xp']}", style="yellow", justify="center"),
+            Text(f"\n\nTotal XP: {self.domain_progress['total_xp']}", style="yellow", justify="center"),
             border_style="green",
             box=box.DOUBLE
         ))

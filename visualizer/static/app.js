@@ -1,5 +1,5 @@
 /**
- * K8sQuest Cluster Visualizer
+ * DevSecOps Arena Visualizer
  * Enhanced with modern interactions, SVG icons, and animations
  */
 
@@ -237,6 +237,43 @@ function updateUI(data) {
     document.getElementById('xp-display').textContent =
         `${game.total_xp || 0} XP`;
 
+    // Update page title and header with domain name
+    if (game.current_domain) {
+        const domainNames = {
+            'kubernetes': '⎈ Kubernetes',
+            'web_security': '🌐 Web Security',
+            'container_security': '🐳 Container Security'
+        };
+        const domainName = domainNames[game.current_domain] || game.current_domain;
+        document.title = `DevSecOps Arena - ${domainName}`;
+        const headerTitle = document.getElementById('header-title');
+        if (headerTitle) {
+            headerTitle.textContent = `DevSecOps Arena - ${domainName}`;
+        }
+
+        // Update sidebar title based on domain
+        const sidebarTitles = {
+            'kubernetes': '📊 Cluster State',
+            'web_security': '📊 Container State',
+            'container_security': '📊 Container State'
+        };
+        const sidebarTitle = document.getElementById('sidebar-title');
+        if (sidebarTitle) {
+            sidebarTitle.textContent = sidebarTitles[game.current_domain] || '📊 Environment State';
+        }
+
+        // Update resource section titles based on domain
+        const podsTitle = document.getElementById('pods-title');
+        const servicesTitle = document.getElementById('services-title');
+        if (game.current_domain === 'web_security' || game.current_domain === 'container_security') {
+            if (podsTitle) podsTitle.textContent = 'Containers';
+            if (servicesTitle) servicesTitle.textContent = 'Exposed Services';
+        } else {
+            if (podsTitle) podsTitle.textContent = 'Pods';
+            if (servicesTitle) servicesTitle.textContent = 'Services';
+        }
+    }
+
     // Update cluster stats
     const cluster = data.cluster || {};
     updatePodsList(cluster.pods || []);
@@ -292,7 +329,25 @@ function updatePodsList(pods) {
         header.appendChild(name);
         div.appendChild(header);
 
-        if (pod.restarts > 0 || pod.issues) {
+        // Show access URL if available (for web security challenges)
+        if (pod.labels && pod.labels.access_url) {
+            const meta = createElement('div', 'resource-meta');
+            const urlItem = createElement('span', 'meta-item');
+            const icon = createElement('span', 'meta-icon', '🌐');
+
+            // Create clickable link
+            const link = document.createElement('a');
+            link.href = pod.labels.access_url.split(',')[0].trim(); // Use first URL
+            link.target = '_blank';
+            link.style.color = '#58A6FF';
+            link.textContent = pod.labels.access_url;
+
+            urlItem.appendChild(icon);
+            urlItem.appendChild(document.createTextNode(' '));
+            urlItem.appendChild(link);
+            meta.appendChild(urlItem);
+            div.appendChild(meta);
+        } else if (pod.restarts > 0) {
             const meta = createElement('div', 'resource-meta');
 
             if (pod.restarts > 0) {

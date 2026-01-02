@@ -140,14 +140,122 @@ class WebSecurityVisualizer(DomainVisualizer):
             level: Level identifier
 
         Returns:
-            Diagram configuration or None
+            Diagram configuration with nodes and connections
         """
-        # Simple architecture for web security challenges
+        # Build diagram from actual running containers
+        level_path = self._infer_level_path(world, level)
+        viz_data = self.get_visualization_data(level_path)
+
+        containers = viz_data.get('containers', [])
+
+        if not containers:
+            # Return a generic web app diagram
+            return {
+                'title': 'Web Security Challenge',
+                'nodes': [
+                    {'id': 'client', 'type': 'pod', 'label': 'Browser', 'x': 150, 'y': 200},
+                    {'id': 'webapp', 'type': 'service', 'label': 'Vulnerable Web App', 'x': 350, 'y': 200},
+                    {'id': 'database', 'type': 'pvc', 'label': 'Database', 'x': 550, 'y': 200}
+                ],
+                'connections': [
+                    {'from': 'client', 'to': 'webapp', 'label': 'HTTP Request'},
+                    {'from': 'webapp', 'to': 'database', 'label': 'SQL Query'}
+                ]
+            }
+
+        # Build diagram from actual containers
+        nodes = []
+        connections = []
+
+        # Add browser/client node
+        nodes.append({
+            'id': 'client',
+            'type': 'pod',
+            'label': '🌐 Your Browser',
+            'x': 100,
+            'y': 200
+        })
+
+        # Add container nodes
+        x_offset = 300
+        for i, container in enumerate(containers):
+            node_id = f"container_{i}"
+
+            # Determine node type based on service name
+            service_name = container.get('service', 'unknown').lower()
+            node_type = 'service'  # Default
+            if 'db' in service_name or 'database' in service_name:
+                node_type = 'pvc'
+            elif 'web' in service_name or 'app' in service_name:
+                node_type = 'service'
+
+            # Get URL or port info
+            label = container.get('service', 'Container')
+            if container.get('urls'):
+                # Show first URL in label
+                url = container['urls'][0]
+                label = f"{label}\n{url}"
+
+            nodes.append({
+                'id': node_id,
+                'type': node_type,
+                'label': label,
+                'resource_name': container.get('name'),
+                'x': x_offset,
+                'y': 200 if i == 0 else 200 + (i % 2) * 150 - 75
+            })
+
+            # Connect client to web services
+            if container.get('urls') and i == 0:
+                connections.append({
+                    'from': 'client',
+                    'to': node_id,
+                    'label': 'Attack Vector'
+                })
+
+            x_offset += 200
+
+        # Connect containers to each other if there are multiple
+        if len(containers) > 1:
+            for i in range(len(containers) - 1):
+                connections.append({
+                    'from': f"container_{i}",
+                    'to': f"container_{i+1}",
+                    'label': 'Internal'
+                })
+
         return {
-            'type': 'web_application',
-            'layers': ['client', 'application', 'database'],
-            'description': 'Web application with intentional security vulnerabilities'
+            'title': f'Web Security: {level or "Challenge"}',
+            'nodes': nodes,
+            'connections': connections
         }
+
+    def _infer_level_path(self, world: str, level: str) -> Optional[Path]:
+        """
+        Try to infer the level path from world and level identifiers.
+
+        Args:
+            world: World identifier
+            level: Level identifier
+
+        Returns:
+            Path to level directory or None
+        """
+        if not world or not level:
+            return None
+
+        # Try to construct path
+        try:
+            from pathlib import Path
+            base_path = Path(__file__).parent
+            level_path = base_path / "worlds" / world / level
+
+            if level_path.exists():
+                return level_path
+        except:
+            pass
+
+        return None
 
     def get_quick_info(self, level_path: Optional[Path] = None) -> str:
         """

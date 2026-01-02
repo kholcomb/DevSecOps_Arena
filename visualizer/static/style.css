@@ -1,5 +1,5 @@
 /**
- * K8sQuest Cluster Visualizer Styles
+ * DevSecOps Arena Visualizer Styles
  * Modern dashboard design with refined dark theme
  */
 
@@ -972,4 +972,192 @@ h3 {
 .node:focus-visible {
   outline: 3px solid var(--accent-primary);
   outline-offset: 4px;
+}
+
+/* ============================================
+   Hints Panel Styles
+   ============================================ */
+
+.hints-panel {
+  position: fixed;
+  right: 0;
+  top: 80px;
+  width: 400px;
+  height: calc(100vh - 80px);
+  background: var(--bg-secondary);
+  border-left: 2px solid var(--border-medium);
+  transition: transform 0.3s ease;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.hints-panel.collapsed {
+  transform: translateX(360px);
+}
+
+.hints-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-medium);
+}
+
+.hints-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.toggle-hints {
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.toggle-hints:hover {
+  background: #4a93e0;
+}
+
+.hints-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* Tabs */
+.hints-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-medium);
+}
+
+.tab-button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.tab-button:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.tab-button.active {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Hints List */
+#hints-list .hint-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+#hints-list .hint-number {
+  display: inline-block;
+  background: var(--accent-primary);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+#hints-list .hint-content {
+  color: var(--text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Solution Content */
+#solution-content pre,
+#debrief-content pre {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+#solution-content code,
+#debrief-content code {
+  color: var(--accent-purple);
+}
+
+#solution-content p,
+#debrief-content p {
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.loading {
+  color: var(--text-secondary);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+  .hints-panel {
+    width: 320px;
+  }
+  
+  .hints-panel.collapsed {
+    transform: translateX(280px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .hints-panel {
+    width: 100%;
+    top: auto;
+    bottom: 0;
+    height: 50vh;
+    border-left: none;
+    border-top: 2px solid var(--border-medium);
+  }
+  
+  .hints-panel.collapsed {
+    transform: translateY(calc(50vh - 60px));
+  }
+  
+  #toggle-icon {
+    transform: rotate(90deg);
+  }
+  
+  .hints-panel.collapsed #toggle-icon {
+    transform: rotate(-90deg);
+  }
 }

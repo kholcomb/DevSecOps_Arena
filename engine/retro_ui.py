@@ -140,14 +140,14 @@ def show_retro_welcome():
     
     # Main title with animation
     title_art = r"""
-    ╦╔═╔═╗╔═╗ ╦ ╦╔═╗╔═╗╔╦╗
-    ╠╩╗╚═╗║═╬╗║ ║║╣ ╚═╗ ║ 
-    ╩ ╩╚═╝╚═╝╚╚═╝╚═╝╚═╝ ╩ 
+    ╔═╗╦═╗╔═╗╔╗╔╔═╗
+    ╠═╣╠╦╝║╣ ║║║╠═╣
+    ╩ ╩╩╚═╚═╝╝╚╝╩ ╩
     """
-    
+
     console.print(title_art, style="bold cyan")
     console.print()
-    console.print(Align.center("🎮 KUBERNETES ADVENTURE GAME 🎮"), style="bold yellow")
+    console.print(Align.center("🎮 DEVSECOPS ARENA 🎮"), style="bold yellow")
     console.print(Align.center("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"), style="cyan")
     console.print()
     

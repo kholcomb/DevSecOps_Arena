@@ -16,8 +16,10 @@ import os
 class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
     """HTTP handler for DevSecOps Arena visualization server"""
 
-    def __init__(self, *args, game_state_callback=None, **kwargs):
+    def __init__(self, *args, game_state_callback=None, domain_visualizer=None, current_level_path=None, **kwargs):
         self.game_state_callback = game_state_callback
+        self.domain_visualizer = domain_visualizer
+        self.current_level_path = current_level_path
         super().__init__(*args, **kwargs)
 
     def do_GET(self):
@@ -29,24 +31,43 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
             self.serve_cluster_state()
         elif parsed_path.path == '/api/level-diagram':
             self.serve_level_diagram()
+        elif parsed_path.path == '/api/hints':
+            self.serve_hints()
+        elif parsed_path.path == '/api/solution':
+            self.serve_solution()
+        elif parsed_path.path == '/api/debrief':
+            self.serve_debrief()
         else:
             # Serve static files
             super().do_GET()
 
     def serve_cluster_state(self):
-        """Serve current cluster state and game progress"""
+        """Serve current environment state and game progress"""
         try:
             # Get game state from callback
             game_state = {}
             if self.game_state_callback:
                 game_state = self.game_state_callback()
 
-            # Get Kubernetes cluster state
-            k8s_state = self.get_k8s_cluster_state()
+            # Get domain-specific environment state
+            env_state = {}
+            if self.domain_visualizer:
+                # Use domain visualizer to get state
+                viz_data = self.domain_visualizer.get_visualization_data(self.current_level_path())
+                # Extract resources for backward compatibility with frontend
+                env_state = viz_data.get('resources', {})
+
+                # For Kubernetes, resources are nested; for other domains, adapt structure
+                if 'domain' in viz_data and viz_data['domain'] != 'kubernetes':
+                    # Adapt non-K8s data to a structure the frontend can display
+                    env_state = self._adapt_domain_state(viz_data)
+            else:
+                # Fallback to K8s state if no domain visualizer (backward compatibility)
+                env_state = self.get_k8s_cluster_state()
 
             response = {
                 'game': game_state,
-                'cluster': k8s_state,
+                'cluster': env_state,  # Keep 'cluster' key for backward compatibility
                 'timestamp': subprocess.check_output(['date', '+%s']).decode().strip()
             }
 
@@ -57,7 +78,62 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(response).encode())
 
         except Exception as e:
-            self.send_error(500, f"Error getting cluster state: {str(e)}")
+            self.send_error(500, f"Error getting environment state: {str(e)}")
+
+    def _adapt_domain_state(self, viz_data):
+        """
+        Adapt domain-specific visualization data to frontend structure.
+
+        For non-Kubernetes domains (like web_security with Docker Compose),
+        convert their data to a structure similar to Kubernetes for display.
+        """
+        adapted = {
+            'pods': [],
+            'services': [],
+            'deployments': [],
+            'configmaps': [],
+            'secrets': [],
+            'ingresses': [],
+            'networkpolicies': [],
+            'pvcs': [],
+            'statefulsets': []
+        }
+
+        # Handle web_security domain (Docker Compose)
+        if viz_data.get('domain') == 'web_security':
+            containers = viz_data.get('containers', [])
+
+            # Map containers to pods for display
+            for container in containers:
+                pod_info = {
+                    'name': container.get('service', container.get('name', 'unknown')),
+                    'status': 'Running' if container.get('status') == 'running' else 'Not Ready',
+                    'ready': container.get('status') == 'running',
+                    'restarts': 0,
+                    'conditions': [],
+                    'labels': {'domain': 'web_security'},
+                    'issues': [] if container.get('status') == 'running' else [f"Container status: {container.get('status', 'unknown')}"]
+                }
+
+                # Add URL info as metadata
+                if container.get('urls'):
+                    pod_info['labels']['access_url'] = ', '.join(container['urls'])
+
+                adapted['pods'].append(pod_info)
+
+            # Add a service entry for each container with URLs
+            for container in containers:
+                if container.get('urls'):
+                    svc_info = {
+                        'name': container.get('service', container.get('name', 'unknown')),
+                        'type': 'External',
+                        'endpoints': len(container.get('urls', [])),
+                        'ports': container.get('ports', []),
+                        'issues': []
+                    }
+                    adapted['services'].append(svc_info)
+
+        return adapted
 
     def serve_level_diagram(self):
         """Serve diagram configuration for current level"""
@@ -66,11 +142,25 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
             if self.game_state_callback:
                 game_state = self.game_state_callback()
 
-            current_level = game_state.get('current_level', 1)
-            current_world = game_state.get('current_world', 1)
+            current_level = game_state.get('current_level', '')
+            current_world = game_state.get('current_world', '')
+            current_domain = game_state.get('current_domain', 'unknown')
 
-            # Get diagram template for this level
-            diagram_data = self.get_level_diagram_template(current_world, current_level)
+            # Try to get diagram from domain visualizer first
+            diagram_data = None
+            if self.domain_visualizer:
+                diagram_data = self.domain_visualizer.get_diagram_template(current_world, current_level)
+
+            # Fallback to hardcoded templates if domain doesn't provide one
+            if not diagram_data:
+                # For backward compatibility, try old template system
+                try:
+                    # Convert world/level names to numbers for legacy system
+                    world_num = self._extract_world_number(current_world)
+                    level_num = self._extract_level_number(current_level)
+                    diagram_data = self.get_level_diagram_template(world_num, level_num)
+                except:
+                    diagram_data = self._get_generic_diagram(current_domain)
 
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -247,6 +337,151 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
         except:
             return 0
 
+    def serve_hints(self):
+        """Serve hints for current level"""
+        try:
+            level_path = None
+            if self.current_level_path:
+                level_path = self.current_level_path()
+
+            if not level_path:
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({'hints': [], 'message': 'No level loaded'}).encode())
+                return
+
+            # Read hint files
+            hints = []
+            for i in range(1, 4):
+                hint_file = level_path / f"hint-{i}.txt"
+                if hint_file.exists():
+                    with open(hint_file, 'r') as f:
+                        hints.append({
+                            'number': i,
+                            'content': f.read().strip()
+                        })
+
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({'hints': hints}).encode())
+
+        except Exception as e:
+            self.send_error(500, f"Error getting hints: {str(e)}")
+
+    def serve_solution(self):
+        """Serve solution for current level"""
+        try:
+            level_path = None
+            if self.current_level_path:
+                level_path = self.current_level_path()
+
+            if not level_path:
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({'solution': '', 'message': 'No level loaded'}).encode())
+                return
+
+            # Try to read solution file (could be .yaml, .md, .txt)
+            solution_content = ''
+            solution_type = 'text'
+
+            for ext in ['yaml', 'yml', 'md', 'txt']:
+                solution_file = level_path / f"solution.{ext}"
+                if solution_file.exists():
+                    with open(solution_file, 'r') as f:
+                        solution_content = f.read()
+                    solution_type = 'markdown' if ext == 'md' else 'yaml' if ext in ['yaml', 'yml'] else 'text'
+                    break
+
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'solution': solution_content,
+                'type': solution_type
+            }).encode())
+
+        except Exception as e:
+            self.send_error(500, f"Error getting solution: {str(e)}")
+
+    def serve_debrief(self):
+        """Serve debrief/learning content for current level"""
+        try:
+            level_path = None
+            if self.current_level_path:
+                level_path = self.current_level_path()
+
+            if not level_path:
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({'debrief': '', 'message': 'No level loaded'}).encode())
+                return
+
+            # Read debrief file
+            debrief_file = level_path / "debrief.md"
+            debrief_content = ''
+
+            if debrief_file.exists():
+                with open(debrief_file, 'r') as f:
+                    debrief_content = f.read()
+
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'debrief': debrief_content,
+                'type': 'markdown'
+            }).encode())
+
+        except Exception as e:
+            self.send_error(500, f"Error getting debrief: {str(e)}")
+
+    def _extract_world_number(self, world_str):
+        """Extract world number from world name like 'world-1-basics' -> 1"""
+        import re
+        match = re.search(r'world-(\d+)', str(world_str))
+        return int(match.group(1)) if match else 1
+
+    def _extract_level_number(self, level_str):
+        """Extract level number from level name like 'level-01-pods' -> 1"""
+        import re
+        match = re.search(r'level-(\d+)', str(level_str))
+        return int(match.group(1)) if match else 1
+
+    def _get_generic_diagram(self, domain):
+        """Get a generic diagram for a domain"""
+        if domain == 'web_security':
+            return {
+                'title': 'Web Application Architecture',
+                'nodes': [
+                    {'id': 'client', 'type': 'client', 'label': 'Browser', 'x': 150, 'y': 100},
+                    {'id': 'webapp', 'type': 'webapp', 'label': 'Web App', 'x': 300, 'y': 200},
+                    {'id': 'database', 'type': 'database', 'label': 'Database', 'x': 450, 'y': 200}
+                ],
+                'connections': [
+                    {'from': 'client', 'to': 'webapp', 'label': 'HTTP'},
+                    {'from': 'webapp', 'to': 'database', 'label': 'SQL'}
+                ]
+            }
+        else:
+            return {
+                'title': 'Challenge Environment',
+                'nodes': [
+                    {'id': 'challenge', 'type': 'service', 'label': 'Challenge Environment', 'x': 300, 'y': 200}
+                ],
+                'connections': []
+            }
+
     def get_level_diagram_template(self, world, level):
         """Get diagram template for specific level"""
         # Import diagram templates
@@ -263,9 +498,11 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
 class VisualizationServer:
     """DevSecOps Arena visualization server manager"""
 
-    def __init__(self, port=8080, game_state_callback=None, verbose=False):
+    def __init__(self, port=8080, game_state_callback=None, domain_visualizer=None, current_level_path_callback=None, verbose=False):
         self.port = port
         self.game_state_callback = game_state_callback
+        self.domain_visualizer = domain_visualizer
+        self.current_level_path_callback = current_level_path_callback
         self.verbose = verbose
         self.server = None
         self.thread = None
@@ -279,11 +516,13 @@ class VisualizationServer:
         # Change to visualizer/static directory to serve files
         os.chdir(Path(__file__).parent / 'static')
 
-        # Create handler with game state callback
+        # Create handler with game state callback and domain visualizer
         def handler(*args, **kwargs):
             return DevSecOpsArenaVisualizerHandler(
                 *args,
                 game_state_callback=self.game_state_callback,
+                domain_visualizer=self.domain_visualizer,
+                current_level_path=self.current_level_path_callback,
                 **kwargs
             )
 

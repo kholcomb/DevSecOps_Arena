@@ -9,7 +9,7 @@ Each domain (Kubernetes, Web Security, Container Security, etc.) implements this
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Dict, Any, List, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import yaml
 
 
@@ -20,15 +20,17 @@ class DomainConfig:
 
     Loaded from domain_config.yaml in each domain directory.
     """
-    id: str                              # Unique domain identifier (e.g., "kubernetes")
-    name: str                            # Display name (e.g., "Kubernetes Security")
-    icon: str                            # Icon/emoji for UI (e.g., "⎈")
-    description: str                     # Brief description
-    worlds: List[str]                    # List of world directories
-    deployment_backend: str              # Backend tool (kubectl, docker-compose, terraform)
-    requires_cluster: bool = False       # Whether external cluster is required
-    namespace: Optional[str] = None      # Default namespace/isolation boundary
-    safety_enabled: bool = True          # Whether safety guards are enabled
+    id: str                                           # Unique domain identifier (e.g., "kubernetes")
+    name: str                                         # Display name (e.g., "Kubernetes Security")
+    icon: str                                         # Icon/emoji for UI (e.g., "⎈")
+    description: str                                  # Brief description
+    worlds: List[str]                                 # List of world directories
+    deployment_backend: str                           # Backend tool (kubectl, docker-compose, terraform)
+    requires_cluster: bool = False                    # Whether external cluster is required
+    namespace: Optional[str] = None                   # Default namespace/isolation boundary
+    safety_enabled: bool = True                       # Whether safety guards are enabled
+    progression: Dict[str, Any] = field(default_factory=dict)   # Progression info (total_challenges, total_xp, etc.)
+    capabilities: Dict[str, Any] = field(default_factory=dict)  # Full capabilities dict for custom access
 
     @classmethod
     def from_yaml(cls, yaml_path: Path) -> 'DomainConfig':
@@ -38,6 +40,7 @@ class DomainConfig:
 
         metadata = data.get('metadata', {})
         capabilities = data.get('capabilities', {})
+        progression = data.get('progression', {})
 
         return cls(
             id=metadata.get('id', ''),
@@ -48,7 +51,9 @@ class DomainConfig:
             deployment_backend=capabilities.get('deployment_backend', 'unknown'),
             requires_cluster=capabilities.get('requires_cluster', False),
             namespace=capabilities.get('namespace'),
-            safety_enabled=capabilities.get('safety_enabled', True)
+            safety_enabled=capabilities.get('safety_enabled', True),
+            progression=progression,
+            capabilities=capabilities
         )
 
 

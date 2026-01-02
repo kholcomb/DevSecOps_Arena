@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K8sQuest - Cluster Visualizer</title>
+    <title>DevSecOps Arena - Visualizer</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
@@ -14,7 +14,7 @@
             <div class="header-content">
                 <div class="header-title">
                     <span class="header-icon" aria-hidden="true">🎮</span>
-                    <h1>K8sQuest Cluster Visualizer</h1>
+                    <h1 id="header-title">DevSecOps Arena Visualizer</h1>
                 </div>
                 <div class="header-stats">
                     <div class="stat-item world-level">
@@ -35,20 +35,20 @@
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Left Panel: Cluster State -->
-            <aside class="sidebar" role="complementary" aria-label="Cluster resources">
-                <h2>📊 Cluster State</h2>
+            <!-- Left Panel: Environment State -->
+            <aside class="sidebar" role="complementary" aria-label="Environment resources">
+                <h2 id="sidebar-title">📊 Environment State</h2>
                 <div id="cluster-stats">
                     <div class="stat-group">
-                        <h3>Pods</h3>
+                        <h3 id="pods-title">Pods</h3>
                         <div id="pods-list" role="list"></div>
                     </div>
                     <div class="stat-group">
-                        <h3>Services</h3>
+                        <h3 id="services-title">Services</h3>
                         <div id="services-list" role="list"></div>
                     </div>
                     <div class="stat-group">
-                        <h3>Deployments</h3>
+                        <h3 id="deployments-title">Deployments</h3>
                         <div id="deployments-list" role="list"></div>
                     </div>
                     <div class="stat-group">
@@ -85,6 +85,46 @@
                     </div>
                 </div>
             </main>
+
+            <!-- Right Panel: Hints & Solutions -->
+            <aside class="hints-panel" id="hints-panel" role="complementary" aria-label="Hints and solutions">
+                <div class="hints-header">
+                    <h2>💡 Help & Resources</h2>
+                    <button class="toggle-hints" id="toggle-hints" aria-label="Toggle hints panel">
+                        <span id="toggle-icon">◀</span>
+                    </button>
+                </div>
+
+                <div class="hints-content" id="hints-content">
+                    <!-- Tabs -->
+                    <div class="hints-tabs">
+                        <button class="tab-button active" data-tab="hints">Hints</button>
+                        <button class="tab-button" data-tab="solution">Solution</button>
+                        <button class="tab-button" data-tab="debrief">Debrief</button>
+                    </div>
+
+                    <!-- Hints Tab -->
+                    <div class="tab-content active" id="tab-hints">
+                        <div id="hints-list">
+                            <p class="loading">Loading hints...</p>
+                        </div>
+                    </div>
+
+                    <!-- Solution Tab -->
+                    <div class="tab-content" id="tab-solution">
+                        <div id="solution-content">
+                            <p class="loading">Loading solution...</p>
+                        </div>
+                    </div>
+
+                    <!-- Debrief Tab -->
+                    <div class="tab-content" id="tab-debrief">
+                        <div id="debrief-content">
+                            <p class="loading">Loading debrief...</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
         </div>
 
         <!-- Footer -->
