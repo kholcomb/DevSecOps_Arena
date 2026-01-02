@@ -40,10 +40,10 @@ kubectl delete clusterrolebinding <name>
 
 ```bash
 # Namespace deletion (non-critical)
-kubectl delete namespace arena-namespace
+kubectl delete namespace arena
 
 # Bulk deletions within allowed namespace
-kubectl delete pods --all -n arena-namespace
+kubectl delete pods --all -n arena
 
 # PersistentVolume operations
 kubectl delete pv <pv-name>
@@ -113,7 +113,7 @@ Test if a command would be blocked:
 python3 engine/safety.py kubectl delete namespace kube-system
 # Output: BLOCKED: Cannot delete critical system namespaces
 
-python3 engine/safety.py kubectl get pods -n arena-namespace
+python3 engine/safety.py kubectl get pods -n arena
 # Output: Command passed safety checks
 ```
 
@@ -144,12 +144,12 @@ export ARENA_SAFETY=on
 
 Developer meant to type:
 ```bash
-kubectl delete deployment myapp -n arena-namespace
+kubectl delete deployment myapp -n arena
 ```
 
 But accidentally typed:
 ```bash
-kubectl delete namespace arena-namespace
+kubectl delete namespace arena
 ```
 
 - Without safety guards: Entire namespace gone, all work lost
@@ -198,7 +198,7 @@ Even if detection is bypassed, RBAC enforces limits:
 ```yaml
 kind: Role
 metadata:
-  namespace: arena-namespace
+  namespace: arena
 # Cannot affect other namespaces
 ```
 
@@ -222,7 +222,7 @@ You may be trying to access resources outside the designated namespace:
 kubectl get pods -n default
 
 # Works
-kubectl get pods -n arena-namespace
+kubectl get pods -n arena
 ```
 
 ### Safety guards not working
@@ -241,17 +241,17 @@ unset ARENA_SAFETY
 
 1. **Always use namespace flag**
    ```bash
-   kubectl get pods -n arena-namespace
-   kubectl apply -f myapp.yaml -n arena-namespace
+   kubectl get pods -n arena
+   kubectl apply -f myapp.yaml -n arena
    ```
 
 2. **Test changes before applying**
    ```bash
    # Dry-run first
-   kubectl apply -f deployment.yaml --dry-run=client -n arena-namespace
+   kubectl apply -f deployment.yaml --dry-run=client -n arena
 
    # Then apply for real
-   kubectl apply -f deployment.yaml -n arena-namespace
+   kubectl apply -f deployment.yaml -n arena
    ```
 
 3. **Use kubectl apply instead of kubectl create**
@@ -265,7 +265,7 @@ unset ARENA_SAFETY
 
 4. **Check what will be deleted**
    ```bash
-   kubectl delete pod <name> --dry-run=client -n arena-namespace
+   kubectl delete pod <name> --dry-run=client -n arena
    ```
 
 5. **Keep safety guards enabled**
