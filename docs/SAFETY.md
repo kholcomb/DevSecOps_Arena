@@ -1,104 +1,88 @@
-# K8sQuest Safety Guards
+# DevSecOps Arena Safety Guards
 
 ## Overview
 
-K8sQuest includes comprehensive safety guards to protect you from accidentally breaking your Kubernetes cluster. These guards are **enabled by default** and strongly recommended for all users, especially beginners.
+DevSecOps Arena includes comprehensive safety guards to protect your system from accidental damage during training exercises. These guards are enabled by default and strongly recommended for all users.
 
-## What's Protected
+## Three-Layer Protection System
 
-### Blocked Operations (Cannot Execute)
+### Layer 1: Command Pattern Validation
 
-1. **Critical Namespace Deletion**
-   ```bash
-   # BLOCKED
-   kubectl delete namespace kube-system
-   kubectl delete namespace kube-public
-   kubectl delete namespace kube-node-lease
-   kubectl delete namespace default
-   ```
+Pre-execution validation using regex pattern matching to detect dangerous commands before they run.
 
-2. **Node Operations**
-   ```bash
-   # BLOCKED
-   kubectl delete node <node-name>
-   kubectl drain node <node-name>
-   kubectl cordon node <node-name>
-   ```
+**Blocked Operations (Cannot Execute):**
 
-3. **Cluster-Wide Deletions**
-   ```bash
-   # BLOCKED
-   kubectl delete pods --all-namespaces
-   kubectl delete deployments --all-namespaces
-   ```
+```bash
+# Critical namespace deletion
+kubectl delete namespace kube-system
+kubectl delete namespace kube-public
+kubectl delete namespace kube-node-lease
+kubectl delete namespace default
 
-4. **CustomResourceDefinitions**
-   ```bash
-   # BLOCKED
-   kubectl delete crd <crd-name>
-   ```
+# Node operations
+kubectl delete node <node-name>
+kubectl drain node <node-name>
+kubectl cordon node <node-name>
 
-5. **Cluster-Level RBAC**
-   ```bash
-   # BLOCKED
-   kubectl delete clusterrole <name>
-   kubectl delete clusterrolebinding <name>
-   ```
+# Cluster-wide deletions
+kubectl delete pods --all-namespaces
+kubectl delete deployments --all-namespaces
 
-### Operations Requiring Confirmation
+# CustomResourceDefinitions
+kubectl delete crd <crd-name>
 
-1. **Namespace Deletion**
-   ```bash
-   # Asks for confirmation
-   kubectl delete namespace k8squest
-   ```
+# Cluster-level RBAC
+kubectl delete clusterrole <name>
+kubectl delete clusterrolebinding <name>
+```
 
-2. **Delete All Resources**
-   ```bash
-   # Asks for confirmation
-   kubectl delete pods --all -n devsecops-arena
-   ```
+**Operations Requiring Confirmation:**
 
-3. **PersistentVolume Operations**
-   ```bash
-   # Asks for confirmation
-   kubectl delete pv <pv-name>
-   ```
+```bash
+# Namespace deletion (non-critical)
+kubectl delete namespace arena-namespace
 
-## RBAC Configuration
+# Bulk deletions within allowed namespace
+kubectl delete pods --all -n arena-namespace
 
-K8sQuest uses Role-Based Access Control to limit what you can do:
+# PersistentVolume operations
+kubectl delete pv <pv-name>
+```
 
-### Namespace-Level Permissions
+### Layer 2: RBAC Enforcement
 
-Full access within `k8squest` namespace to:
+Role-Based Access Control limits permissions at the Kubernetes cluster level.
+
+**Namespace-Level Permissions (Full Access):**
 - Pods, Services, ConfigMaps, Secrets
 - Deployments, ReplicaSets, StatefulSets, DaemonSets
 - Jobs, CronJobs
 - Ingresses, NetworkPolicies
 - PersistentVolumeClaims
 
-### Cluster-Level Permissions
-
-**Read-only** access to:
+**Cluster-Level Permissions (Read-Only):**
 - Nodes (view cluster info)
 - Namespaces (list available namespaces)
 - StorageClasses (for storage challenges)
 - Metrics (for observability challenges)
 
-### What You CANNOT Do
-
-- Modify resources outside `k8squest` namespace
-- Create or delete namespaces (except with confirmation)
-- Modify cluster-level resources (CRDs, ClusterRoles, etc.)
+**Prohibited Operations:**
+- Modify resources outside designated namespace
+- Create or delete namespaces without confirmation
+- Modify cluster-level resources (CRDs, ClusterRoles)
 - Delete or modify nodes
 - Access secrets in other namespaces
+
+### Layer 3: Namespace Isolation
+
+All operations are scoped to isolated training namespace with system namespaces protected.
 
 ## Setup
 
 ### Automatic Setup (Recommended)
 
-RBAC is automatically configured when you run:
+RBAC is automatically configured during installation:
+
 ```bash
 ./install.sh
 ```
@@ -109,15 +93,14 @@ RBAC is automatically configured when you run:
 # Apply RBAC configuration
 ./rbac/setup-rbac.sh
 
-# Or manually:
-kubectl apply -f rbac/k8squest-rbac.yaml
+# Or manually
+kubectl apply -f rbac/arena-rbac.yaml
 ```
 
 ## Using Safety Guards
 
-### In Python Engine (Automatic)
+Safety guards are automatically active when using the game engine:
 
-Safety guards are automatically active when using the Python game engine:
 ```bash
 ./play.sh
 ```
@@ -125,11 +108,12 @@ Safety guards are automatically active when using the Python game engine:
 ### Testing Safety Guards
 
 Test if a command would be blocked:
+
 ```bash
 python3 engine/safety.py kubectl delete namespace kube-system
-# Output: BLOCKED: Cannot delete critical system namespaces!
+# Output: BLOCKED: Cannot delete critical system namespaces
 
-python3 engine/safety.py kubectl get pods -n devsecops-arena
+python3 engine/safety.py kubectl get pods -n arena-namespace
 # Output: Command passed safety checks
 ```
 
@@ -141,76 +125,80 @@ python3 engine/safety.py info
 
 ## Disabling Safety Guards
 
-**NOT RECOMMENDED** - But if you need to disable safety guards:
+**Not recommended** - Only disable if absolutely necessary:
 
 ```bash
 # Temporary (current session only)
 export ARENA_SAFETY=off
 ./play.sh
 
-# To re-enable
+# Re-enable
 unset ARENA_SAFETY
 # or
 export ARENA_SAFETY=on
 ```
 
-## Why Safety Guards Matter
+## Real-World Examples
 
-### Real-World Examples
+**Scenario 1: Accidental Namespace Delete**
 
-**Scenario 1: The Accidental Namespace Delete**
+Developer meant to type:
 ```bash
-# Developer meant to type:
-kubectl delete deployment myapp -n devsecops-arena
-
-# But accidentally typed:
-kubectl delete namespace k8squest
+kubectl delete deployment myapp -n arena-namespace
 ```
-Without safety guards: Entire namespace gone, all work lost.
-With safety guards: Prompted for confirmation, given chance to cancel.
 
-**Scenario 2: The Copy-Paste Disaster**
+But accidentally typed:
 ```bash
-# Copied from Stack Overflow for production:
+kubectl delete namespace arena-namespace
+```
+
+- Without safety guards: Entire namespace gone, all work lost
+- With safety guards: Prompted for confirmation, chance to cancel
+
+**Scenario 2: Copy-Paste Disaster**
+
+Copied from documentation for production:
+```bash
 kubectl delete pods --all-namespaces
-
-# Ran in dev cluster by mistake
 ```
-Without safety guards: All pods in all namespaces deleted.
-With safety guards: Command blocked completely.
 
-**Scenario 3: The Node Deletion**
+Ran in development cluster by mistake.
+
+- Without safety guards: All pods in all namespaces deleted
+- With safety guards: Command blocked completely
+
+**Scenario 3: Node Deletion**
+
+Trying to delete a pod, mistyped:
 ```bash
-# Trying to delete a pod, mistyped:
 kubectl delete node kind-control-plane
 ```
-Without safety guards: Entire cluster node removed.
-With safety guards: Command blocked, cluster saved.
+
+- Without safety guards: Entire cluster node removed
+- With safety guards: Command blocked, cluster saved
 
 ## Safety Guard Implementation
 
 ### Command Validation
 
-Safety guards use regex pattern matching to detect dangerous commands BEFORE execution:
+Pattern matching detects dangerous commands before execution:
 
 ```python
 # Example: Detect namespace deletion
 pattern = r"kubectl\s+delete\s+namespace\s+(kube-system|default)"
 
-# Check command against patterns
 if matches_dangerous_pattern(command):
     block_command()
 ```
 
 ### RBAC Enforcement
 
-Even if safety guard detection is bypassed, RBAC enforces limits:
+Even if detection is bypassed, RBAC enforces limits:
 
 ```yaml
-# Role only allows operations in k8squest namespace
 kind: Role
 metadata:
-  namespace: k8squest
+  namespace: arena-namespace
 # Cannot affect other namespaces
 ```
 
@@ -218,53 +206,55 @@ metadata:
 
 ### "Command blocked by safety guards"
 
-This is working as intended! The command you tried is dangerous. Options:
+This is working as intended. The command you tried is dangerous. Options:
+
 1. Review what you're trying to do
-2. Make sure you're using `-n devsecops-arena` namespace
-3. Check if you have a typo
-4. If you really need this operation, see "Disabling Safety Guards" (not recommended)
+2. Ensure you're using correct namespace flag
+3. Check for typos
+4. See "Disabling Safety Guards" if operation is truly necessary (not recommended)
 
 ### "Permission denied" errors
 
-You may be trying to access resources outside the `k8squest` namespace:
+You may be trying to access resources outside the designated namespace:
 
 ```bash
 # Won't work
 kubectl get pods -n default
 
 # Works
-kubectl get pods -n devsecops-arena
+kubectl get pods -n arena-namespace
 ```
 
 ### Safety guards not working
 
 Check if they're enabled:
+
 ```bash
 echo $ARENA_SAFETY
 # Should be empty or "on"
 
-# If it says "off", re-enable:
+# If it says "off", re-enable
 unset ARENA_SAFETY
 ```
 
 ## Best Practices
 
-1. **Always use `-n devsecops-arena` flag**
+1. **Always use namespace flag**
    ```bash
-   kubectl get pods -n devsecops-arena
-   kubectl apply -f myapp.yaml -n devsecops-arena
+   kubectl get pods -n arena-namespace
+   kubectl apply -f myapp.yaml -n arena-namespace
    ```
 
 2. **Test changes before applying**
    ```bash
    # Dry-run first
-   kubectl apply -f deployment.yaml --dry-run=client -n devsecops-arena
+   kubectl apply -f deployment.yaml --dry-run=client -n arena-namespace
 
    # Then apply for real
-   kubectl apply -f deployment.yaml -n devsecops-arena
+   kubectl apply -f deployment.yaml -n arena-namespace
    ```
 
-3. **Use `kubectl apply` instead of `kubectl create`**
+3. **Use kubectl apply instead of kubectl create**
    ```bash
    # Fails if exists
    kubectl create -f deployment.yaml
@@ -275,47 +265,40 @@ unset ARENA_SAFETY
 
 4. **Check what will be deleted**
    ```bash
-   # See what would be deleted
-   kubectl delete pod <name> --dry-run=client -n devsecops-arena
+   kubectl delete pod <name> --dry-run=client -n arena-namespace
    ```
 
 5. **Keep safety guards enabled**
    - Only disable if you absolutely know what you're doing
    - Re-enable immediately after
 
-## Contributing
-
-When creating new challenges:
-- Ensure they work within `k8squest` namespace
-- Don't require cluster-admin permissions
-- Test with safety guards enabled
-- Document any exceptions needed
-
 ## FAQ
 
 **Q: Why can't I delete the default namespace?**
-A: The default namespace is critical to Kubernetes. Deleting it would break many system components. Use `k8squest` namespace instead.
+
+A: The default namespace is critical to Kubernetes. Deleting it would break many system components. Use the designated training namespace instead.
 
 **Q: Can I practice RBAC challenges with safety guards?**
-A: Yes! You have full RBAC control within the `k8squest` namespace. You just can't modify cluster-level RBAC.
+
+A: Yes. You have full RBAC control within the training namespace. You just can't modify cluster-level RBAC.
 
 **Q: What if I'm an experienced user?**
-A: Safety guards still help prevent accidents. Even experts make typos. You can disable them if needed, but we recommend keeping them on.
+
+A: Safety guards help prevent accidents. Even experts make typos. You can disable them if needed, but we recommend keeping them enabled.
 
 **Q: Will this work on production clusters?**
-A: K8sQuest is designed for LOCAL clusters only. Never run on production. Safety guards are an extra layer of protection, not a replacement for proper cluster isolation.
+
+A: DevSecOps Arena is designed for LOCAL clusters only. Never run on production. Safety guards are an extra layer of protection, not a replacement for proper cluster isolation.
 
 ## Summary
 
 Safety guards provide multiple layers of protection:
 
-1. **Command validation** - Blocks dangerous patterns before execution
-2. **RBAC enforcement** - Limits permissions at the cluster level
-3. **Namespace isolation** - Restricts operations to `k8squest`
-4. **User confirmation** - Prompts for risky but allowed operations
+1. Command validation - Blocks dangerous patterns before execution
+2. RBAC enforcement - Limits permissions at cluster level
+3. Namespace isolation - Restricts operations to training namespace
+4. User confirmation - Prompts for risky but allowed operations
 
-Together, these make K8sQuest safe for beginners while still providing realistic Kubernetes experience.
+Together, these make DevSecOps Arena safe for learning while providing realistic experience.
 
----
-
-**Remember:** The goal is learning, not breaking things. Safety guards let you experiment confidently.
+The goal is learning, not breaking things. Safety guards enable confident experimentation.

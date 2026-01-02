@@ -1,187 +1,310 @@
-# DevSecOps_Arena
-Learn Kubernetes by fixing it.
+# DevSecOps Arena
 
-DevSecOps_Arena is a **local, game-based Kubernetes training platform** with an interactive GUI-like terminal interface. Each mission breaks something in Kubernetes. Your job is to fix it.
+Learn security by fixing it. A local, game-based security training platform with progressive challenges across multiple domains.
 
-**50 progressive challenges across 5 worlds** - from beginner to advanced.
+## Overview
 
-No cloud. No AWS. No costs.
+DevSecOps Arena is a multi-domain security training platform that teaches through hands-on practice. Each challenge presents a broken or vulnerable configuration that you must identify and fix. The platform currently covers Kubernetes security and web application security, with plans to expand to API security, CI/CD security, and container security.
 
-## Features
-
-- **Real-time Monitoring** - Watch Kubernetes resources update live with "check" command
-- **Progressive Hints** - Unlocks gradually as you need help
-- **Step-by-Step Guides** - Beginner-friendly walkthroughs when you need them
-- **Post-Mission Debriefs** - Learn WHY your fix worked with real-world examples
-- **Clear Mission Briefings** - Know difficulty, time estimate, and concepts
-- **XP & Progress System** - Track your learning journey and achievements
-- **Multi-Terminal Workflow** - Learn real-world debugging patterns
-- **Auto-Save Progress** - Never lose your achievements
-- **Reset Levels** - Get stuck? Clean slate anytime
-
-## Safety First
-
-DevSecOps_Arena includes **comprehensive safety guards** (enabled by default):
-- Prevents deletion of critical namespaces (kube-system, default, etc.)
-- Blocks destructive cluster-wide operations
-- Limits operations to `DevSecOps_Arena` namespace via RBAC
-- Confirms risky operations before execution
-- Safe for beginners - hard to break things!
-
-[Learn more about safety guards →](docs/SAFETY.md)
+**Key Features:**
+- 50+ progressive challenges across multiple security domains
+- Real-time monitoring and validation
+- Progressive hints and step-by-step guides
+- Comprehensive post-challenge learning debriefs
+- XP progression system with auto-save
+- Multi-domain architecture supporting different deployment backends
+- Safety guards to prevent accidental system damage
+- No cloud dependencies or costs
 
 ## Requirements
+
 - Docker Desktop (running)
 - kubectl
-- kind
+- kind (Kubernetes in Docker)
 - bash
 - python3
+- Git
 
 ## Quick Start
+
 ```bash
 # One-time setup
 ./install.sh
 
-# Start playing (with visual diagrams)
+# Start playing with visual diagrams
 ./play.sh
 
-# Or start in terminal-only mode
+# Terminal-only mode (more realistic)
 ./play.sh --no-viz
 ```
 
-## Visual Cluster Diagrams
+## Architecture
 
-DevSecOps_Arena now includes a **real-time web-based visualization** that shows your cluster architecture and highlights issues:
+DevSecOps Arena uses a multi-domain plugin architecture where each security domain is self-contained with its own deployment backend:
 
-- **Auto-refreshes every 3 seconds** showing live cluster state
-- **Level-specific diagrams** that match what you're learning
-- **Color-coded health status** (green=healthy, orange=warning, red=error)
-- **Interactive D3.js diagrams** with zoom and pan
-- **Issue detection panel** showing what's broken and why
+- **Kubernetes Domain**: 50 challenges using kubectl (5 worlds, 10,200 XP)
+- **Web Security Domain**: Docker Compose-based challenges (3 challenges, 360 XP)
+- **Future Domains**: API Security, CI/CD Security, Container Security, IaC Security
 
-### Usage
-```bash
-# Default - visualizer auto-starts and opens in browser
-./play.sh
+Each domain includes:
+- Domain-specific deployer (kubectl, docker-compose, terraform)
+- Safety guards to prevent dangerous operations
+- Progress tracking and validation
+- Challenge metadata and learning objectives
 
-# Disable for terminal-only experience (more realistic)
-./play.sh --no-viz
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture diagrams and technical implementation.
 
-# Use custom port
-./play.sh --viz-port 9000
-```
+## Available Domains
 
-The visualizer runs on `http://localhost:8080` and provides a heads-up display for your cluster, making it easier to understand architecture and track your progress.
+### Kubernetes Security (50 Levels, 10,200 XP)
 
-[Learn more about the visualizer →](visualizer/README.md)
+Master Kubernetes security and troubleshooting through 5 progressive worlds:
+
+**World 1: Core Kubernetes Basics (Levels 1-10)** - 1,000 XP
+- Difficulty: Beginner
+- Topics: Pods, Deployments, Labels, Ports, Logs, Namespaces, Init Containers
+- Focus: Fundamental debugging and troubleshooting skills
+
+**World 2: Deployments & Scaling (Levels 11-20)** - 1,350 XP
+- Difficulty: Intermediate
+- Topics: Rolling updates, HPA, Liveness/Readiness probes, PodDisruptionBudgets, Canary deployments
+- Focus: Production deployment patterns and scaling strategies
+
+**World 3: Networking & Services (Levels 21-30)** - 2,100 XP
+- Difficulty: Intermediate
+- Topics: Services (ClusterIP, NodePort, LoadBalancer), DNS, Ingress, NetworkPolicies
+- Focus: Service discovery, load balancing, network segmentation
+
+**World 4: Storage & Stateful Apps (Levels 31-40)** - 2,600 XP
+- Difficulty: Advanced
+- Topics: PersistentVolumes/Claims, StatefulSets, StorageClasses, ConfigMaps, Secrets
+- Focus: Persistent storage and configuration management
+
+**World 5: Security & Production Ops (Levels 41-50)** - 3,150 XP
+- Difficulty: Advanced
+- Topics: RBAC, SecurityContext, ResourceQuotas, NetworkPolicies, Node scheduling, Taints/Tolerations
+- Focus: Production-ready security and resource management
+- **Level 50**: The Chaos Finale - 9 simultaneous failures in a production scenario
+
+### Web Application Security (3 Levels, 360 XP)
+
+**World 1: Injection Attacks**
+- Level 1: Reflected XSS (120 XP)
+- Level 2: SQL Injection (120 XP)
+- Level 3: CSRF (120 XP)
 
 ## How to Play
 
-1. **Start the game** - Run `./play.sh` (keeps the game running)
-2. **Read the mission briefing** - Understand what's broken
-3. **OPEN A NEW TERMINAL** - Keep the game running in the first terminal
-4. **Use kubectl to investigate** - Check pods, logs, and events in the NEW terminal
-5. **Fix the issue** - Apply corrections using kubectl commands
-6. **Return to game terminal** - Choose an action (check/validate/guide)
-7. **Earn XP** - Complete missions to level up
+### Workflow
 
-## Available Commands During Play
+1. **Start the game** - Run `./play.sh` (keeps game running in one terminal)
+2. **Read the mission briefing** - Understand what's broken and what needs fixing
+3. **Open a new terminal** - Keep the game running in the first terminal
+4. **Investigate** - Use kubectl, docker, or other tools to explore the issue
+5. **Fix the issue** - Apply corrections using the appropriate tools
+6. **Return to game terminal** - Validate your solution
+7. **Earn XP** - Complete challenges to progress
 
-- `check` - Monitor resource status in real-time (watch for changes!)
+### Available Commands
+
+During gameplay, you can use these commands:
+
+- `check` - Monitor resource status in real-time
 - `guide` - Show step-by-step solution walkthrough
 - `hints` - Display progressive hints (unlocks more on each use)
-- `solution` - View the solution.yaml file
+- `solution` - View the solution file
 - `validate` - Test if your solution works
 - `skip` - Skip to the next level (no XP awarded)
-- `quit` - Exit the game (progress is auto-saved)
+- `quit` - Exit the game (progress auto-saved)
 
-## Post-Mission Debriefs
+### Visual Cluster Diagrams
 
-After completing each mission, you'll get a detailed debrief explaining:
+The platform includes a web-based visualization that shows cluster architecture and highlights issues:
+
+- Auto-refreshes every 3 seconds showing live state
+- Level-specific diagrams matching current challenge
+- Color-coded health status (green=healthy, orange=warning, red=error)
+- Interactive D3.js diagrams with zoom and pan
+- Issue detection panel showing what's broken
+
+```bash
+# Default - visualizer auto-starts
+./play.sh
+
+# Disable for terminal-only experience
+./play.sh --no-viz
+
+# Custom port
+./play.sh --viz-port 9000
+```
+
+Visualizer runs on `http://localhost:8080`
+
+## Safety System
+
+DevSecOps Arena includes comprehensive safety guards enabled by default:
+
+### Three-Layer Protection
+
+**Layer 1: Command Pattern Validation**
+- Regex pattern matching for dangerous commands
+- Blocks: namespace deletion (kube-system, default), node operations, cluster-wide deletions
+- Confirms: risky but allowed operations
+
+**Layer 2: RBAC Enforcement**
+- ServiceAccount with limited permissions
+- Full access only in designated namespace
+- Read-only cluster-wide access
+
+**Layer 3: Namespace Isolation**
+- All operations scoped to isolated namespace
+- System namespaces protected
+- Resource quotas enforced
+
+### What's Protected
+
+**Blocked Operations:**
+- Critical namespace deletion (kube-system, kube-public, default)
+- Node operations (delete, drain, cordon)
+- Cluster-wide resource deletions
+- CRD modifications
+- Cluster-level RBAC changes
+
+**Confirmed Operations:**
+- Game namespace deletion
+- Bulk resource deletions within game namespace
+- PersistentVolume operations
+
+See detailed safety documentation in [docs/SAFETY.md](docs/SAFETY.md)
+
+## Learning Path
+
+### After World 1: Core Basics
+- Debug common pod failures independently
+- Navigate kubectl commands confidently
+- Understand pod lifecycle and status
+- Work with namespaces and quotas
+
+**Job Titles:** Junior DevOps Engineer, Platform Engineer (entry level), SRE Intern
+
+### After World 2: Deployments & Scaling
+- Manage production deployments
+- Configure autoscaling
+- Implement zero-downtime deployments
+- Handle rollback scenarios
+
+**Job Titles:** DevOps Engineer, Platform Engineer, SRE Engineer, Kubernetes Administrator
+
+### After Worlds 3-5: Advanced Topics
+- Debug service discovery and networking issues
+- Manage stateful applications and persistent storage
+- Implement production security and RBAC
+- Pass CKA/CKAD certification exams
+
+## Post-Challenge Debriefs
+
+After completing each challenge, you receive a detailed debrief explaining:
+
 - What actually happened and why
-- The correct mental model for this concept
-- Real-world production incident examples
+- The correct mental model for the concept
+- Real-world production incident examples with costs/impact
 - Interview questions you can now answer
-- kubectl commands you mastered
+- Commands and techniques mastered
 
-**This is where the real learning happens.**
+**This is where real learning happens.**
 
 ## Reset Levels
 
 Get stuck or want to retry? Reset individual levels:
+
 ```bash
 python3 engine/reset.py level-1-pods
 python3 engine/reset.py level-2-deployments
 ```
 
 Or reset everything:
+
 ```bash
 python3 engine/reset.py all
 ```
 
-## Learning Path
+## OWASP Coverage
 
-### World 1: Core Kubernetes Basics (Levels 1-10)
-**Difficulty**: Beginner | **Total XP**: 1,000
-Master the fundamentals of Kubernetes debugging and troubleshooting.
+DevSecOps Arena is designed to provide comprehensive coverage of OWASP security risks:
 
-- Level 1: CrashLoopBackOff Challenge (100 XP)
-- Level 2: Deployment Zero Replicas (100 XP)
-- Level 3: ImagePullBackOff Mystery (100 XP)
-- Level 4: Pending Pod Problem (100 XP)
-- Level 5: Lost Connection - Labels & Selectors (100 XP)
-- Level 6: Port Mismatch Mayhem (100 XP)
-- Level 7: Sidecar Sabotage (100 XP)
-- Level 8: Pod Logs Mystery (100 XP)
-- Level 9: Init Container Gridlock (100 XP)
-- Level 10: Namespace Confusion (100 XP)
+| Domain | OWASP List | Total Items | Covered | Percentage |
+|--------|-----------|-------------|---------|------------|
+| Web Security | Top 10:2025 | 10 | 3 | 30% |
+| Kubernetes | K8s Top 10 | 10 | 3 | 30% |
+| API Security | API Top 10:2023 | 10 | 0 | 0% |
+| CI/CD Security | CI/CD Top 10 | 10 | 0 | 0% |
+| Container Security | Docker Top 10 | 10 | 0 | 0% |
+| **Total** | **5 lists** | **50** | **6** | **12%** |
 
-### World 2: Deployments & Scaling (Levels 11-20)
-**Difficulty**: Intermediate | **Total XP**: 1,350
-Master deployment strategies, scaling, and health checks.
+**Current Status:** 53 challenges covering 12% of core OWASP security risks
 
-- Rolling updates, rollbacks, HPA, liveness/readiness probes
-- PodDisruptionBudgets, canary deployments, anti-affinity
-- Resource management, pod lifecycle, and production patterns
+**Roadmap:** 90-110 additional challenges planned to achieve full OWASP coverage across all five security domains.
 
-### World 3: Networking & Services (Levels 21-30)
-**Difficulty**: Intermediate | **Total XP**: 2,100
-Master service discovery, load balancing, and network policies.
+## Time Estimates
 
-- ClusterIP, NodePort, LoadBalancer services
-- DNS resolution, Ingress controllers, NetworkPolicies
-- Session affinity, cross-namespace communication, headless services
+| Experience Level | World 1 | World 2 | Worlds 1-2 Total |
+|-----------------|---------|---------|------------------|
+| Beginner | 5-8 hours | 6-10 hours | 11-18 hours |
+| Intermediate | 3-5 hours | 4-6 hours | 7-11 hours |
+| Advanced | 2-3 hours | 3-4 hours | 5-7 hours |
 
-### World 4: Storage & Stateful Apps (Levels 31-40)
-**Difficulty**: Advanced | **Total XP**: 2,600
-Master persistent storage, StatefulSets, and configuration management.
+**Experience Levels:**
+- Beginner: Never used Kubernetes
+- Intermediate: Have deployed apps to Kubernetes
+- Advanced: Use Kubernetes daily, studying for certification
 
-- PersistentVolumes, PVCs, access modes, StorageClasses
-- StatefulSets, volume permissions, reclaim policies
-- ConfigMaps, Secrets, and production storage patterns
+## Certification Alignment
 
-### World 5: Security & Production Ops (Levels 41-50)
-**Difficulty**: Advanced | **Total XP**: 3,150
-Production-ready Kubernetes: RBAC, security, resource management, and chaos engineering.
+### CKAD (Certified Kubernetes Application Developer)
+Coverage: Core Concepts (World 1), Multi-Container Pods, Pod Design (World 2), Services & Networking (World 3), State Persistence (World 4)
 
-- RBAC (ServiceAccounts, Roles, RoleBindings)
-- SecurityContext, Pod Security Standards (restricted)
-- ResourceQuotas, NetworkPolicies, node scheduling
-- Taints/Tolerations, PodDisruptionBudgets, PriorityClass
-- **Level 50**: **The Chaos Finale** - 9 simultaneous failures in a production scenario
+**Recommendation:** Complete Worlds 1-4 for full CKAD readiness
 
-**Total Journey**: 50 Levels | 10,200 XP | Beginner to Kubernetes Master
+### CKA (Certified Kubernetes Administrator)
+Coverage: Workloads & Scheduling (Worlds 1-2), Services & Networking (World 3), Storage (World 4), Security (World 5)
 
-**Full Blueprint**: See [docs/50-CHALLENGE-BLUEPRINT.md](docs/50-CHALLENGE-BLUEPRINT.md) for detailed descriptions of all 50 challenges.
+**Recommendation:** Complete all worlds plus official CKA labs
 
+## Contributing
 
-## Manual Play (Advanced)
+Want to add more challenges or improve existing content? See [docs/contributing.md](docs/contributing.md) for detailed guidelines.
 
-If you prefer the old-school bash script:
+Key requirements:
+- All 8 required files per level (mission.yaml, broken.yaml, solution.yaml, validate.sh, 3 hints, debrief.md)
+- Single, clear learning objective per challenge
+- Comprehensive debrief with real-world examples
+- Testing on fresh cluster before submission
+
+## Manual Play
+
+For the old-school bash script experience:
+
 ```bash
 ./engine/start_game.sh
 ```
 
-## Contributing
+## Documentation
 
-Want to add more missions? Check out [docs/contributing.md](docs/contributing.md)
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technical architecture with mermaid diagrams
+- [contributing.md](docs/contributing.md) - Detailed contributor guide
+- [SAFETY.md](docs/SAFETY.md) - Comprehensive safety system documentation
+- [50-CHALLENGE-BLUEPRINT.md](docs/50-CHALLENGE-BLUEPRINT.md) - Complete reference for all 50 Kubernetes challenges
+
+## Project Status
+
+**Active Development** - Multi-domain architecture fully functional with expansion in progress
+
+- Production-ready game engine with domain plugin system
+- 2 active domains (Kubernetes, Web Security)
+- 53 challenges, 10,560 total XP available
+- Safety guards, progress tracking, and visualization
+- Extensible architecture for rapid domain expansion
+
+---
+
+Created for security professionals and developers worldwide. Learn by fixing, master by doing.

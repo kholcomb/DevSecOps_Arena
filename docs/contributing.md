@@ -1,17 +1,17 @@
-# Contributing to K8sQuest
+# Contributing to DevSecOps Arena
 
-## 🎯 Mission: Create Consistent, High-Quality Challenges
+## Mission: Create Consistent, High-Quality Challenges
 
-Welcome, contributor! This guide will help you create new K8sQuest challenges that are maintainable, consistent, and provide actual learning value.
+Welcome, contributor. This guide will help you create new DevSecOps Arena challenges that are maintainable, consistent, and provide learning value.
 
-**K8sQuest is now COMPLETE with all 50 levels across 5 worlds!** However, we welcome:
+**Kubernetes domain is complete with all 50 levels across 5 worlds.** We welcome:
 - Bug fixes and improvements to existing levels
 - New bonus levels or alternative challenges
 - Translations and localization
 - Documentation improvements
 - Engine enhancements
 
-## 📁 Required File Structure (8 Files Per Level)
+## Required File Structure (8 Files Per Level)
 
 Every challenge MUST have this structure:
 
@@ -31,7 +31,7 @@ worlds/
 
 **All 8 files are mandatory.** This ensures consistency across all 50 levels.
 
-## 📋 File Requirements
+##  File Requirements
 
 ### 1. mission.yaml
 
@@ -88,8 +88,8 @@ spec:
   - name: web
     image: nginx:latest
     securityContext:
-      runAsUser: 0  # ❌ Running as root - violates security policy
-      allowPrivilegeEscalation: true  # ❌ Allows privilege escalation
+      runAsUser: 0  #  Running as root - violates security policy
+      allowPrivilegeEscalation: true  #  Allows privilege escalation
 ```
 
 ### 3. solution.yaml
@@ -111,17 +111,17 @@ metadata:
   namespace: k8squest
 spec:
   securityContext:
-    runAsNonRoot: true  # ✅ Require non-root user
-    runAsUser: 1000     # ✅ Run as specific non-root user
+    runAsNonRoot: true  #  Require non-root user
+    runAsUser: 1000     #  Run as specific non-root user
     fsGroup: 2000
   containers:
   - name: web
     image: nginx:latest
     securityContext:
-      allowPrivilegeEscalation: false  # ✅ Prevent privilege escalation
+      allowPrivilegeEscalation: false  #  Prevent privilege escalation
       capabilities:
         drop:
-        - ALL  # ✅ Drop all capabilities
+        - ALL  #  Drop all capabilities
 ```
 
 ### 4. validate.sh
@@ -135,29 +135,29 @@ Bash script that returns 0 (success) or 1 (failure). Must be executable.
 NAMESPACE="k8squest"
 POD_NAME="web-app"
 
-echo "🔍 Validating SecurityContext configuration..."
+echo " Validating SecurityContext configuration..."
 
 # Check if pod exists
 if ! kubectl get pod $POD_NAME -n $NAMESPACE &>/dev/null; then
-    echo "❌ Pod not found"
+    echo " Pod not found"
     exit 1
 fi
 
 # Check runAsNonRoot
 RUN_AS_NON_ROOT=$(kubectl get pod $POD_NAME -n $NAMESPACE -o jsonpath='{.spec.containers[0].securityContext.runAsNonRoot}')
 if [ "$RUN_AS_NON_ROOT" != "true" ]; then
-    echo "❌ runAsNonRoot not set to true"
+    echo " runAsNonRoot not set to true"
     exit 1
 fi
 
 # Check allowPrivilegeEscalation
 ALLOW_PRIV=$(kubectl get pod $POD_NAME -n $NAMESPACE -o jsonpath='{.spec.containers[0].securityContext.allowPrivilegeEscalation}')
 if [ "$ALLOW_PRIV" != "false" ]; then
-    echo "❌ allowPrivilegeEscalation not set to false"
+    echo " allowPrivilegeEscalation not set to false"
     exit 1
 fi
 
-echo "✅ SUCCESS! SecurityContext properly configured!"
+echo " SUCCESS! SecurityContext properly configured!"
 exit 0
 ```
 
@@ -168,16 +168,16 @@ exit 0
 NAMESPACE="k8squest"
 ERRORS=0
 
-echo "🔍 MULTI-STAGE VALIDATION"
+echo " MULTI-STAGE VALIDATION"
 echo ""
 
 # Stage 1
 echo "Stage 1: Checking pod exists..."
 if ! kubectl get pod web-app -n $NAMESPACE &>/dev/null; then
-    echo "❌ FAILED: Pod not found"
+    echo " FAILED: Pod not found"
     ((ERRORS++))
 else
-    echo "✅ PASSED"
+    echo " PASSED"
 fi
 
 # Stage 2
@@ -186,10 +186,10 @@ echo "Stage 2: Checking SecurityContext..."
 
 # Final result
 if [ $ERRORS -eq 0 ]; then
-    echo "✅ ALL CHECKS PASSED!"
+    echo " ALL CHECKS PASSED!"
     exit 0
 else
-    echo "❌ $ERRORS check(s) failed"
+    echo " $ERRORS check(s) failed"
     exit 1
 fi
 ```
@@ -268,7 +268,7 @@ Progressive hints that unlock gradually. Each should build on the previous.
 
 **hint-1.txt** - Initial observations and investigation commands:
 ```
-💡 Hint 1: Initial Investigation
+ Hint 1: Initial Investigation
 
 The pod is failing to start. Let's investigate:
 
@@ -285,7 +285,7 @@ Look for admission controller rejection messages!
 
 **hint-2.txt** - Point toward the solution area:
 ```
-💡 Hint 2: Security Context
+ Hint 2: Security Context
 
 The pod is being rejected by the Pod Security admission controller.
 
@@ -299,7 +299,7 @@ What values would meet the "restricted" security standard?
 
 **hint-3.txt** - Near-complete solution:
 ```
-💡 Hint 3: The Fix
+ Hint 3: The Fix
 
 You need to configure SecurityContext to:
 
@@ -322,40 +322,40 @@ Apply these in both pod-level and container-level securityContext!
 - Hint 2: "What to focus on"
 - Hint 3: "How to fix it"
 
-## 🚫 What NOT to Do
+##  What NOT to Do
 
-❌ **Don't create multi-issue challenges** (except for special finale levels)
+ **Don't create multi-issue challenges** (except for special finale levels)
 - Each level should teach ONE concept clearly
 - Multiple issues confuse learners
 
-❌ **Don't require external tools** (helm, kustomize, operators, etc.)
+ **Don't require external tools** (helm, kustomize, operators, etc.)
 - Keep it kubectl-only for consistency
 - External tools add complexity
 
-❌ **Don't use real secrets/credentials**
+ **Don't use real secrets/credentials**
 - Use obviously fake values: `password123`, `fake-token`
 - Never commit real credentials
 
-❌ **Don't break multiple namespaces**
+ **Don't break multiple namespaces**
 - All resources in `k8squest` namespace only
 - Don't affect system namespaces
 
-❌ **Don't make it a guessing game**
+ **Don't make it a guessing game**
 - Provide clear error messages
 - Validation should guide users
 - Hints should actually help
 
-❌ **Don't skip the debrief**
+ **Don't skip the debrief**
 - This is the most important learning moment
 - Include real-world examples and incidents
 - Explain the "why" not just the "how"
 
-❌ **Don't forget to test**
+ **Don't forget to test**
 - Test on a fresh cluster
 - Verify both broken and fixed states
 - Check all 8 files are present
 
-## ✅ Quality Checklist
+##  Quality Checklist
 
 Before submitting a new level, verify:
 
@@ -447,7 +447,7 @@ cat debrief.md
 # - 2,000+ words of content
 ```
 
-## 📚 Reference Examples
+##  Reference Examples
 
 ### Beginner Level Examples
 - `worlds/world-1-basics/level-1-pods/` - CrashLoopBackOff
@@ -467,7 +467,7 @@ cat debrief.md
 ### Expert Level Example
 - `worlds/world-5-security/level-50-chaos-finale/` - Multi-concept finale
 
-## 🎯 XP Reward Guidelines
+##  XP Reward Guidelines
 
 Choose XP based on difficulty and learning value:
 
@@ -477,7 +477,7 @@ Choose XP based on difficulty and learning value:
 - **350 XP**: Complex advanced concepts
 - **500 XP**: Expert finale levels combining multiple concepts
 
-## 🌍 World Structure
+##  World Structure
 
 Levels are organized into worlds by theme:
 
@@ -504,7 +504,7 @@ New levels should fit logically into existing worlds or propose a new themed wor
    - What makes it unique from existing levels
    - Screenshots/examples of broken and fixed states
 
-## 💡 Tips for Great Levels
+##  Tips for Great Levels
 
 ### Make It Real
 - Base scenarios on actual production incidents
@@ -528,11 +528,11 @@ New levels should fit logically into existing worlds or propose a new themed wor
 - All hints and validation messages
 - Complete playthrough as a learner
 
-## 📞 Questions?
+##  Questions?
 
 - Check existing levels for patterns
 - Review [ARCHITECTURE.md](ARCHITECTURE.md)
 - Open an issue for discussion
 - Join community discussions
 
-**Thank you for contributing to K8sQuest!** 🚀
+**Thank you for contributing to K8sQuest!** 
