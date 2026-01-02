@@ -345,10 +345,6 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
             if self.current_level_path and callable(self.current_level_path):
                 level_path = self.current_level_path()
 
-            # Debug logging
-            import sys
-            print(f"[DEBUG] serve_hints - level_path: {level_path}", file=sys.stderr)
-
             if not level_path:
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')

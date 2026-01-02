@@ -1419,7 +1419,10 @@ async function fetchHints() {
         const hintsContainer = document.getElementById('hints-list');
 
         if (!data.hints || data.hints.length === 0) {
-            hintsContainer.textContent = 'No hints available for this level';
+            const message = data.message || 'No hints available for this level';
+            hintsContainer.textContent = message === 'No level loaded'
+                ? '🎮 Start a level to see hints'
+                : 'No hints available for this level';
             return;
         }
 
@@ -1445,7 +1448,10 @@ async function fetchSolution() {
         const solutionContainer = document.getElementById('solution-content');
 
         if (!data.solution) {
-            solutionContainer.textContent = 'No solution available yet';
+            const message = data.message || 'No solution available yet';
+            solutionContainer.textContent = message === 'No level loaded'
+                ? '🎮 Start a level to see the solution'
+                : 'No solution available yet';
             return;
         }
 
@@ -1468,7 +1474,10 @@ async function fetchDebrief() {
         const debriefContainer = document.getElementById('debrief-content');
 
         if (!data.debrief) {
-            debriefContainer.textContent = 'No debrief available yet';
+            const message = data.message || 'No debrief available yet';
+            debriefContainer.textContent = message === 'No level loaded'
+                ? '🎮 Start a level to see the debrief'
+                : 'Complete the level to see the debrief';
             return;
         }
 
