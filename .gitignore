@@ -31,3 +31,6 @@ Thumbs.db
 # Kubernetes
 kubeconfig
 *.kubeconfig
+
+# Development
+Plan.md
