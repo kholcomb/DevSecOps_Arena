@@ -12,7 +12,7 @@ Check These Areas:
 1. **Ingress Configuration**
    View your Ingress:
    ```bash
-   kubectl describe ingress web-ingress -n devsecops-arena
+   kubectl describe ingress web-ingress -n arena
    ```
 
    Look at the "Rules" section. What path is configured?
@@ -28,7 +28,7 @@ Check These Areas:
 3. **Service Endpoints**
    Check if the Service has endpoints:
    ```bash
-   kubectl get endpoints web-service -n devsecops-arena
+   kubectl get endpoints web-service -n arena
    ```
 
 🎯 Key Questions:

@@ -21,16 +21,16 @@ spec:
 ```bash
 kubectl delete -f broken.yaml
 kubectl apply -f solution.yaml
-kubectl get pvc app-storage -n devsecops-arena -w
+kubectl get pvc app-storage -n arena -w
 # Watch it transition from Pending → Bound
 ```
 
 🔍 Verify:
 ```bash
-kubectl get pvc app-storage -n devsecops-arena
+kubectl get pvc app-storage -n arena
 # STATUS should be "Bound"
 
-kubectl get pod data-processor -n devsecops-arena
+kubectl get pod data-processor -n arena
 # Pod should start successfully now
 ```
 

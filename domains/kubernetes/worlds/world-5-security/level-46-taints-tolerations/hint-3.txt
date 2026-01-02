@@ -38,7 +38,7 @@ kubectl taint nodes kind-control-plane dedicated=gpu:NoSchedule --overwrite
 kubectl apply -f solution.yaml
 
 # Verify
-kubectl get pod regular-app -n devsecops-arena
+kubectl get pod regular-app -n arena
 # Should be Running
 
 # Run validation

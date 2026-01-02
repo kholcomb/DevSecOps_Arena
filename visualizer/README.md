@@ -220,7 +220,7 @@ Then open `http://localhost:8080` in your browser.
 - Check firewall settings
 
 ### Diagram not updating
-- Verify kubectl is working: `kubectl get pods -n devsecops-arena`
+- Verify kubectl is working: `kubectl get pods -n arena`
 - Check browser console for JavaScript errors
 - Refresh the page manually
 

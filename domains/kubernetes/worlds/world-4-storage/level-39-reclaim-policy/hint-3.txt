@@ -30,10 +30,10 @@ kubectl get pv important-data
 🧪 Test data safety:
 ```bash
 # Write some data
-kubectl exec data-writer -n devsecops-arena -- cat /data/important.txt
+kubectl exec data-writer -n arena -- cat /data/important.txt
 
 # Delete PVC (simulate accident)
-kubectl delete pvc data-claim -n devsecops-arena
+kubectl delete pvc data-claim -n arena
 
 # Check PV
 kubectl get pv important-data

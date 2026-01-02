@@ -3,13 +3,13 @@
 Edit the service to add explicit NodePort:
 
 ```bash
-kubectl edit svc web-nodeport -n devsecops-arena
+kubectl edit svc web-nodeport -n arena
 ```
 
 Or delete and reapply:
 ```bash
-kubectl delete svc web-nodeport -n devsecops-arena
-kubectl apply -f solution.yaml -n devsecops-arena
+kubectl delete svc web-nodeport -n arena
+kubectl apply -f solution.yaml -n arena
 ```
 
 Add this to the ports section:

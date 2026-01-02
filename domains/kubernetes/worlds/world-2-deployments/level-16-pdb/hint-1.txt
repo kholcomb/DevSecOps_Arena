@@ -1,16 +1,16 @@
 🔍 Observation Hint:
 
 Check the PodDisruptionBudget:
-`kubectl get pdb -n devsecops-arena`
+`kubectl get pdb -n arena`
 
 Look at the ALLOWED column - is it 0?
 
 Describe the PDB:
-`kubectl describe pdb db-proxy-pdb -n devsecops-arena`
+`kubectl describe pdb db-proxy-pdb -n arena`
 
 Check "Disruptions allowed" - if it's 0, node drains will fail!
 
 Check the deployment:
-`kubectl get deployment database-proxy -n devsecops-arena`
+`kubectl get deployment database-proxy -n arena`
 
 How many replicas? Compare to PDB's minAvailable.

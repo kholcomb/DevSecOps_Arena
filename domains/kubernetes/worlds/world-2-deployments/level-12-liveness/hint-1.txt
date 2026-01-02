@@ -1,11 +1,11 @@
 🔍 Observation Hint:
 
 Check the pods:
-`kubectl get pods -n devsecops-arena -l app=api`
+`kubectl get pods -n arena -l app=api`
 
 Look at the RESTARTS column. Are the pods constantly restarting?
 
 Describe one of the pods:
-`kubectl describe pod <pod-name> -n devsecops-arena`
+`kubectl describe pod <pod-name> -n arena`
 
 Look at the Events section at the bottom. What do you see?

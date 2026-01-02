@@ -422,7 +422,7 @@ spec:
 ### Check Quota Status
 
 ```bash
-kubectl describe resourcequota compute-quota -n devsecops-arena
+kubectl describe resourcequota compute-quota -n arena
 ```
 
 Output:
@@ -441,7 +441,7 @@ requests.memory  512Mi 2Gi
 ### Check Pod Events
 
 ```bash
-kubectl describe pod my-pod -n devsecops-arena
+kubectl describe pod my-pod -n arena
 ```
 
 Look for:
@@ -453,7 +453,7 @@ Warning  FailedScheduling  ... exceeded quota: compute-quota, requested: request
 
 ```bash
 # See what's using quota
-kubectl get pods -n devsecops-arena -o custom-columns=\
+kubectl get pods -n arena -o custom-columns=\
 NAME:.metadata.name,\
 CPU_REQ:.spec.containers[*].resources.requests.cpu,\
 MEM_REQ:.spec.containers[*].resources.requests.memory
@@ -463,7 +463,7 @@ MEM_REQ:.spec.containers[*].resources.requests.memory
 
 ```bash
 # Sum all CPU requests
-kubectl get pods -n devsecops-arena -o jsonpath='{range .items[*]}{.spec.containers[*].resources.requests.cpu}{"\n"}{end}' | \
+kubectl get pods -n arena -o jsonpath='{range .items[*]}{.spec.containers[*].resources.requests.cpu}{"\n"}{end}' | \
   sed 's/m$//' | awk '{s+=$1} END {print s "m"}'
 ```
 

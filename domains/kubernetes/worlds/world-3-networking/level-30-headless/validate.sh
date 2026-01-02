@@ -11,7 +11,7 @@ echo ""
 
 # Stage 1: Check if service exists
 echo "📋 Stage 1: Checking if service exists..."
-if ! kubectl get service web-cluster -n devsecops-arena &>/dev/null; then
+if ! kubectl get service web-cluster -n arena &>/dev/null; then
     echo -e "${RED}❌ Service 'web-cluster' not found in namespace 'arena'${NC}"
     echo ""
     echo "💡 Make sure to apply your fixed configuration with the service definition."
@@ -22,7 +22,7 @@ echo ""
 
 # Stage 2: Check if service is headless
 echo "📋 Stage 2: Checking if service is headless (clusterIP: None)..."
-CLUSTER_IP=$(kubectl get service web-cluster -n devsecops-arena -o jsonpath='{.spec.clusterIP}')
+CLUSTER_IP=$(kubectl get service web-cluster -n arena -o jsonpath='{.spec.clusterIP}')
 
 if [ "$CLUSTER_IP" != "None" ]; then
     echo -e "${RED}❌ Service has ClusterIP: $CLUSTER_IP (expected: None)${NC}"
@@ -53,7 +53,7 @@ echo ""
 
 # Stage 3: Check if StatefulSet exists
 echo "📋 Stage 3: Checking if StatefulSet exists..."
-if ! kubectl get statefulset web -n devsecops-arena &>/dev/null; then
+if ! kubectl get statefulset web -n arena &>/dev/null; then
     echo -e "${RED}❌ StatefulSet 'web' not found in namespace 'arena'${NC}"
     exit 1
 fi
@@ -65,8 +65,8 @@ echo "📋 Stage 4: Waiting for StatefulSet pods to be ready..."
 TIMEOUT=60
 ELAPSED=0
 while [ $ELAPSED -lt $TIMEOUT ]; do
-    READY_PODS=$(kubectl get pods -n devsecops-arena -l app=web-cluster -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' | grep -c "True" || echo 0)
-    EXPECTED_PODS=$(kubectl get statefulset web -n devsecops-arena -o jsonpath='{.spec.replicas}')
+    READY_PODS=$(kubectl get pods -n arena -l app=web-cluster -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' | grep -c "True" || echo 0)
+    EXPECTED_PODS=$(kubectl get statefulset web -n arena -o jsonpath='{.spec.replicas}')
     
     if [ "$READY_PODS" -eq "$EXPECTED_PODS" ]; then
         break
@@ -81,7 +81,7 @@ if [ "$READY_PODS" -ne "$EXPECTED_PODS" ]; then
     echo -e "${RED}❌ Not all StatefulSet pods are ready ($READY_PODS/$EXPECTED_PODS)${NC}"
     echo ""
     echo "💡 Check pod status:"
-    echo "   kubectl get pods -n devsecops-arena -l app=web-cluster"
+    echo "   kubectl get pods -n arena -l app=web-cluster"
     exit 1
 fi
 echo -e "${GREEN}✓ All $EXPECTED_PODS StatefulSet pods are ready${NC}"
@@ -91,8 +91,8 @@ echo ""
 echo "📋 Stage 5: Testing per-pod DNS resolution..."
 
 # Deploy a test pod to check DNS
-kubectl run -n devsecops-arena dns-test --image=busybox:1.28 --restart=Never --rm -i --command -- sleep 1 &>/dev/null || true
-kubectl delete pod dns-test -n devsecops-arena --ignore-not-found=true &>/dev/null
+kubectl run -n arena dns-test --image=busybox:1.28 --restart=Never --rm -i --command -- sleep 1 &>/dev/null || true
+kubectl delete pod dns-test -n arena --ignore-not-found=true &>/dev/null
 
 # Create test pod
 cat <<EOF | kubectl apply -f - &>/dev/null
@@ -110,23 +110,23 @@ EOF
 
 # Wait for test pod to be ready
 echo "   Starting DNS test pod..."
-kubectl wait --for=condition=Ready pod/dns-test -n devsecops-arena --timeout=30s &>/dev/null
+kubectl wait --for=condition=Ready pod/dns-test -n arena --timeout=30s &>/dev/null
 
 # Test DNS for each StatefulSet pod
-POD_COUNT=$(kubectl get statefulset web -n devsecops-arena -o jsonpath='{.spec.replicas}')
+POD_COUNT=$(kubectl get statefulset web -n arena -o jsonpath='{.spec.replicas}')
 DNS_SUCCESS=true
 
 for i in $(seq 0 $((POD_COUNT - 1))); do
     POD_DNS="web-$i.web-cluster.arena.svc.cluster.local"
     echo "   Testing: $POD_DNS"
     
-    if ! kubectl exec -n devsecops-arena dns-test -- nslookup "$POD_DNS" &>/dev/null; then
+    if ! kubectl exec -n arena dns-test -- nslookup "$POD_DNS" &>/dev/null; then
         echo -e "${RED}   ❌ DNS resolution failed for $POD_DNS${NC}"
         DNS_SUCCESS=false
     else
         # Verify it resolves to the correct pod
-        RESOLVED_IP=$(kubectl exec -n devsecops-arena dns-test -- nslookup "$POD_DNS" 2>/dev/null | grep "Address" | tail -n1 | awk '{print $3}')
-        POD_IP=$(kubectl get pod "web-$i" -n devsecops-arena -o jsonpath='{.status.podIP}')
+        RESOLVED_IP=$(kubectl exec -n arena dns-test -- nslookup "$POD_DNS" 2>/dev/null | grep "Address" | tail -n1 | awk '{print $3}')
+        POD_IP=$(kubectl get pod "web-$i" -n arena -o jsonpath='{.status.podIP}')
         
         if [ "$RESOLVED_IP" == "$POD_IP" ]; then
             echo -e "${GREEN}   ✓ $POD_DNS → $POD_IP${NC}"
@@ -138,7 +138,7 @@ for i in $(seq 0 $((POD_COUNT - 1))); do
 done
 
 # Cleanup test pod
-kubectl delete pod dns-test -n devsecops-arena --ignore-not-found=true &>/dev/null
+kubectl delete pod dns-test -n arena --ignore-not-found=true &>/dev/null
 
 if [ "$DNS_SUCCESS" = false ]; then
     echo -e "${RED}❌ Per-pod DNS resolution failed${NC}"
@@ -151,7 +151,7 @@ echo ""
 
 # Stage 6: Verify service endpoints
 echo "📋 Stage 6: Verifying service endpoints..."
-ENDPOINTS=$(kubectl get endpoints web-cluster -n devsecops-arena -o jsonpath='{.subsets[*].addresses[*].ip}' | wc -w)
+ENDPOINTS=$(kubectl get endpoints web-cluster -n arena -o jsonpath='{.subsets[*].addresses[*].ip}' | wc -w)
 if [ "$ENDPOINTS" -ne "$POD_COUNT" ]; then
     echo -e "${RED}❌ Expected $POD_COUNT endpoints, found $ENDPOINTS${NC}"
     exit 1
@@ -172,7 +172,7 @@ echo "   • ClusterIP: None"
 echo ""
 echo "🔗 Per-Pod DNS Names:"
 for i in $(seq 0 $((POD_COUNT - 1))); do
-    POD_IP=$(kubectl get pod "web-$i" -n devsecops-arena -o jsonpath='{.status.podIP}')
+    POD_IP=$(kubectl get pod "web-$i" -n arena -o jsonpath='{.status.podIP}')
     echo "   • web-$i.web-cluster.arena.svc.cluster.local → $POD_IP"
 done
 echo ""

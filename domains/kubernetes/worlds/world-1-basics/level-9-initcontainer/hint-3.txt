@@ -1,7 +1,7 @@
 💡 Near-Solution Hint:
 
 Steps to fix:
-1. Delete the pod: `kubectl delete pod web-with-init -n devsecops-arena`
+1. Delete the pod: `kubectl delete pod web-with-init -n arena`
 2. Edit broken.yaml and change the init container to do something useful:
    ```yaml
    command: ['sh', '-c', 'echo "Config ready" > /work-dir/config.txt']

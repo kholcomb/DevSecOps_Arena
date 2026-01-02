@@ -35,14 +35,14 @@ kubectl delete -f broken.yaml
 kubectl apply -f solution.yaml
 
 # Write data
-kubectl exec data-app -n devsecops-arena -- sh -c 'echo "persistent data" > /data/test.txt'
+kubectl exec data-app -n arena -- sh -c 'echo "persistent data" > /data/test.txt'
 
 # Restart pod
-kubectl delete pod data-app -n devsecops-arena
+kubectl delete pod data-app -n arena
 kubectl apply -f solution.yaml
 
 # Check data still exists!
-kubectl exec data-app -n devsecops-arena -- cat /data/test.txt
+kubectl exec data-app -n arena -- cat /data/test.txt
 # Should show "persistent data" - survived the restart!
 ```
 

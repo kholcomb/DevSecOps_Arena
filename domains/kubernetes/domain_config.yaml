@@ -25,7 +25,7 @@ capabilities:
   requires_cluster: true
 
   # Default namespace for challenges
-  namespace: devsecops-arena
+  namespace: arena
 
   # Safety guards enabled
   safety_enabled: true

@@ -62,14 +62,14 @@ Since we're running as non-root user:
 kubectl apply -f solution.yaml
 
 # Verify pod is running
-kubectl get pod web-app -n devsecops-arena
+kubectl get pod web-app -n arena
 
 # Check what user it's running as
-kubectl exec web-app -n devsecops-arena -- id
+kubectl exec web-app -n arena -- id
 # Should show: uid=1000 gid=0
 
 # Check security context was applied
-kubectl get pod web-app -n devsecops-arena -o jsonpath='{.spec.containers[0].securityContext}' | jq
+kubectl get pod web-app -n arena -o jsonpath='{.spec.containers[0].securityContext}' | jq
 ```
 
 ## Verification

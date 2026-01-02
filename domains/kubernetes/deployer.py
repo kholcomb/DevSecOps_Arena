@@ -22,7 +22,7 @@ class KubectlDeployer(ChallengeDeployer):
     Deployer for Kubernetes challenges using kubectl.
 
     Manages:
-    - Namespace creation/deletion (devsecops-arena)
+    - Namespace creation/deletion (arena)
     - Deployment of broken.yaml manifests
     - Resource status checking
     - Challenge cleanup
@@ -36,7 +36,7 @@ class KubectlDeployer(ChallengeDeployer):
             domain_config: Configuration from domain_config.yaml
         """
         super().__init__(domain_config)
-        self.namespace = domain_config.get('namespace', 'devsecops-arena')
+        self.namespace = domain_config.get('namespace', 'arena')
 
     def health_check(self) -> tuple[bool, str]:
         """
@@ -82,7 +82,7 @@ class KubectlDeployer(ChallengeDeployer):
         Deploy a Kubernetes challenge.
 
         Steps:
-        1. Delete and recreate devsecops-arena namespace
+        1. Delete and recreate arena namespace
         2. Apply broken.yaml manifest
         3. Wait briefly for resources to be created
 
@@ -141,7 +141,7 @@ class KubectlDeployer(ChallengeDeployer):
         """
         Clean up Kubernetes challenge resources.
 
-        Deletes the entire devsecops-arena namespace.
+        Deletes the entire arena namespace.
 
         Args:
             level_path: Path to level directory

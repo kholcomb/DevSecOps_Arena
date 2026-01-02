@@ -50,13 +50,13 @@ spec:
 🚀 How to Apply:
 
 1️⃣ Delete the broken service:
-   kubectl delete service web-service -n devsecops-arena
+   kubectl delete service web-service -n arena
 
 2️⃣ Apply the fixed configuration:
    kubectl apply -f solution.yaml
 
 3️⃣ Verify the service:
-   kubectl get service web-service -n devsecops-arena
+   kubectl get service web-service -n arena
    
    You should see:
    NAME          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
@@ -66,7 +66,7 @@ spec:
 
 4️⃣ Access the service:
    # Via port-forward (easiest for local testing)
-   kubectl port-forward -n devsecops-arena service/web-service 8080:80
+   kubectl port-forward -n arena service/web-service 8080:80
    # Then open: http://localhost:8080
    
    # Or via NodePort (if you can reach node IP)
@@ -150,7 +150,7 @@ ClusterIP:
 ✅ Apply this solution and your service will be accessible immediately!
 
 After applying, verify with:
-   kubectl get service web-service -n devsecops-arena
-   kubectl get endpoints web-service -n devsecops-arena
+   kubectl get service web-service -n arena
+   kubectl get endpoints web-service -n arena
 
 The service should show NodePort type with a port in range 30000-32767.

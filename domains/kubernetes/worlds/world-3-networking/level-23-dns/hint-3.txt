@@ -3,8 +3,8 @@
 Fix the client pod to use correct service name:
 
 ```bash
-kubectl delete pod app-client -n devsecops-arena
-kubectl apply -f solution.yaml -n devsecops-arena
+kubectl delete pod app-client -n arena
+kubectl apply -f solution.yaml -n arena
 ```
 
 Or edit broken.yaml and change:
@@ -23,5 +23,5 @@ args:
 
 Then recreate the pod. Check logs to verify connection success:
 ```bash
-kubectl logs app-client -n devsecops-arena
+kubectl logs app-client -n arena
 ```

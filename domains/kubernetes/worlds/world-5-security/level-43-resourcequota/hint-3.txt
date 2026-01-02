@@ -60,12 +60,12 @@ This allows:
 kubectl apply -f solution.yaml
 
 # Watch pod status
-kubectl get pod resource-hungry-app -n devsecops-arena --watch
+kubectl get pod resource-hungry-app -n arena --watch
 
 # Should transition: Pending → Running
 
 # Verify quota usage
-kubectl describe resourcequota compute-quota -n devsecops-arena
+kubectl describe resourcequota compute-quota -n arena
 ```
 
 You should see:
@@ -94,7 +94,7 @@ requests:
 
 ```bash
 # Check what pod actually uses
-kubectl top pod resource-hungry-app -n devsecops-arena
+kubectl top pod resource-hungry-app -n arena
 ```
 
 ### 3. Set Limits Higher Than Requests
@@ -168,16 +168,16 @@ requests:
 
 ```bash
 # Check pod is running
-kubectl get pod resource-hungry-app -n devsecops-arena
+kubectl get pod resource-hungry-app -n arena
 
 # Check resource requests
-kubectl describe pod resource-hungry-app -n devsecops-arena | grep -A 6 "Requests"
+kubectl describe pod resource-hungry-app -n arena | grep -A 6 "Requests"
 
 # Check quota usage
-kubectl describe resourcequota compute-quota -n devsecops-arena
+kubectl describe resourcequota compute-quota -n arena
 
 # Check actual usage (requires metrics-server)
-kubectl top pod resource-hungry-app -n devsecops-arena
+kubectl top pod resource-hungry-app -n arena
 ```
 
 ---

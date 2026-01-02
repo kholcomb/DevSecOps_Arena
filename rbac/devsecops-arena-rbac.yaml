@@ -3,18 +3,18 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: devsecops-arena-player
-  namespace: devsecops-arena
+  name: arena-player
+  namespace: arena
 
 ---
-# Role with permissions only in devsecops-arena namespace
+# Role with permissions only in arena namespace
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: devsecops-arena-player-role
-  namespace: devsecops-arena
+  name: arena-player-role
+  namespace: arena
 rules:
-  # Allow all operations on common resources within devsecops-arena namespace
+  # Allow all operations on common resources within arena namespace
   - apiGroups: [""]
     resources:
       - pods
@@ -62,15 +62,15 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: devsecops-arena-player-binding
-  namespace: devsecops-arena
+  name: arena-player-binding
+  namespace: arena
 subjects:
   - kind: ServiceAccount
-    name: devsecops-arena-player
-    namespace: devsecops-arena
+    name: arena-player
+    namespace: arena
 roleRef:
   kind: Role
-  name: devsecops-arena-player-role
+  name: arena-player-role
   apiGroup: rbac.authorization.k8s.io
 
 ---
@@ -79,7 +79,7 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: devsecops-arena-viewer
+  name: arena-viewer
 rules:
   # View nodes (for understanding cluster)
   - apiGroups: [""]
@@ -106,12 +106,12 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: devsecops-arena-viewer-binding
+  name: arena-viewer-binding
 subjects:
   - kind: ServiceAccount
-    name: devsecops-arena-player
-    namespace: devsecops-arena
+    name: arena-player
+    namespace: arena
 roleRef:
   kind: ClusterRole
-  name: devsecops-arena-viewer
+  name: arena-viewer
   apiGroup: rbac.authorization.k8s.io

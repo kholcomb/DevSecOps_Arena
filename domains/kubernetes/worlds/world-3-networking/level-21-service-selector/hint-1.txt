@@ -1,9 +1,9 @@
 🔍 Observation Hint:
 
-Check the service details: `kubectl describe svc backend-service -n devsecops-arena`
+Check the service details: `kubectl describe svc backend-service -n arena`
 
 Look at the "Endpoints" field. Is it empty? That means no pods match the service selector!
 
-Now check the pod labels: `kubectl get pod backend-pod -n devsecops-arena --show-labels`
+Now check the pod labels: `kubectl get pod backend-pod -n arena --show-labels`
 
 Compare the pod's labels with the service's selector.

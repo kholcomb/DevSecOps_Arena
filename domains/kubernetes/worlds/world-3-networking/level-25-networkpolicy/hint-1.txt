@@ -13,7 +13,7 @@ Check These Areas:
 1. **Frontend Pod Logs**
    Check what errors the frontend is seeing:
    ```bash
-   kubectl logs frontend -n devsecops-arena
+   kubectl logs frontend -n arena
    ```
 
    Look for:
@@ -24,7 +24,7 @@ Check These Areas:
 2. **NetworkPolicy Configuration**
    View the NetworkPolicy:
    ```bash
-   kubectl describe networkpolicy backend-network-policy -n devsecops-arena
+   kubectl describe networkpolicy backend-network-policy -n arena
    ```
 
    Look at:
@@ -35,7 +35,7 @@ Check These Areas:
 3. **Frontend Pod Labels**
    Check the frontend pod's labels:
    ```bash
-   kubectl get pod frontend -n devsecops-arena --show-labels
+   kubectl get pod frontend -n arena --show-labels
    ```
 
    What labels does the frontend have?

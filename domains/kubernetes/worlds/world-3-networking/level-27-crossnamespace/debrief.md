@@ -515,7 +515,7 @@ curl http://api.example.com    # Uses external DNS, not CoreDNS
 Every pod gets DNS configured via `/etc/resolv.conf`:
 
 ```bash
-kubectl exec frontend-app -n devsecops-arena -- cat /etc/resolv.conf
+kubectl exec frontend-app -n arena -- cat /etc/resolv.conf
 ```
 
 Output:
@@ -752,10 +752,10 @@ subjects:
 
 ```bash
 # From frontend pod
-kubectl exec frontend-app -n devsecops-arena -- nslookup api-service
+kubectl exec frontend-app -n arena -- nslookup api-service
 # Should fail: NXDOMAIN
 
-kubectl exec frontend-app -n devsecops-arena -- nslookup api-service.backend-ns.svc.cluster.local
+kubectl exec frontend-app -n arena -- nslookup api-service.backend-ns.svc.cluster.local
 # Should succeed: Returns ClusterIP
 ```
 
@@ -763,7 +763,7 @@ kubectl exec frontend-app -n devsecops-arena -- nslookup api-service.backend-ns.
 
 ```bash
 # View pod's DNS config
-kubectl exec frontend-app -n devsecops-arena -- cat /etc/resolv.conf
+kubectl exec frontend-app -n arena -- cat /etc/resolv.conf
 
 # Check CoreDNS is running
 kubectl get pods -n kube-system -l k8s-app=kube-dns
@@ -786,7 +786,7 @@ kubectl get endpoints api-service -n backend-ns
 SERVICE_IP=$(kubectl get service api-service -n backend-ns -o jsonpath='{.spec.clusterIP}')
 
 # Test direct IP connection
-kubectl exec frontend-app -n devsecops-arena -- wget -q -O- http://$SERVICE_IP
+kubectl exec frontend-app -n arena -- wget -q -O- http://$SERVICE_IP
 ```
 
 ### 5. Check CoreDNS Logs
@@ -806,7 +806,7 @@ kubectl logs -n kube-system -l k8s-app=kube-dns | grep NXDOMAIN
 kubectl get service kube-dns -n kube-system
 
 # Query from pod
-kubectl exec frontend-app -n devsecops-arena -- nslookup api-service.backend-ns.svc.cluster.local 10.96.0.10
+kubectl exec frontend-app -n arena -- nslookup api-service.backend-ns.svc.cluster.local 10.96.0.10
 ```
 
 ---

@@ -1,15 +1,15 @@
 🔍 Observation Hint:
 
 Check what resources exist:
-`kubectl get deployments,replicasets -n devsecops-arena`
+`kubectl get deployments,replicasets -n arena`
 
 Do you see a standalone ReplicaSet (web-app-rs) without a Deployment?
 
 Try to update the image:
-`kubectl set image replicaset/web-app-rs web=hashicorp/http-echo:latest -n devsecops-arena`
+`kubectl set image replicaset/web-app-rs web=hashicorp/http-echo:latest -n arena`
 
 Check the pods:
-`kubectl get pods -n devsecops-arena -l app=webapp`
+`kubectl get pods -n arena -l app=webapp`
 
 Did the update work? Spoiler: It updated the ReplicaSet spec, but the EXISTING pods didn't change!
 

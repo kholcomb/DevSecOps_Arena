@@ -48,20 +48,20 @@ selector:
 
 ### Step 1: Check Service Status
 ```bash
-kubectl get svc backend-service -n devsecops-arena
+kubectl get svc backend-service -n arena
 # Shows: Name, Type, ClusterIP, Port
 # But doesn't show if endpoints exist!
 ```
 
 ### Step 2: Check Endpoints (Critical!)
 ```bash
-kubectl get endpoints backend-service -n devsecops-arena
+kubectl get endpoints backend-service -n arena
 # Empty = No pods match the selector
 ```
 
 ### Step 3: Describe the Service
 ```bash
-kubectl describe svc backend-service -n devsecops-arena
+kubectl describe svc backend-service -n arena
 # Shows:
 # - Selector labels
 # - Endpoints (IPs of backing pods)
@@ -70,7 +70,7 @@ kubectl describe svc backend-service -n devsecops-arena
 
 ### Step 4: Compare with Pod Labels
 ```bash
-kubectl get pods -n devsecops-arena --show-labels
+kubectl get pods -n arena --show-labels
 # See actual labels on pods
 ```
 

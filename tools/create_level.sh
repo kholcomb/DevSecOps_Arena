@@ -63,7 +63,7 @@ cat > "$LEVEL_DIR/validate.sh" <<'EOF'
 #!/bin/bash
 
 # TODO: Add validation logic
-POD_STATUS=$(kubectl get pod example-pod -n devsecops-arena -o jsonpath='{.status.phase}' 2>/dev/null)
+POD_STATUS=$(kubectl get pod example-pod -n arena -o jsonpath='{.status.phase}' 2>/dev/null)
 
 if [ "$POD_STATUS" = "Running" ]; then
     echo "✅ Validation passed"
@@ -81,14 +81,14 @@ cat > "$LEVEL_DIR/hint-1.txt" <<EOF
 🔍 Observation Hint:
 
 TODO: Add observation hint
-Run: kubectl get pods -n devsecops-arena
+Run: kubectl get pods -n arena
 EOF
 
 cat > "$LEVEL_DIR/hint-2.txt" <<EOF
 🧭 Direction Hint:
 
 TODO: Add direction hint
-Check: kubectl describe pod <name> -n devsecops-arena
+Check: kubectl describe pod <name> -n arena
 EOF
 
 cat > "$LEVEL_DIR/hint-3.txt" <<EOF
@@ -125,7 +125,7 @@ TODO: Teach the concept properly
 
 \`\`\`bash
 # TODO: Add relevant commands
-kubectl get pods -n devsecops-arena
+kubectl get pods -n arena
 \`\`\`
 
 ## What's Next

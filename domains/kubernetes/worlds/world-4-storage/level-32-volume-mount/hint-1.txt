@@ -3,17 +3,17 @@
 Let's investigate why the pod is failing:
 
 1️⃣ Check pod status:
-   kubectl get pod web-app -n devsecops-arena
+   kubectl get pod web-app -n arena
    
    What's the STATUS? Is it Running or CrashLoopBackOff?
 
 2️⃣ Check pod logs:
-   kubectl logs web-app -n devsecops-arena
+   kubectl logs web-app -n arena
    
    What error message do you see?
 
 3️⃣ Check the pod specification:
-   kubectl get pod web-app -n devsecops-arena -o yaml | grep -A 5 volumeMounts
+   kubectl get pod web-app -n arena -o yaml | grep -A 5 volumeMounts
    
    Where is the volume mounted?
 

@@ -11,7 +11,7 @@ echo ""
 
 # Stage 1: Check if service exists
 echo "📋 Stage 1: Checking if service exists..."
-if ! kubectl get service web-service -n devsecops-arena &>/dev/null; then
+if ! kubectl get service web-service -n arena &>/dev/null; then
     echo -e "${RED}❌ Service 'web-service' not found in namespace 'arena'${NC}"
     echo ""
     echo "💡 The service might have been deleted. Make sure to apply your fixed configuration."
@@ -22,7 +22,7 @@ echo ""
 
 # Stage 2: Check service type
 echo "📋 Stage 2: Checking service type..."
-SERVICE_TYPE=$(kubectl get service web-service -n devsecops-arena -o jsonpath='{.spec.type}')
+SERVICE_TYPE=$(kubectl get service web-service -n arena -o jsonpath='{.spec.type}')
 
 if [ "$SERVICE_TYPE" == "LoadBalancer" ]; then
     echo -e "${RED}❌ Service is still type LoadBalancer${NC}"
@@ -52,7 +52,7 @@ echo ""
 echo "📋 Stage 3: Checking service accessibility..."
 
 # Get node port
-NODE_PORT=$(kubectl get service web-service -n devsecops-arena -o jsonpath='{.spec.ports[0].nodePort}')
+NODE_PORT=$(kubectl get service web-service -n arena -o jsonpath='{.spec.ports[0].nodePort}')
 if [ -z "$NODE_PORT" ]; then
     echo -e "${RED}❌ No nodePort assigned to service${NC}"
     echo ""
@@ -65,12 +65,12 @@ echo ""
 
 # Stage 4: Verify pod is running
 echo "📋 Stage 4: Checking if backend pod is running..."
-if ! kubectl get pod web-app -n devsecops-arena &>/dev/null; then
+if ! kubectl get pod web-app -n arena &>/dev/null; then
     echo -e "${RED}❌ Pod 'web-app' not found${NC}"
     exit 1
 fi
 
-POD_STATUS=$(kubectl get pod web-app -n devsecops-arena -o jsonpath='{.status.phase}')
+POD_STATUS=$(kubectl get pod web-app -n arena -o jsonpath='{.status.phase}')
 if [ "$POD_STATUS" != "Running" ]; then
     echo -e "${RED}❌ Pod is not running (status: $POD_STATUS)${NC}"
     exit 1
@@ -80,7 +80,7 @@ echo ""
 
 # Stage 5: Check service endpoints
 echo "📋 Stage 5: Verifying service endpoints..."
-ENDPOINTS=$(kubectl get endpoints web-service -n devsecops-arena -o jsonpath='{.subsets[*].addresses[*].ip}')
+ENDPOINTS=$(kubectl get endpoints web-service -n arena -o jsonpath='{.subsets[*].addresses[*].ip}')
 if [ -z "$ENDPOINTS" ]; then
     echo -e "${RED}❌ Service has no endpoints${NC}"
     echo ""
@@ -106,7 +106,7 @@ echo ""
 echo "🔗 Access the service:"
 echo "   From within cluster: http://web-service.arena.svc.cluster.local"
 echo "   From your machine: http://localhost:$NODE_PORT (if port-forwarded)"
-echo "   Via kubectl: kubectl port-forward -n devsecops-arena service/web-service 8080:80"
+echo "   Via kubectl: kubectl port-forward -n arena service/web-service 8080:80"
 echo ""
 echo "💡 NodePort vs LoadBalancer:"
 echo "   • NodePort: Exposes service on static port on each node (works everywhere)"

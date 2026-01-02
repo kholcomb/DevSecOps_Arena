@@ -3,24 +3,24 @@
 Let's investigate the Secret encoding issue:
 
 1️⃣ Check pod status:
-   kubectl get pod database-client -n devsecops-arena
-   kubectl describe pod database-client -n devsecops-arena
+   kubectl get pod database-client -n arena
+   kubectl describe pod database-client -n arena
    
    Is the pod Running or CrashLoopBackOff?
 
 2️⃣ Check pod logs:
-   kubectl logs database-client -n devsecops-arena
+   kubectl logs database-client -n arena
    
    What error do you see?
 
 3️⃣ Check the Secret:
-   kubectl get secret db-credentials -n devsecops-arena
-   kubectl get secret db-credentials -n devsecops-arena -o yaml
+   kubectl get secret db-credentials -n arena
+   kubectl get secret db-credentials -n arena -o yaml
    
    Look at the "data" section - does it look encoded?
 
 4️⃣ Try to decode the values:
-   kubectl get secret db-credentials -n devsecops-arena -o jsonpath='{.data.username}'
+   kubectl get secret db-credentials -n arena -o jsonpath='{.data.username}'
    echo "admin" | base64
    
    Do they match? Are the secret values base64 encoded?

@@ -75,7 +75,7 @@ spec:
    kubectl apply -f solution.yaml
 
 3️⃣ Watch the PVC bind:
-   kubectl get pvc -n devsecops-arena -w
+   kubectl get pvc -n arena -w
    
    You should see:
    NAME                 STATUS    VOLUME        CAPACITY   ACCESS MODES
@@ -83,14 +83,14 @@ spec:
    app-storage-claim    Bound     app-storage   5Gi        RWO
 
 4️⃣ Verify the pod starts:
-   kubectl get pod database-pod -n devsecops-arena
+   kubectl get pod database-pod -n arena
    
    Should show: STATUS = Running
 
 5️⃣ Test the volume mount:
-   kubectl exec database-pod -n devsecops-arena -- ls -la /data
-   kubectl exec database-pod -n devsecops-arena -- touch /data/test.txt
-   kubectl exec database-pod -n devsecops-arena -- ls /data
+   kubectl exec database-pod -n arena -- ls -la /data
+   kubectl exec database-pod -n arena -- touch /data/test.txt
+   kubectl exec database-pod -n arena -- ls /data
 
 📚 Understanding the Fix:
 
@@ -191,7 +191,7 @@ spec:
 
 **Check PVC status:**
 ```bash
-kubectl describe pvc app-storage-claim -n devsecops-arena
+kubectl describe pvc app-storage-claim -n arena
 ```
 
 **Look for events:**
@@ -210,7 +210,7 @@ kubectl get pv
 **Check PV and PVC specs match:**
 ```bash
 # Compare side by side
-kubectl get pvc app-storage-claim -n devsecops-arena -o yaml | grep -A 5 "spec:"
+kubectl get pvc app-storage-claim -n arena -o yaml | grep -A 5 "spec:"
 kubectl get pv app-storage -o yaml | grep -A 10 "spec:"
 ```
 
@@ -224,10 +224,10 @@ kubectl get pv app-storage -o yaml | grep -A 10 "spec:"
 ✅ Apply this solution and your PVC will bind immediately!
 
 After applying, watch the magic happen:
-   kubectl get pvc -n devsecops-arena -w
+   kubectl get pvc -n arena -w
    # STATUS changes: Pending → Bound
    
-   kubectl get pod database-pod -n devsecops-arena -w
+   kubectl get pod database-pod -n arena -w
    # STATUS changes: ContainerCreating → Running
 
 The key changes are just two lines in the PV:

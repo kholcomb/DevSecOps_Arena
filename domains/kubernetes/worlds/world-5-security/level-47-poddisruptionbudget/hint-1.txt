@@ -1,13 +1,13 @@
 # 💡 HINT 1: Check PDB Status
 
 ```bash
-kubectl get pdb web-pdb -n devsecops-arena
+kubectl get pdb web-pdb -n arena
 ```
 
 Look at `ALLOWED DISRUPTIONS` - if 0, drain is blocked.
 
 ```bash
-kubectl describe pdb web-pdb -n devsecops-arena
+kubectl describe pdb web-pdb -n arena
 ```
 
 Error: `minAvailable (3) > replicas (2)`

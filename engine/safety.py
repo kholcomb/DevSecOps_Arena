@@ -194,7 +194,7 @@ DevSecOps Arena protects you from dangerous operations:
 - PersistentVolume operations
 
 ## ✅ Best Practices:
-- Always use `-n devsecops-arena` namespace flag
+- Always use `-n arena` namespace flag
 - Avoid cluster-wide operations
 - Test changes before applying
 - Use `kubectl apply` instead of `kubectl create`

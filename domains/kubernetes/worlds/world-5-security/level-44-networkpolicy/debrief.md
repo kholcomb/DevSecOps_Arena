@@ -683,7 +683,7 @@ cilium monitor --type policy-verdict
 kubectl get networkpolicy --all-namespaces
 
 # Describe specific policy
-kubectl describe networkpolicy allow-backend -n devsecops-arena
+kubectl describe networkpolicy allow-backend -n arena
 ```
 
 ### Test Connectivity

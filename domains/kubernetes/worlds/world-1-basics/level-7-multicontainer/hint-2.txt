@@ -2,7 +2,7 @@
 
 The "log-sidecar" container is crashing. To see why:
 
-`kubectl logs app-with-logging -c log-sidecar -n devsecops-arena`
+`kubectl logs app-with-logging -c log-sidecar -n arena`
 
 The error shows that the file `/var/log/nonexistent.log` doesn't exist. The `tail -f` command fails immediately when the file is missing, causing the container to crash.
 

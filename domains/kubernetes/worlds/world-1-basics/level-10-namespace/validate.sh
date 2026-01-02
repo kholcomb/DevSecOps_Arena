@@ -3,8 +3,8 @@
 echo "🔍 Checking resource namespaces..."
 
 # Check if resources exist in arena namespace
-POD_EXISTS=$(kubectl get pod client-app -n devsecops-arena 2>/dev/null)
-SERVICE_EXISTS=$(kubectl get service backend-service -n devsecops-arena 2>/dev/null)
+POD_EXISTS=$(kubectl get pod client-app -n arena 2>/dev/null)
+SERVICE_EXISTS=$(kubectl get service backend-service -n arena 2>/dev/null)
 
 # Check if they're in wrong namespace
 POD_IN_DEFAULT=$(kubectl get pod client-app -n default 2>/dev/null)
@@ -20,7 +20,7 @@ else
     if [[ -n "$POD_IN_DEFAULT" ]] || [[ -n "$SERVICE_IN_DEFAULT" ]]; then
         echo "💡 Found resources in 'default' namespace - they should be in 'arena'"
     fi
-    echo "💡 Check: kubectl get all -n devsecops-arena"
+    echo "💡 Check: kubectl get all -n arena"
     echo "💡 Check: kubectl get all -n default"
     exit 1
 fi

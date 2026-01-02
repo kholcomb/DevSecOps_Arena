@@ -28,7 +28,7 @@ spec:
 ```bash
 kubectl delete -f broken.yaml
 kubectl apply -f solution.yaml
-kubectl get pods -n devsecops-arena -l app=web -w
+kubectl get pods -n arena -l app=web -w
 # Watch all 3 pods start successfully
 ```
 

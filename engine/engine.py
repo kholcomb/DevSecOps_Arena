@@ -514,17 +514,17 @@ class Arena:
         """Show helpful hints based on the level - DEPRECATED, use show_progressive_hints"""
         hints = {
             "level-1-pods": [
-                "Use `kubectl get pod nginx-broken -n devsecops-arena` to check status",
-                "Use `kubectl describe pod nginx-broken -n devsecops-arena` to see events",
-                "Use `kubectl logs nginx-broken -n devsecops-arena` to check logs",
+                "Use `kubectl get pod nginx-broken -n arena` to check status",
+                "Use `kubectl describe pod nginx-broken -n arena` to see events",
+                "Use `kubectl logs nginx-broken -n arena` to check logs",
                 "The pod has a bad command. Check what command is being run.",
                 "Remember: You can't edit a running pod - delete and recreate it!"
             ],
             "level-2-deployments": [
-                "Use `kubectl get deployment web -n devsecops-arena` to check status",
-                "Use `kubectl describe deployment web -n devsecops-arena` for details",
-                "Scale with `kubectl scale deployment web --replicas=N -n devsecops-arena`",
-                "Or edit with `kubectl edit deployment web -n devsecops-arena`"
+                "Use `kubectl get deployment web -n arena` to check status",
+                "Use `kubectl describe deployment web -n arena` for details",
+                "Scale with `kubectl scale deployment web --replicas=N -n arena`",
+                "Or edit with `kubectl edit deployment web -n arena`"
             ]
         }
         
@@ -609,8 +609,8 @@ The pod has a bad command `nginxzz` that doesn't exist.
 
 ### Step 1: Check what's wrong
 ```bash
-kubectl get pod nginx-broken -n devsecops-arena
-kubectl describe pod nginx-broken -n devsecops-arena
+kubectl get pod nginx-broken -n arena
+kubectl describe pod nginx-broken -n arena
 ```
 
 ### Step 2: View the solution
@@ -618,17 +618,17 @@ Look at the file: `worlds/world-1-basics/level-1-pods/solution.yaml`
 
 ### Step 3: Delete the broken pod
 ```bash
-kubectl delete pod nginx-broken -n devsecops-arena
+kubectl delete pod nginx-broken -n arena
 ```
 
 ### Step 4: Apply the fix
 ```bash
-kubectl apply -n devsecops-arena -f worlds/world-1-basics/level-1-pods/solution.yaml
+kubectl apply -n arena -f worlds/world-1-basics/level-1-pods/solution.yaml
 ```
 
 ### Step 5: Verify it's working
 ```bash
-kubectl get pod nginx-broken -n devsecops-arena
+kubectl get pod nginx-broken -n arena
 ```
 Look for "Running" status!
             """,
@@ -642,18 +642,18 @@ The deployment has 0 replicas, so no pods are running.
 
 ### Step 1: Check the deployment
 ```bash
-kubectl get deployment web -n devsecops-arena
+kubectl get deployment web -n arena
 ```
 
 ### Step 2: Scale up the replicas
 ```bash
-kubectl scale deployment web --replicas=2 -n devsecops-arena
+kubectl scale deployment web --replicas=2 -n arena
 ```
 
 ### Step 3: Verify it's working
 ```bash
-kubectl get deployment web -n devsecops-arena
-kubectl get pods -n devsecops-arena
+kubectl get deployment web -n arena
+kubectl get pods -n arena
 ```
 Look for "2/2" ready replicas!
             """

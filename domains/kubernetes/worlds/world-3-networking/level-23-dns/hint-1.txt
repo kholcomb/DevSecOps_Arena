@@ -1,9 +1,9 @@
 🔍 Observation Hint:
 
-Check the client pod logs: `kubectl logs app-client -n devsecops-arena`
+Check the client pod logs: `kubectl logs app-client -n arena`
 
 You'll see "Connection failed" repeating. The pod is trying to connect to hostname "database".
 
-But what's the actual SERVICE name? `kubectl get svc -n devsecops-arena`
+But what's the actual SERVICE name? `kubectl get svc -n arena`
 
 The service is named "database-service", not "database"!

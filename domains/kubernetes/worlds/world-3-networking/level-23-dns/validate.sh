@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if client pod can resolve service DNS
-LOGS=$(kubectl logs app-client -n devsecops-arena --tail=5 2>/dev/null)
+LOGS=$(kubectl logs app-client -n arena --tail=5 2>/dev/null)
 
 if echo "$LOGS" | grep -q "Connection successful"; then
   echo "✅ Level complete! DNS resolution working"

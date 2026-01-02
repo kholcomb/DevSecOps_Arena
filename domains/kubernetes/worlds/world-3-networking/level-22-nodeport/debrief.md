@@ -226,7 +226,7 @@ data:
 
 ### Check NodePort Assignment:
 ```bash
-kubectl get svc -n devsecops-arena
+kubectl get svc -n arena
 # Shows PORT(S) column: 80:30080/TCP
 #                          ↑    ↑
 #                      ClusterIP:NodePort

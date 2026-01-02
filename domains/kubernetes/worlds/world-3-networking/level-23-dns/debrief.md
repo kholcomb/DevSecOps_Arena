@@ -125,13 +125,13 @@ metadata:
 
 ### Test 1: Check Service Exists
 ```bash
-kubectl get svc -n devsecops-arena
+kubectl get svc -n arena
 # Verify service name exactly
 ```
 
 ### Test 2: DNS Resolution from Pod
 ```bash
-kubectl exec -it app-client -n devsecops-arena -- nslookup database-service
+kubectl exec -it app-client -n arena -- nslookup database-service
 
 # Expected output:
 # Server: 10.96.0.10
@@ -143,7 +143,7 @@ kubectl exec -it app-client -n devsecops-arena -- nslookup database-service
 
 ### Test 3: Full FQDN
 ```bash
-kubectl exec -it app-client -n devsecops-arena -- \
+kubectl exec -it app-client -n arena -- \
   nslookup database-service.arena.svc.cluster.local
 ```
 
@@ -155,7 +155,7 @@ kubectl get pods -n kube-system | grep coredns
 
 ### Test 5: Connectivity Test
 ```bash
-kubectl exec -it app-client -n devsecops-arena -- \
+kubectl exec -it app-client -n arena -- \
   curl http://database-service:5432
 ```
 

@@ -102,9 +102,9 @@ command: ['sh', '-c', 'wget -q -O- http://api-service.backend-ns.svc.cluster.loc
 
 Then apply:
 ```bash
-kubectl delete pod frontend-app -n devsecops-arena
+kubectl delete pod frontend-app -n arena
 kubectl apply -f broken.yaml
-kubectl logs frontend-app -n devsecops-arena -f
+kubectl logs frontend-app -n arena -f
 ```
 
 You should see "API Response from backend-ns" instead of DNS errors!
@@ -116,10 +116,10 @@ You can test DNS resolution manually:
 
 ```bash
 # Test short name (will fail)
-kubectl exec frontend-app -n devsecops-arena -- nslookup api-service
+kubectl exec frontend-app -n arena -- nslookup api-service
 
 # Test FQDN (will succeed)
-kubectl exec frontend-app -n devsecops-arena -- nslookup api-service.backend-ns.svc.cluster.local
+kubectl exec frontend-app -n arena -- nslookup api-service.backend-ns.svc.cluster.local
 ```
 
 The FQDN should return the service IP.

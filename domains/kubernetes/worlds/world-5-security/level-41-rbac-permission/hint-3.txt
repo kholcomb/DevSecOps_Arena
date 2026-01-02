@@ -36,7 +36,7 @@ subjects:
 ```bash
 kubectl delete -f broken.yaml
 kubectl apply -f solution.yaml
-kubectl logs pod-lister -n devsecops-arena
+kubectl logs pod-lister -n arena
 # Should show: "✅ Success! Can list pods"
 ```
 
@@ -44,7 +44,7 @@ kubectl logs pod-lister -n devsecops-arena
 ```bash
 kubectl auth can-i list pods \
   --as=system:serviceaccount:k8squest:pod-reader \
-  -n devsecops-arena
+  -n arena
 # Should output: yes
 ```
 

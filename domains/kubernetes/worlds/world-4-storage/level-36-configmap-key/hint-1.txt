@@ -3,19 +3,19 @@
 Let's find the missing ConfigMap key:
 
 1️⃣ Check pod status:
-   kubectl get pod web-app -n devsecops-arena
-   kubectl describe pod web-app -n devsecops-arena
+   kubectl get pod web-app -n arena
+   kubectl describe pod web-app -n arena
    
    Look at Events - what error do you see?
 
 2️⃣ Check the ConfigMap:
-   kubectl get configmap app-config -n devsecops-arena
-   kubectl describe configmap app-config -n devsecops-arena
+   kubectl get configmap app-config -n arena
+   kubectl describe configmap app-config -n arena
    
    What keys exist in the ConfigMap?
 
 3️⃣ Check what the pod is trying to use:
-   kubectl get pod web-app -n devsecops-arena -o yaml | grep -A 5 "configMapKeyRef"
+   kubectl get pod web-app -n arena -o yaml | grep -A 5 "configMapKeyRef"
    
    What keys is the pod requesting?
 

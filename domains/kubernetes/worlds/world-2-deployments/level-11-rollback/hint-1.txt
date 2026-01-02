@@ -1,9 +1,9 @@
 🔍 Observation Hint:
 
 Check the deployment status:
-`kubectl get deployment web-app -n devsecops-arena`
+`kubectl get deployment web-app -n arena`
 
 Look at the rollout status:
-`kubectl rollout status deployment/web-app -n devsecops-arena`
+`kubectl rollout status deployment/web-app -n arena`
 
 What do you notice about the READY column and the rollout status?

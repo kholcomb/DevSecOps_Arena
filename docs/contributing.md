@@ -273,10 +273,10 @@ Progressive hints that unlock gradually. Each should build on the previous.
 The pod is failing to start. Let's investigate:
 
 1. Check pod status:
-   kubectl get pod web-app -n devsecops-arena
+   kubectl get pod web-app -n arena
    
 2. Look for events:
-   kubectl describe pod web-app -n devsecops-arena
+   kubectl describe pod web-app -n arena
    
 3. Check for security-related errors in events
 

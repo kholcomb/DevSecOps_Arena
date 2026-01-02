@@ -11,7 +11,7 @@ for LEVEL in "$WORLD_DIR"/*; do
   kubectl delete namespace arena --ignore-not-found
   kubectl create namespace arena
 
-  kubectl apply -n devsecops-arena -f "$LEVEL/broken.yaml"
+  kubectl apply -n arena -f "$LEVEL/broken.yaml"
 
   echo "❌ Mission deployed. Fix the issue."
   echo "Press ENTER when ready to validate"

@@ -1,16 +1,16 @@
 🔍 Observation Hint:
 
 Check the HPA status:
-`kubectl get hpa -n devsecops-arena`
+`kubectl get hpa -n arena`
 
 Look at the TARGETS column. Do you see "<unknown>/50%"?
 
 Describe the HPA:
-`kubectl describe hpa web-backend-hpa -n devsecops-arena`
+`kubectl describe hpa web-backend-hpa -n arena`
 
 Look at the Conditions section. What error message do you see?
 
 Try getting pod metrics:
-`kubectl top pods -n devsecops-arena`
+`kubectl top pods -n arena`
 
 Does it work?

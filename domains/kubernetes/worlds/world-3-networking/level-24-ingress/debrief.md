@@ -427,10 +427,10 @@ Does NOT match:
 
 ```bash
 # View Ingress details
-kubectl describe ingress web-ingress -n devsecops-arena
+kubectl describe ingress web-ingress -n arena
 
 # Check path configuration
-kubectl get ingress web-ingress -n devsecops-arena -o yaml
+kubectl get ingress web-ingress -n arena -o yaml
 ```
 
 Look for:
@@ -484,13 +484,13 @@ Look for:
 
 ```bash
 # Check service exists
-kubectl get service web-service -n devsecops-arena
+kubectl get service web-service -n arena
 
 # Check service has endpoints
-kubectl get endpoints web-service -n devsecops-arena
+kubectl get endpoints web-service -n arena
 
 # Describe service
-kubectl describe service web-service -n devsecops-arena
+kubectl describe service web-service -n arena
 ```
 
 If endpoints are empty, the service selector might not match any pods.
@@ -499,7 +499,7 @@ If endpoints are empty, the service selector might not match any pods.
 
 ```bash
 # Port-forward to service
-kubectl port-forward -n devsecops-arena service/web-service 8080:80
+kubectl port-forward -n arena service/web-service 8080:80
 
 # Test in another terminal
 curl http://localhost:8080/

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Get replica counts
-STABLE=$(kubectl get deployment app-stable -n devsecops-arena -o jsonpath='{.status.readyReplicas}' 2>/dev/null)
-CANARY=$(kubectl get deployment app-canary -n devsecops-arena -o jsonpath='{.status.readyReplicas}' 2>/dev/null)
+STABLE=$(kubectl get deployment app-stable -n arena -o jsonpath='{.status.readyReplicas}' 2>/dev/null)
+CANARY=$(kubectl get deployment app-canary -n arena -o jsonpath='{.status.readyReplicas}' 2>/dev/null)
 
 TOTAL=$((STABLE + CANARY))
 if [ "$TOTAL" -eq 0 ]; then

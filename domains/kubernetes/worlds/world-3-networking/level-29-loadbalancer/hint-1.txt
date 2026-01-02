@@ -3,12 +3,12 @@
 Let's investigate why the service isn't accessible:
 
 1️⃣ Check the service status:
-   kubectl get service web-service -n devsecops-arena
+   kubectl get service web-service -n arena
    
    Notice the EXTERNAL-IP column - what do you see?
 
 2️⃣ Look for more details:
-   kubectl describe service web-service -n devsecops-arena
+   kubectl describe service web-service -n arena
    
    Pay attention to:
    • Type: LoadBalancer
@@ -16,7 +16,7 @@ Let's investigate why the service isn't accessible:
    • What does "pending" mean?
 
 3️⃣ Check the service type:
-   kubectl get service web-service -n devsecops-arena -o yaml | grep type:
+   kubectl get service web-service -n arena -o yaml | grep type:
    
    What type of service is this?
 
