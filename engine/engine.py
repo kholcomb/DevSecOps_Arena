@@ -138,15 +138,17 @@ def discover_domains(base_dir: Path) -> dict:
     return domains
 
 
-def select_domain(domains: dict):
+def select_domain(domains: dict, preselected_domain_id: str = None):
     """
     Select which domain to play.
 
+    If a domain_id is provided, use that directly.
     If only one domain exists, auto-select it.
     If multiple domains exist, show selection menu.
 
     Args:
         domains: Dict of available domains
+        preselected_domain_id: Optional domain ID to pre-select (e.g., 'kubernetes', 'web_security')
 
     Returns:
         Selected Domain instance
@@ -154,6 +156,17 @@ def select_domain(domains: dict):
     if len(domains) == 0:
         console.print("[red]Error: No domains found![/red]")
         sys.exit(1)
+
+    # If domain was pre-selected via command line
+    if preselected_domain_id:
+        if preselected_domain_id in domains:
+            selected_domain = domains[preselected_domain_id]
+            console.print(f"\n[green]✓ Using domain: {selected_domain.config.name}[/green]\n")
+            return selected_domain
+        else:
+            console.print(f"[red]Error: Domain '{preselected_domain_id}' not found![/red]")
+            console.print(f"[yellow]Available domains: {', '.join(domains.keys())}[/yellow]")
+            sys.exit(1)
 
     if len(domains) == 1:
         # Auto-select single domain (backward compatibility)
@@ -181,13 +194,13 @@ def select_domain(domains: dict):
 
 
 class Arena:
-    def __init__(self, enable_visualizer=True):
+    def __init__(self, enable_visualizer=True, domain=None):
         self.base_dir = Path(__file__).parent.parent
         self.progress_file = self.base_dir / "progress.json"
 
         # Discover and select domain
         self.domains = discover_domains(self.base_dir)
-        self.current_domain = select_domain(self.domains)
+        self.current_domain = select_domain(self.domains, preselected_domain_id=domain)
 
         # Load progress (will auto-migrate old format)
         self.progress = self.load_progress()
@@ -967,10 +980,12 @@ def main():
                         help='Disable visualization server for a more realistic terminal-only experience')
     parser.add_argument('--viz-port', type=int, default=8080,
                         help='Port for visualization server (default: 8080)')
+    parser.add_argument('--domain', type=str, default=None,
+                        help='Pre-select a domain (e.g., kubernetes, web_security)')
     args = parser.parse_args()
 
     # Create game instance
-    game = Arena(enable_visualizer=not args.no_viz)
+    game = Arena(enable_visualizer=not args.no_viz, domain=args.domain)
 
     # Store for cleanup
     import __main__

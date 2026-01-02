@@ -13,7 +13,7 @@ from urllib.parse import parse_qs, urlparse
 import os
 
 
-class DevSecOps ArenaVisualizerHandler(SimpleHTTPRequestHandler):
+class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
     """HTTP handler for DevSecOps Arena visualization server"""
 
     def __init__(self, *args, game_state_callback=None, **kwargs):
@@ -281,7 +281,7 @@ class VisualizationServer:
 
         # Create handler with game state callback
         def handler(*args, **kwargs):
-            return DevSecOps ArenaVisualizerHandler(
+            return DevSecOpsArenaVisualizerHandler(
                 *args,
                 game_state_callback=self.game_state_callback,
                 **kwargs
