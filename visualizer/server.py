@@ -16,10 +16,12 @@ import os
 class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
     """HTTP handler for DevSecOps Arena visualization server"""
 
-    def __init__(self, *args, game_state_callback=None, domain_visualizer=None, current_level_path=None, **kwargs):
+    def __init__(self, *args, game_state_callback=None, domain_visualizer=None, current_level_path=None, validator_callback=None, unlock_hint_callback=None, **kwargs):
         self.game_state_callback = game_state_callback
         self.domain_visualizer = domain_visualizer
         self.current_level_path = current_level_path
+        self.validator_callback = validator_callback
+        self.unlock_hint_callback = unlock_hint_callback
         super().__init__(*args, **kwargs)
 
     def do_GET(self):
@@ -40,6 +42,17 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
         else:
             # Serve static files
             super().do_GET()
+
+    def do_POST(self):
+        """Handle POST requests"""
+        parsed_path = urlparse(self.path)
+
+        if parsed_path.path == '/api/submit-flag':
+            self.handle_flag_submission()
+        elif parsed_path.path == '/api/unlock-hint':
+            self.handle_hint_unlock()
+        else:
+            self.send_error(404, "Not Found")
 
     def serve_cluster_state(self):
         """Serve current environment state and game progress"""
@@ -339,7 +352,7 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
             return 0
 
     def serve_hints(self):
-        """Serve hints for current level"""
+        """Serve hints for current level with lock status and costs"""
         try:
             level_path = None
             if self.current_level_path and callable(self.current_level_path):
@@ -353,22 +366,55 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({'hints': [], 'message': 'No level loaded'}).encode())
                 return
 
-            # Read hint files
+            # Get game state to check unlocked hints
+            game_state = {}
+            if self.game_state_callback and callable(self.game_state_callback):
+                game_state = self.game_state_callback()
+
+            unlocked_hints = game_state.get('unlocked_hints', {})
+            level_name = level_path.name
+            level_unlocked = unlocked_hints.get(level_name, [])
+
+            # Read mission.yaml to get hint costs
+            import yaml
+            mission_file = level_path / "mission.yaml"
+            hint_costs = {}
+            if mission_file.exists():
+                with open(mission_file, 'r') as f:
+                    mission_data = yaml.safe_load(f)
+                    hint_costs = mission_data.get('hints_cost', {})
+
+            # Read hint files with lock status
             hints = []
             for i in range(1, 4):
                 hint_file = level_path / f"hint-{i}.txt"
                 if hint_file.exists():
-                    with open(hint_file, 'r') as f:
-                        hints.append({
-                            'number': i,
-                            'content': f.read().strip()
-                        })
+                    is_unlocked = i in level_unlocked
+                    cost = hint_costs.get(f'hint_{i}', 0)
+
+                    hint_data = {
+                        'number': i,
+                        'locked': not is_unlocked,
+                        'cost': cost
+                    }
+
+                    # Only include content if unlocked
+                    if is_unlocked:
+                        with open(hint_file, 'r') as f:
+                            hint_data['content'] = f.read().strip()
+                    else:
+                        hint_data['content'] = None
+
+                    hints.append(hint_data)
 
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
-            self.wfile.write(json.dumps({'hints': hints}).encode())
+            self.wfile.write(json.dumps({
+                'hints': hints,
+                'current_xp': game_state.get('total_xp', 0)
+            }).encode())
 
         except Exception as e:
             self.send_error(500, f"Error getting hints: {str(e)}")
@@ -471,6 +517,148 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
         except Exception as e:
             self.send_error(500, f"Error getting debrief: {str(e)}")
 
+    def handle_flag_submission(self):
+        """Handle flag submission from visualizer"""
+        try:
+            # Read request body
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length).decode('utf-8')
+            data = json.loads(body)
+
+            flag = data.get('flag', '').strip()
+
+            if not flag:
+                self.send_response(400)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'success': False,
+                    'message': 'No flag provided'
+                }).encode())
+                return
+
+            # Get current level path
+            level_path = None
+            if self.current_level_path and callable(self.current_level_path):
+                level_path = self.current_level_path()
+
+            if not level_path:
+                self.send_response(400)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'success': False,
+                    'message': 'No level loaded. Start a challenge first!'
+                }).encode())
+                return
+
+            # Validate flag using validator callback
+            if not self.validator_callback or not callable(self.validator_callback):
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'success': False,
+                    'message': 'Validator not available'
+                }).encode())
+                return
+
+            # Call validator with flag
+            success, message = self.validator_callback(level_path, flag)
+
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'success': success,
+                'message': message
+            }).encode())
+
+        except json.JSONDecodeError:
+            self.send_error(400, "Invalid JSON")
+        except Exception as e:
+            self.send_error(500, f"Error validating flag: {str(e)}")
+
+    def handle_hint_unlock(self):
+        """Handle hint unlock request from visualizer"""
+        try:
+            # Read request body
+            content_length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(content_length).decode('utf-8')
+            data = json.loads(body)
+
+            hint_number = data.get('hint_number')
+
+            if not hint_number:
+                self.send_response(400)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'success': False,
+                    'message': 'No hint number provided'
+                }).encode())
+                return
+
+            # Get current level path
+            level_path = None
+            if self.current_level_path and callable(self.current_level_path):
+                level_path = self.current_level_path()
+
+            if not level_path:
+                self.send_response(400)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'success': False,
+                    'message': 'No level loaded. Start a challenge first!'
+                }).encode())
+                return
+
+            # Unlock hint using callback
+            if not self.unlock_hint_callback or not callable(self.unlock_hint_callback):
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    'success': False,
+                    'message': 'Unlock callback not available'
+                }).encode())
+                return
+
+            # Call unlock callback
+            success, message, cost = self.unlock_hint_callback(level_path, hint_number)
+
+            # Read hint content if successful
+            hint_content = None
+            if success:
+                hint_file = level_path / f"hint-{hint_number}.txt"
+                if hint_file.exists():
+                    with open(hint_file, 'r') as f:
+                        hint_content = f.read().strip()
+
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({
+                'success': success,
+                'message': message,
+                'hint_content': hint_content,
+                'cost': cost
+            }).encode())
+
+        except json.JSONDecodeError:
+            self.send_error(400, "Invalid JSON")
+        except Exception as e:
+            self.send_error(500, f"Error unlocking hint: {str(e)}")
+
     def _extract_world_number(self, world_str):
         """Extract world number from world name like 'world-1-basics' -> 1"""
         import re
@@ -523,11 +711,13 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
 class VisualizationServer:
     """DevSecOps Arena visualization server manager"""
 
-    def __init__(self, port=8080, game_state_callback=None, domain_visualizer=None, current_level_path_callback=None, verbose=False):
+    def __init__(self, port=8080, game_state_callback=None, domain_visualizer=None, current_level_path_callback=None, validator_callback=None, unlock_hint_callback=None, verbose=False):
         self.port = port
         self.game_state_callback = game_state_callback
         self.domain_visualizer = domain_visualizer
         self.current_level_path_callback = current_level_path_callback
+        self.validator_callback = validator_callback
+        self.unlock_hint_callback = unlock_hint_callback
         self.verbose = verbose
         self.server = None
         self.thread = None
@@ -548,6 +738,8 @@ class VisualizationServer:
                 game_state_callback=self.game_state_callback,
                 domain_visualizer=self.domain_visualizer,
                 current_level_path=self.current_level_path_callback,
+                validator_callback=self.validator_callback,
+                unlock_hint_callback=self.unlock_hint_callback,
                 **kwargs
             )
 

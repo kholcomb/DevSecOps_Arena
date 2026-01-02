@@ -31,12 +31,13 @@ class ChallengeValidator(ABC):
         self.config = domain_config
 
     @abstractmethod
-    def validate(self, level_path: Path) -> tuple[bool, str]:
+    def validate(self, level_path: Path, flag: str = None) -> tuple[bool, str]:
         """
         Validate the challenge solution.
 
         Args:
             level_path: Path to the level directory
+            flag: Optional flag for web security challenges
 
         Returns:
             tuple[bool, str]: (is_valid, message)
@@ -46,6 +47,8 @@ class ChallengeValidator(ABC):
         Example:
             >>> validator.validate(Path("domains/kubernetes/worlds/world-1/level-1"))
             (True, "✅ Pod is running correctly")
+            >>> validator.validate(Path("domains/web_security/worlds/world-1/level-1"), "ARENA{flag}")
+            (True, "✅ Correct flag!")
         """
         raise NotImplementedError("Subclass must implement validate()")
 
@@ -77,12 +80,13 @@ class BashScriptValidator(ChallengeValidator):
     This is the standard validator used by most domains.
     """
 
-    def validate(self, level_path: Path) -> tuple[bool, str]:
+    def validate(self, level_path: Path, flag: str = None) -> tuple[bool, str]:
         """
         Execute validate.sh script and return results.
 
         Args:
             level_path: Path to the level directory
+            flag: Optional flag to pass as argument to validation script
 
         Returns:
             tuple[bool, str]: (success, output_message)
@@ -96,8 +100,13 @@ class BashScriptValidator(ChallengeValidator):
             return False, f"❌ Validation script is not a file: {validate_script}"
 
         try:
+            # Build command - include flag as argument if provided
+            cmd = ["bash", str(validate_script)]
+            if flag:
+                cmd.append(flag)
+
             result = subprocess.run(
-                ["bash", str(validate_script)],
+                cmd,
                 capture_output=True,
                 text=True,
                 timeout=30,

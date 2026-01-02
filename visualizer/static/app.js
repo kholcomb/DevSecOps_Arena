@@ -233,18 +233,22 @@ async function fetchLevelDiagram() {
 function updateUI(data) {
     // Update game info
     const game = data.game || {};
-    const currentLevel = game.current_level || 'Level 1';
+    const currentLevel = game.current_level;
+    const displayLevel = currentLevel || 'No level loaded';
     document.getElementById('world-level').textContent =
-        `${game.current_world || 'World 1'} - ${currentLevel}`;
+        `${game.current_world || 'World 1'} - ${displayLevel}`;
     document.getElementById('xp-display').textContent =
         `${game.total_xp || 0} XP`;
 
     // Reload hints/solution/debrief when level changes
-    if (currentLevel && currentLevel !== 'Level 1' && currentLevel !== window.lastLoadedLevel) {
+    if (currentLevel !== window.lastLoadedLevel) {
         window.lastLoadedLevel = currentLevel;
-        fetchHints();
-        fetchSolution();
-        fetchDebrief();
+        // Only fetch if we have an actual level (not null/undefined)
+        if (currentLevel && typeof currentLevel === 'string' && currentLevel.includes('level-')) {
+            fetchHints();
+            fetchSolution();
+            fetchDebrief();
+        }
     }
 
     // Update page title and header with domain name
@@ -1358,7 +1362,7 @@ class Tooltip {
 // ============================================
 
 let hintsVisible = true;
-let currentTab = 'hints';
+let currentTab = 'submit';
 
 /**
  * Initialize hints panel
@@ -1390,6 +1394,22 @@ function initHintsPanel() {
             switchTab(tab);
         });
     });
+
+    // Set up flag submission
+    const submitBtn = document.getElementById('submit-flag-btn');
+    const flagInput = document.getElementById('flag-input');
+
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => submitFlag());
+    }
+
+    if (flagInput) {
+        flagInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitFlag();
+            }
+        });
+    }
 
     fetchHints();
     fetchSolution();
@@ -1489,4 +1509,77 @@ async function fetchDebrief() {
         console.error('Error fetching debrief:', error);
         document.getElementById('debrief-content').textContent = 'Error loading debrief';
     }
+}
+
+/**
+ * Submit flag for validation
+ */
+async function submitFlag() {
+    const flagInput = document.getElementById('flag-input');
+    const submitBtn = document.getElementById('submit-flag-btn');
+    const resultDiv = document.getElementById('flag-result');
+
+    const flag = flagInput.value.trim();
+
+    if (!flag) {
+        showFlagResult('error', '❌ Please enter a flag');
+        return;
+    }
+
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Validating...';
+    showFlagResult('validating', '🔍 Checking your flag...');
+
+    try {
+        const response = await fetch('/api/submit-flag', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ flag: flag })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showFlagResult('success', `✅ ${data.message || 'Correct flag! Challenge completed!'}`);
+            flagInput.value = '';
+
+            // Refresh game state to show updated XP
+            setTimeout(() => {
+                fetchClusterState();
+            }, 1000);
+        } else {
+            showFlagResult('error', `❌ ${data.message || 'Incorrect flag. Try again!'}`);
+        }
+    } catch (error) {
+        console.error('Error submitting flag:', error);
+        showFlagResult('error', '❌ Error submitting flag. Please try again.');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Flag';
+    }
+}
+
+/**
+ * Show flag validation result
+ */
+function showFlagResult(type, message) {
+    const resultDiv = document.getElementById('flag-result');
+    resultDiv.className = `flag-result ${type} show`;
+
+    // Use safe DOM methods instead of innerHTML
+    resultDiv.textContent = '';
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'flag-result-message';
+    messageDiv.textContent = message;
+    resultDiv.appendChild(messageDiv);
+
+    // Auto-hide after 5 seconds for validating messages
+    if (type === 'validating') {
+        return;
+    }
+
+    // Keep success/error messages visible
 }

@@ -98,13 +98,26 @@
                 <div class="hints-content" id="hints-content">
                     <!-- Tabs -->
                     <div class="hints-tabs">
-                        <button class="tab-button active" data-tab="hints">Hints</button>
+                        <button class="tab-button active" data-tab="submit">Submit Flag</button>
+                        <button class="tab-button" data-tab="hints">Hints</button>
                         <button class="tab-button" data-tab="solution">Solution</button>
                         <button class="tab-button" data-tab="debrief">Debrief</button>
                     </div>
 
+                    <!-- Submit Flag Tab -->
+                    <div class="tab-content active" id="tab-submit">
+                        <div class="flag-submission">
+                            <div class="flag-form">
+                                <label for="flag-input">Enter the flag you discovered:</label>
+                                <input type="text" id="flag-input" placeholder="ARENA{...}" autocomplete="off" />
+                                <button id="submit-flag-btn" class="submit-btn">Submit Flag</button>
+                            </div>
+                            <div id="flag-result" class="flag-result"></div>
+                        </div>
+                    </div>
+
                     <!-- Hints Tab -->
-                    <div class="tab-content active" id="tab-hints">
+                    <div class="tab-content" id="tab-hints">
                         <div id="hints-list">
                             <p class="loading">Loading hints...</p>
                         </div>

@@ -209,6 +209,7 @@ class Arena:
         self.current_level_path = None
         self.deployed_level_path = None  # Track deployed level for cleanup
         self.visualizer = None
+        self.level_completed_externally = False  # Flag for visualizer completion
         self.enable_visualizer = enable_visualizer and VISUALIZER_ENABLED
         
     def load_progress(self):
@@ -258,12 +259,15 @@ class Arena:
                         "total_xp": 0,
                         "completed_levels": [],
                         "current_world": self.current_domain.config.worlds[0] if self.current_domain.config.worlds else "world-1-basics",
-                        "current_level": None
+                        "current_level": None,
+                        "unlocked_hints": {}
                     }
 
-                # Ensure current_level exists for resume functionality
+                # Ensure current_level and unlocked_hints exist for resume functionality
                 if "current_level" not in progress["domains"][domain_id]:
                     progress["domains"][domain_id]["current_level"] = None
+                if "unlocked_hints" not in progress["domains"][domain_id]:
+                    progress["domains"][domain_id]["unlocked_hints"] = {}
 
                 return progress
 
@@ -275,7 +279,8 @@ class Arena:
                     "total_xp": 0,
                     "completed_levels": [],
                     "current_world": self.current_domain.config.worlds[0] if self.current_domain.config.worlds else "world-1-basics",
-                    "current_level": None
+                    "current_level": None,
+                    "unlocked_hints": {}
                 }
             }
         }
@@ -321,6 +326,7 @@ class Arena:
             'completed_levels': self.domain_progress.get('completed_levels', []),
             'current_world': self.domain_progress.get('current_world', 'world-1-basics'),
             'current_level': self.domain_progress.get('current_level'),
+            'unlocked_hints': self.domain_progress.get('unlocked_hints', {}),
             'player_name': self.progress.get('player_name', 'Padawan'),
             'current_mission': self.current_mission.get('name', '') if self.current_mission else None,
             'current_domain': self.current_domain.config.id
@@ -329,6 +335,72 @@ class Arena:
     def get_current_level_path(self):
         """Get path to current level directory for domain visualizer"""
         return self.current_level_path
+
+    def validate_flag(self, level_path, flag):
+        """Validator callback for visualizer flag submission"""
+        if not self.current_domain or not self.current_domain.validator:
+            return False, "❌ No validator available"
+
+        try:
+            success, message = self.current_domain.validator.validate(level_path, flag)
+
+            # If validation succeeds, update game state
+            if success and self.current_mission:
+                level_name = level_path.name
+
+                # Award XP if not already completed
+                if level_name not in self.domain_progress["completed_levels"]:
+                    xp_earned = self.current_mission.get("xp", 0)
+                    self.domain_progress["total_xp"] += xp_earned
+
+                    # Mark as completed
+                    self.domain_progress["completed_levels"].append(level_name)
+
+                    # Save progress
+                    self.save_progress()
+
+                    # Set flag for CLI to detect
+                    self.level_completed_externally = True
+
+                    # Include XP in success message
+                    message = f"{message}\n\n🌟 +{xp_earned} XP! Total: {self.domain_progress['total_xp']} XP"
+
+            return success, message
+        except Exception as e:
+            return False, f"❌ Validation error: {str(e)}"
+
+    def unlock_hint(self, level_path, hint_number):
+        """Unlock a hint for the current level (called from visualizer or CLI)"""
+        if not self.current_mission:
+            return False, "❌ No level loaded", 0
+
+        level_name = level_path.name
+
+        # Get hint cost from mission config
+        hint_costs = self.current_mission.get('hints_cost', {})
+        hint_key = f'hint_{hint_number}'
+        cost = hint_costs.get(hint_key, 0)
+
+        # Check if already unlocked
+        if level_name not in self.domain_progress['unlocked_hints']:
+            self.domain_progress['unlocked_hints'][level_name] = []
+
+        if hint_number in self.domain_progress['unlocked_hints'][level_name]:
+            return True, "✅ Hint already unlocked", cost
+
+        # Check if player has enough XP
+        if cost > 0 and self.domain_progress['total_xp'] < cost:
+            return False, f"❌ Not enough XP! Need {cost} XP, have {self.domain_progress['total_xp']} XP", cost
+
+        # Deduct XP and unlock hint
+        self.domain_progress['total_xp'] -= cost
+        self.domain_progress['unlocked_hints'][level_name].append(hint_number)
+        self.save_progress()
+
+        if cost > 0:
+            return True, f"✅ Hint unlocked! (Cost: {cost} XP, Remaining: {self.domain_progress['total_xp']} XP)", cost
+        else:
+            return True, "✅ Hint unlocked!", cost
 
     def start_visualizer(self, port=8080):
         """Start the visualization server"""
@@ -341,6 +413,7 @@ class Arena:
                 game_state_callback=self.get_game_state,
                 domain_visualizer=self.current_domain.visualizer,
                 current_level_path_callback=self.get_current_level_path,
+                validator_callback=self.validate_flag,
                 verbose=False
             )
             url = self.visualizer.start()
@@ -655,8 +728,9 @@ class Arena:
                 "1️⃣  Open your web browser\n"
                 "2️⃣  Navigate to the vulnerable application URL shown above\n"
                 "3️⃣  Exploit the vulnerability to extract the flag\n"
-                "4️⃣  Come back here and choose 'validate' to submit your solution\n\n"
-                "[dim]💡 Tip: Check the visualizer at http://localhost:8080 for direct links[/dim]"
+                "4️⃣  Submit via visualizer (http://localhost:8080) OR come back here and choose 'validate'\n\n"
+                "[dim]💡 Tip: You can submit flags directly in the visualizer's 'Submit Flag' tab![/dim]\n"
+                "[dim]   After submitting in the visualizer, press Enter here to continue.[/dim]"
             )
 
         instructions = Panel(
@@ -668,23 +742,23 @@ class Arena:
         console.print(instructions)
         console.print()
     
-    def monitor_status(self, level_name, duration=10):
+    def monitor_status(self, level_path, level_name, duration=10):
         """Monitor resource status in real-time"""
-        console.print(f"\n[yellow]👀 Monitoring status for {duration} seconds...[/yellow]\n")
-        
+        console.print(f"\n[yellow]👀 Monitoring challenge status for {duration} seconds...[/yellow]\n")
+
         status_table = Table(box=box.SIMPLE, show_header=True, header_style="bold cyan")
         status_table.add_column("Time", style="dim")
         status_table.add_column("Status", style="yellow")
-        
+
         with Live(status_table, refresh_per_second=2, console=console) as live:
             for i in range(duration):
-                status = self.get_resource_status(level_name)
+                status = self.get_resource_status(level_name, level_path)
                 status_table.add_row(
                     datetime.now().strftime("%H:%M:%S"),
                     status
                 )
                 time.sleep(1)
-        
+
         console.print()
     
     def show_step_by_step_guide(self, level_name):
@@ -820,8 +894,13 @@ Look for "2/2" ready replicas!
         """Validate solution using domain validator"""
         console.print("\n[yellow]🔍 Validating your solution...[/yellow]\n")
 
+        # For web security domains, prompt for flag input
+        flag = None
+        if self.current_domain.config.id in ['web_security', 'container_security']:
+            flag = Prompt.ask("🚩 Enter the flag you discovered")
+
         # Use domain validator
-        success, message = self.current_domain.validator.validate(level_path)
+        success, message = self.current_domain.validator.validate(level_path, flag)
 
         if success:
             # Success!
@@ -934,16 +1013,30 @@ Look for "2/2" ready replicas!
                 console.print("="*60)
             
             console.print()
-            
+
+            # Check if level was completed externally (via visualizer)
+            if self.level_completed_externally:
+                self.level_completed_externally = False  # Reset flag
+                console.print("\n[bold green]🎉 LEVEL COMPLETED VIA VISUALIZER! 🎉[/bold green]")
+                console.print(f"[yellow]🌟 +{self.current_mission.get('xp', 0)} XP! Total: {self.domain_progress['total_xp']} XP[/yellow]\n")
+
+                # Show debrief
+                self.show_debrief(level_path)
+
+                if Confirm.ask("Ready for the next challenge?", default=True):
+                    return True
+                else:
+                    return False
+
             action = Prompt.ask(
                 "⚔️  Choose your action",
                 choices=["check", "guide", "hints", "solution", "validate", "skip", "quit"],
                 default="check"
             )
-            
+
             if action == "check":
                 # Real-time status monitoring
-                self.monitor_status(level_name, duration=10)
+                self.monitor_status(level_path, level_name, duration=10)
                 
             elif action == "guide":
                 if RETRO_UI_ENABLED:

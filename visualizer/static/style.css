@@ -1168,3 +1168,119 @@ h3 {
     max-height: 40vh;
   }
 }
+
+/* ============================================
+   Flag Submission Styles
+   ============================================ */
+.flag-submission {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.flag-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: 6px;
+  padding: 1.5rem;
+}
+
+.flag-form label {
+  color: var(--text-primary);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+#flag-input {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  border-radius: 4px;
+  padding: 0.75rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+#flag-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
+#flag-input::placeholder {
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+.submit-btn {
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submit-btn:hover {
+  background: #4a93e0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(88, 166, 255, 0.3);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.submit-btn:disabled {
+  background: var(--border-medium);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.flag-result {
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  display: none;
+}
+
+.flag-result.show {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+.flag-result.success {
+  background: var(--status-success-bg);
+  border: 1px solid var(--status-success);
+  color: var(--status-success);
+}
+
+.flag-result.error {
+  background: var(--status-error-bg);
+  border: 1px solid var(--status-error);
+  color: var(--status-error);
+}
+
+.flag-result.validating {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+}
+
+.flag-result-icon {
+  font-size: 1.2rem;
+  margin-right: 0.5rem;
+}
+
+.flag-result-message {
+  font-weight: 500;
+}
