@@ -17,7 +17,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: shared-pvc
-  namespace: k8squest
+  namespace: arena
 spec:
   accessModes:
     - ReadWriteOnce  # ❌ Matches PV but wrong for multiple pods!
@@ -30,7 +30,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web-servers
-  namespace: k8squest
+  namespace: arena
 spec:
   replicas: 3  # Want 3 pods, but only 1 can mount the volume!
   selector:

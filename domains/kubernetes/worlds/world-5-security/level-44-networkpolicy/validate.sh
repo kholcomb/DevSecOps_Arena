@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE="k8squest"
+NAMESPACE="arena"
 DB_POD="database"
 BACKEND_POD="backend"
 

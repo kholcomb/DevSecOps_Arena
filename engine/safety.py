@@ -20,10 +20,10 @@ DANGEROUS_PATTERNS = [
         "message": "🚨 BLOCKED: Cannot delete critical system namespaces!",
         "severity": "critical"
     },
-    # Deleting k8squest namespace (warn)
+    # Deleting arena namespace (warn)
     {
-        "pattern": r"kubectl\s+delete\s+namespace\s+k8squest",
-        "message": "⚠️  WARNING: This will delete the entire k8squest namespace and all your work!",
+        "pattern": r"kubectl\s+delete\s+namespace\s+arena",
+        "message": "⚠️  WARNING: This will delete the entire arena namespace and all your work!",
         "severity": "warning"
     },
     # Deleting nodes
@@ -65,7 +65,7 @@ DANGEROUS_PATTERNS = [
 ]
 
 # Namespaces that should be used in DevSecOps Arena
-ALLOWED_NAMESPACES = ["k8squest", "default"]
+ALLOWED_NAMESPACES = ["arena", "default"]
 
 # Commands that require confirmation
 RISKY_COMMANDS = [
@@ -100,7 +100,7 @@ def check_command_safety(command: str) -> tuple[bool, str, str]:
             if namespace not in ALLOWED_NAMESPACES:
                 return (
                     False,
-                    f"⚠️  WARNING: DevSecOps Arena should use namespace 'k8squest', not '{namespace}'",
+                    f"⚠️  WARNING: DevSecOps Arena should use namespace 'arena', not '{namespace}'",
                     "warning"
                 )
     
@@ -137,7 +137,7 @@ def validate_kubectl_command(command: str, interactive: bool = True) -> bool:
             console.print(Panel(
                 f"[bold red]{message}[/bold red]\n\n"
                 "[yellow]This command is blocked for your safety.[/yellow]\n"
-                "[dim]DevSecOps Arena limits operations to the 'k8squest' namespace.[/dim]",
+                "[dim]DevSecOps Arena limits operations to the 'arena' namespace.[/dim]",
                 title="[bold red]⛔ Safety Guard Activated[/bold red]",
                 border_style="red"
             ))

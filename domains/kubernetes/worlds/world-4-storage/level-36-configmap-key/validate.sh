@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE="k8squest"
+NAMESPACE="arena"
 CONFIGMAP="app-config"
 POD_NAME="web-app"
 

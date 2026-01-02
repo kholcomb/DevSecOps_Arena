@@ -30,21 +30,21 @@ def reset_level(world, level):
     # Delete namespace (clean slate)
     console.print("1️⃣  Deleting namespace...")
     subprocess.run(
-        ["kubectl", "delete", "namespace", "k8squest", "--ignore-not-found"],
+        ["kubectl", "delete", "namespace", "arena", "--ignore-not-found"],
         capture_output=True
     )
     
     # Recreate namespace
     console.print("2️⃣  Creating fresh namespace...")
     subprocess.run(
-        ["kubectl", "create", "namespace", "k8squest"],
+        ["kubectl", "create", "namespace", "arena"],
         capture_output=True
     )
     
     # Apply broken state
     console.print("3️⃣  Deploying broken resources...")
     result = subprocess.run(
-        ["kubectl", "apply", "-n", "k8squest", "-f", str(broken_file)],
+        ["kubectl", "apply", "-n", "arena", "-f", str(broken_file)],
         capture_output=True,
         text=True
     )
@@ -68,7 +68,7 @@ def reset_all():
     # Delete namespace
     console.print("\n[yellow]Cleaning up...[/yellow]")
     subprocess.run(
-        ["kubectl", "delete", "namespace", "k8squest", "--ignore-not-found"],
+        ["kubectl", "delete", "namespace", "arena", "--ignore-not-found"],
         capture_output=True
     )
     

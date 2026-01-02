@@ -428,7 +428,7 @@ kubectl describe resourcequota compute-quota -n devsecops-arena
 Output:
 ```
 Name:            compute-quota
-Namespace:       k8squest
+Namespace:       arena
 Resource         Used  Hard
 --------         ----  ----
 limits.cpu       1     4

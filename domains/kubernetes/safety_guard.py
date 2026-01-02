@@ -31,13 +31,13 @@ class K8sSafetyGuard(SafetyGuard):
     - Deleting cluster nodes
     - Cluster-wide deletions (--all-namespaces)
     - Deleting CRDs and cluster-level RBAC
-    - Operations outside k8squest namespace
+    - Operations outside arena namespace
     """
 
     def __init__(self, domain_config: Dict[str, Any]):
         """Initialize K8s safety guard"""
         super().__init__(domain_config)
-        self.allowed_namespaces = ["k8squest", "default"]
+        self.allowed_namespaces = ["arena", "default"]
 
     def get_dangerous_patterns(self) -> List[SafetyPattern]:
         """
@@ -52,13 +52,13 @@ class K8sSafetyGuard(SafetyGuard):
                 pattern=r"kubectl\s+delete\s+namespace\s+(kube-system|kube-public|kube-node-lease|default)",
                 message="🚨 BLOCKED: Cannot delete critical system namespaces!",
                 severity=SafetySeverity.CRITICAL,
-                suggestion="Work in the k8squest namespace instead"
+                suggestion="Work in the arena namespace instead"
             ),
 
-            # Warning - k8squest namespace
+            # Warning - arena namespace
             SafetyPattern(
-                pattern=r"kubectl\s+delete\s+namespace\s+k8squest",
-                message="⚠️  WARNING: This will delete the entire k8squest namespace and all your work!",
+                pattern=r"kubectl\s+delete\s+namespace\s+arena",
+                message="⚠️  WARNING: This will delete the entire arena namespace and all your work!",
                 severity=SafetySeverity.WARNING,
                 suggestion="Delete individual resources instead"
             ),
@@ -140,7 +140,7 @@ class K8sSafetyGuard(SafetyGuard):
                         console.print(Panel(
                             f"[bold red]{pattern_obj.message}[/bold red]\n\n"
                             "[yellow]This command is blocked for your safety.[/yellow]\n"
-                            "[dim]DevSecOps Arena limits operations to the 'k8squest' namespace.[/dim]"
+                            "[dim]DevSecOps Arena limits operations to the 'arena' namespace.[/dim]"
                             + (f"\n\n💡 Suggestion: {pattern_obj.suggestion}" if pattern_obj.suggestion else ""),
                             title="[bold red]⛔ Safety Guard Activated[/bold red]",
                             border_style="red"
@@ -171,8 +171,8 @@ class K8sSafetyGuard(SafetyGuard):
 
             if namespace_match:
                 namespace = namespace_match.group(2)
-                if namespace not in self.allowed_namespaces and namespace != "k8squest":
-                    message = f"⚠️  WARNING: DevSecOps Arena should use namespace 'k8squest', not '{namespace}'"
+                if namespace not in self.allowed_namespaces and namespace != "arena":
+                    message = f"⚠️  WARNING: DevSecOps Arena should use namespace 'arena', not '{namespace}'"
 
                     if interactive:
                         console.print(Panel(
@@ -210,13 +210,13 @@ DevSecOps Arena protects you from dangerous kubectl operations:
 - Deleting ClusterRoles/ClusterRoleBindings
 
 ## ⚠️  Commands Requiring Confirmation:
-- Deleting k8squest namespace
+- Deleting arena namespace
 - Deleting all resources (--all)
 - PersistentVolume operations
-- Operations outside k8squest namespace
+- Operations outside arena namespace
 
 ## ✅ Best Practices:
-- Always use `-n k8squest` namespace flag
+- Always use `-n arena` namespace flag
 - Avoid cluster-wide operations
 - Test changes before applying
 - Use `kubectl apply` instead of `kubectl create`

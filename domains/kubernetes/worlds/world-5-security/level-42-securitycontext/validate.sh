@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE="k8squest"
+NAMESPACE="arena"
 POD_NAME="web-app"
 
 echo "🔍 VALIDATION STAGE 1: Checking if pod exists..."

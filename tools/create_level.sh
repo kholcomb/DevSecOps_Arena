@@ -51,7 +51,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: example-pod
-  namespace: k8squest
+  namespace: arena
 spec:
   containers:
   - name: app

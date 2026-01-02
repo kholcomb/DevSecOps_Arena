@@ -225,7 +225,7 @@ Then open `http://localhost:8080` in your browser.
 - Refresh the page manually
 
 ### Blank diagram
-- Ensure resources exist in k8squest namespace
+- Ensure resources exist in arena namespace
 - Check that the current level has a diagram template
 - Verify API endpoints are responding: `curl http://localhost:8080/api/state`
 

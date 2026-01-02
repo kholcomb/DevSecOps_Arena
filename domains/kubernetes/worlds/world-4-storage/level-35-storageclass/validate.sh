@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE="k8squest"
+NAMESPACE="arena"
 PVC_NAME="app-storage"
 POD_NAME="data-processor"
 

@@ -12,7 +12,7 @@ echo ""
 # Stage 1: Check if service exists
 echo "📋 Stage 1: Checking if service exists..."
 if ! kubectl get service web-service -n devsecops-arena &>/dev/null; then
-    echo -e "${RED}❌ Service 'web-service' not found in namespace 'k8squest'${NC}"
+    echo -e "${RED}❌ Service 'web-service' not found in namespace 'arena'${NC}"
     echo ""
     echo "💡 The service might have been deleted. Make sure to apply your fixed configuration."
     exit 1
@@ -104,7 +104,7 @@ echo "   • Port: 80"
 echo "   • NodePort: $NODE_PORT"
 echo ""
 echo "🔗 Access the service:"
-echo "   From within cluster: http://web-service.k8squest.svc.cluster.local"
+echo "   From within cluster: http://web-service.arena.svc.cluster.local"
 echo "   From your machine: http://localhost:$NODE_PORT (if port-forwarded)"
 echo "   Via kubectl: kubectl port-forward -n devsecops-arena service/web-service 8080:80"
 echo ""

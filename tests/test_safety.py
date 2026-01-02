@@ -31,18 +31,18 @@ def test_safety_guards():
         ("kubectl delete pods --all-namespaces", False, "Delete pods in all namespaces"),
         
         # Should warn but not block
-        ("kubectl delete namespace k8squest", False, "Delete k8squest namespace (warning)"),
-        ("kubectl delete pods --all -n k8squest", False, "Delete all pods (warning)"),
+        ("kubectl delete namespace arena", False, "Delete arena namespace (warning)"),
+        ("kubectl delete pods --all -n arena", False, "Delete all pods (warning)"),
         ("kubectl delete pv my-pv", False, "Delete PersistentVolume (warning)"),
         
         # Should be safe
-        ("kubectl get pods -n k8squest", True, "Get pods in k8squest"),
-        ("kubectl delete pod nginx-broken -n k8squest", True, "Delete specific pod"),
-        ("kubectl apply -f deployment.yaml -n k8squest", True, "Apply deployment"),
-        ("kubectl scale deployment web --replicas=3 -n k8squest", True, "Scale deployment"),
-        ("kubectl logs my-pod -n k8squest", True, "View pod logs"),
-        ("kubectl describe pod my-pod -n k8squest", True, "Describe pod"),
-        ("kubectl exec -it my-pod -n k8squest -- bash", True, "Exec into pod"),
+        ("kubectl get pods -n arena", True, "Get pods in arena"),
+        ("kubectl delete pod nginx-broken -n arena", True, "Delete specific pod"),
+        ("kubectl apply -f deployment.yaml -n arena", True, "Apply deployment"),
+        ("kubectl scale deployment web --replicas=3 -n arena", True, "Scale deployment"),
+        ("kubectl logs my-pod -n arena", True, "View pod logs"),
+        ("kubectl describe pod my-pod -n arena", True, "Describe pod"),
+        ("kubectl exec -it my-pod -n arena -- bash", True, "Exec into pod"),
         ("kubectl get nodes", True, "List nodes (read-only)"),
         ("kubectl get namespaces", True, "List namespaces"),
     ]

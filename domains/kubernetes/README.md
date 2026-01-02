@@ -30,7 +30,7 @@ Total: 1,232 lines of domain code + 50 challenges
 - Domain ID: `kubernetes`
 - Icon: ⎈
 - Deployment backend: `kubectl`
-- Namespace: `k8squest`
+- Namespace: `arena`
 - Safety guards: Enabled
 - Total XP: 11,600 across 50 challenges
 
@@ -49,7 +49,7 @@ Main domain class that instantiates all components.
 Handles kubectl-based challenge deployment.
 
 **Features:**
-- Namespace management (create/delete k8squest)
+- Namespace management (create/delete arena)
 - Deploys broken.yaml manifests
 - Resource status checking (pods, deployments, services)
 - Health checks for kubectl and cluster connectivity
@@ -65,7 +65,7 @@ Protects against dangerous kubectl operations.
 
 **8 Safety Patterns:**
 1. ⛔ CRITICAL: Delete system namespaces
-2. ⚠️  WARNING: Delete k8squest namespace
+2. ⚠️  WARNING: Delete arena namespace
 3. ⛔ CRITICAL: Delete nodes
 4. ⚠️  WARNING: Delete all resources (--all)
 5. ⛔ CRITICAL: Cluster-wide deletions (--all-namespaces)
@@ -228,7 +228,7 @@ viz_data = domain.visualizer.get_visualization_data(level_path)
 
 # Validate a kubectl command
 allowed, msg, severity = domain.safety_guard.validate_command(
-    "kubectl delete pod test -n k8squest",
+    "kubectl delete pod test -n arena",
     interactive=True
 )
 

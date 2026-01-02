@@ -34,7 +34,7 @@ class K8sVisualizer(DomainVisualizer):
     def __init__(self, domain_config: Dict[str, Any]):
         """Initialize K8s visualizer"""
         super().__init__(domain_config)
-        self.namespace = domain_config.get('namespace', 'k8squest')
+        self.namespace = domain_config.get('namespace', 'arena')
 
     def get_visualization_data(self, level_path: Optional[Path] = None) -> Dict[str, Any]:
         """
@@ -75,7 +75,7 @@ class K8sVisualizer(DomainVisualizer):
         return state
 
     def _get_pods(self) -> List[Dict[str, Any]]:
-        """Get pods in k8squest namespace"""
+        """Get pods in arena namespace"""
         try:
             result = subprocess.run(
                 ['kubectl', 'get', 'pods', '-n', self.namespace, '-o', 'json'],
@@ -116,7 +116,7 @@ class K8sVisualizer(DomainVisualizer):
             return []
 
     def _get_services(self) -> List[Dict[str, Any]]:
-        """Get services in k8squest namespace"""
+        """Get services in arena namespace"""
         try:
             result = subprocess.run(
                 ['kubectl', 'get', 'services', '-n', self.namespace, '-o', 'json'],
@@ -149,7 +149,7 @@ class K8sVisualizer(DomainVisualizer):
             return []
 
     def _get_deployments(self) -> List[Dict[str, Any]]:
-        """Get deployments in k8squest namespace"""
+        """Get deployments in arena namespace"""
         try:
             result = subprocess.run(
                 ['kubectl', 'get', 'deployments', '-n', self.namespace, '-o', 'json'],
@@ -181,7 +181,7 @@ class K8sVisualizer(DomainVisualizer):
             return []
 
     def _get_configmaps(self) -> List[Dict[str, Any]]:
-        """Get configmaps in k8squest namespace"""
+        """Get configmaps in arena namespace"""
         try:
             result = subprocess.run(
                 ['kubectl', 'get', 'configmaps', '-n', self.namespace, '-o', 'json'],
@@ -203,7 +203,7 @@ class K8sVisualizer(DomainVisualizer):
             return []
 
     def _get_secrets(self) -> List[Dict[str, Any]]:
-        """Get secrets in k8squest namespace"""
+        """Get secrets in arena namespace"""
         try:
             result = subprocess.run(
                 ['kubectl', 'get', 'secrets', '-n', self.namespace, '-o', 'json'],
@@ -225,7 +225,7 @@ class K8sVisualizer(DomainVisualizer):
             return []
 
     def _get_networkpolicies(self) -> List[Dict[str, Any]]:
-        """Get network policies in k8squest namespace"""
+        """Get network policies in arena namespace"""
         try:
             result = subprocess.run(
                 ['kubectl', 'get', 'networkpolicies', '-n', self.namespace, '-o', 'json'],
@@ -247,7 +247,7 @@ class K8sVisualizer(DomainVisualizer):
             return []
 
     def _get_pvcs(self) -> List[Dict[str, Any]]:
-        """Get PVCs in k8squest namespace"""
+        """Get PVCs in arena namespace"""
         try:
             result = subprocess.run(
                 ['kubectl', 'get', 'pvc', '-n', self.namespace, '-o', 'json'],
@@ -273,7 +273,7 @@ class K8sVisualizer(DomainVisualizer):
             return []
 
     def _get_statefulsets(self) -> List[Dict[str, Any]]:
-        """Get StatefulSets in k8squest namespace"""
+        """Get StatefulSets in arena namespace"""
         try:
             result = subprocess.run(
                 ['kubectl', 'get', 'statefulsets', '-n', self.namespace, '-o', 'json'],
@@ -357,7 +357,7 @@ class K8sVisualizer(DomainVisualizer):
                     'severity': 'error' if 'failed' in issue.lower() or 'crash' in issue.lower() else 'warning',
                     'resource': f"Pod/{pod['name']}",
                     'message': issue,
-                    'hint': 'Check pod logs with: kubectl logs ' + pod['name'] + ' -n k8squest'
+                    'hint': 'Check pod logs with: kubectl logs ' + pod['name'] + ' -n arena'
                 })
 
         return issues

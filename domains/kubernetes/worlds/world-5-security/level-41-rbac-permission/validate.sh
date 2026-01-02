@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE="k8squest"
+NAMESPACE="arena"
 POD_NAME="pod-lister"
 SA_NAME="pod-reader"
 ROLE_NAME="pod-reader-role"
@@ -87,7 +87,7 @@ echo "✅ Pod successfully listed pods with RBAC permissions"
 
 echo ""
 echo "🔍 Stage 9: Testing RBAC permissions directly..."
-kubectl auth can-i list pods --as=system:serviceaccount:k8squest:pod-reader -n devsecops-arena &>/dev/null
+kubectl auth can-i list pods --as=system:serviceaccount:arena:pod-reader -n devsecops-arena &>/dev/null
 if [ $? -ne 0 ]; then
     echo "❌ ServiceAccount cannot list pods according to RBAC check"
     exit 1

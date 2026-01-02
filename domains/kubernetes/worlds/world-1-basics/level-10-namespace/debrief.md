@@ -2,7 +2,7 @@
 
 ## What Happened
 
-Your resources were deployed to the "default" namespace instead of "k8squest". Namespaces provide isolation—resources in different namespaces can't easily find each other.
+Your resources were deployed to the "default" namespace instead of "arena". Namespaces provide isolation—resources in different namespaces can't easily find each other.
 
 ## How Kubernetes Behaved
 
@@ -22,7 +22,7 @@ Cluster
 ├── default namespace
 │   ├── pod: app-1
 │   └── service: api
-├── k8squest namespace
+├── arena namespace
 │   ├── pod: client-app
 │   └── service: backend-service
 └── production namespace

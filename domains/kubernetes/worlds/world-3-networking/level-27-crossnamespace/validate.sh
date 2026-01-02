@@ -5,7 +5,7 @@
 
 set -e
 
-FRONTEND_NAMESPACE="k8squest"
+FRONTEND_NAMESPACE="arena"
 BACKEND_NAMESPACE="backend-ns"
 FRONTEND_POD="frontend-app"
 BACKEND_SERVICE="api-service"
@@ -96,7 +96,7 @@ elif echo "$POD_COMMAND" | grep -q "http://api-service[^.]"; then
     echo "📋 Issue: Frontend is using SHORT NAME 'api-service' instead of FQDN"
     echo ""
     echo "🔍 Current command uses: api-service"
-    echo "   This only works within the SAME namespace (k8squest)"
+    echo "   This only works within the SAME namespace (arena)"
     echo "   But api-service is in a DIFFERENT namespace (backend-ns)"
     echo ""
     echo "💡 Fix: Use FQDN format: api-service.backend-ns.svc.cluster.local"

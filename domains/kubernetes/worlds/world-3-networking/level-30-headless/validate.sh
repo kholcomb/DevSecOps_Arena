@@ -12,7 +12,7 @@ echo ""
 # Stage 1: Check if service exists
 echo "📋 Stage 1: Checking if service exists..."
 if ! kubectl get service web-cluster -n devsecops-arena &>/dev/null; then
-    echo -e "${RED}❌ Service 'web-cluster' not found in namespace 'k8squest'${NC}"
+    echo -e "${RED}❌ Service 'web-cluster' not found in namespace 'arena'${NC}"
     echo ""
     echo "💡 Make sure to apply your fixed configuration with the service definition."
     exit 1
@@ -54,7 +54,7 @@ echo ""
 # Stage 3: Check if StatefulSet exists
 echo "📋 Stage 3: Checking if StatefulSet exists..."
 if ! kubectl get statefulset web -n devsecops-arena &>/dev/null; then
-    echo -e "${RED}❌ StatefulSet 'web' not found in namespace 'k8squest'${NC}"
+    echo -e "${RED}❌ StatefulSet 'web' not found in namespace 'arena'${NC}"
     exit 1
 fi
 echo -e "${GREEN}✓ StatefulSet exists${NC}"
@@ -100,7 +100,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: dns-test
-  namespace: k8squest
+  namespace: arena
 spec:
   containers:
   - name: busybox
@@ -117,7 +117,7 @@ POD_COUNT=$(kubectl get statefulset web -n devsecops-arena -o jsonpath='{.spec.r
 DNS_SUCCESS=true
 
 for i in $(seq 0 $((POD_COUNT - 1))); do
-    POD_DNS="web-$i.web-cluster.k8squest.svc.cluster.local"
+    POD_DNS="web-$i.web-cluster.arena.svc.cluster.local"
     echo "   Testing: $POD_DNS"
     
     if ! kubectl exec -n devsecops-arena dns-test -- nslookup "$POD_DNS" &>/dev/null; then
@@ -173,7 +173,7 @@ echo ""
 echo "🔗 Per-Pod DNS Names:"
 for i in $(seq 0 $((POD_COUNT - 1))); do
     POD_IP=$(kubectl get pod "web-$i" -n devsecops-arena -o jsonpath='{.status.podIP}')
-    echo "   • web-$i.web-cluster.k8squest.svc.cluster.local → $POD_IP"
+    echo "   • web-$i.web-cluster.arena.svc.cluster.local → $POD_IP"
 done
 echo ""
 echo "💡 Headless Service Benefits:"

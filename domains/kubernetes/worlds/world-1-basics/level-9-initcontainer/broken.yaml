@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: web-with-init
-  namespace: k8squest
+  namespace: arena
 spec:
   initContainers:
   - name: wait-for-service

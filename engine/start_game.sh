@@ -8,8 +8,8 @@ for LEVEL in "$WORLD_DIR"/*; do
   echo "▶ Starting $(basename $LEVEL)"
   echo "=================================="
 
-  kubectl delete namespace k8squest --ignore-not-found
-  kubectl create namespace k8squest
+  kubectl delete namespace arena --ignore-not-found
+  kubectl create namespace arena
 
   kubectl apply -n devsecops-arena -f "$LEVEL/broken.yaml"
 

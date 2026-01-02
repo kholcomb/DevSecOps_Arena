@@ -28,23 +28,23 @@ echo "✅ Python packages installed"
 echo ""
 
 # Create Kubernetes cluster
-if ! kind get clusters | grep k8squest >/dev/null 2>&1; then
+if ! kind get clusters | grep arena >/dev/null 2>&1; then
   echo "🔧 Creating Kubernetes cluster..."
-  kind create cluster --name k8squest
+  kind create cluster --name arena
 else
   echo "✅ Cluster already exists"
 fi
 
-kubectl config use-context kind-k8squest
+kubectl config use-context kind-arena
 
-# Create k8squest namespace
-echo "🏗️  Setting up k8squest namespace..."
-kubectl create namespace k8squest --dry-run=client -o yaml | kubectl apply -f -
+# Create arena namespace
+echo "🏗️  Setting up arena namespace..."
+kubectl create namespace arena --dry-run=client -o yaml | kubectl apply -f -
 
 # Setup RBAC for safety
 echo "🛡️  Configuring safety guards (RBAC)..."
-if [ -f "rbac/k8squest-rbac.yaml" ]; then
-  kubectl apply -f rbac/k8squest-rbac.yaml
+if [ -f "rbac/arena-rbac.yaml" ]; then
+  kubectl apply -f rbac/arena-rbac.yaml
   echo "✅ Safety guards configured"
 else
   echo "⚠️  Warning: RBAC config not found, skipping"

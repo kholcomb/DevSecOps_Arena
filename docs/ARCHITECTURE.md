@@ -9,7 +9,7 @@ graph TD
     C[Game Engine engine.py<br/>• Mission Management<br/>• Progressive Hint System 3 tiers<br/>• XP Tracking & Persistence<br/>• Real-time Resource Monitoring<br/>• Command Validation]
     D[Safety Module<br/>safety.py<br/>• Pattern Match<br/>• RBAC Check<br/>• Confirmation]
     E[Mission Content<br/>Worlds 1-5<br/>• 50 Levels<br/>• Broken Configs<br/>• Solutions<br/>• Hints<br/>• Debriefs]
-    F[Kubernetes Cluster<br/>kind - Local<br/>• k8squest namespace<br/>• RBAC Isolation<br/>• Safe Playground]
+    F[Kubernetes Cluster<br/>kind - Local<br/>• arena namespace<br/>• RBAC Isolation<br/>• Safe Playground]
 
     A --> B
     B --> C
@@ -70,9 +70,9 @@ graph TB
 
     B[Layer 1: Command Pattern Validation<br/>safety.py<br/>• Regex pattern matching<br/>• Dangerous commands: delete namespace, --all flags, etc.<br/>• Severity levels: CRITICAL block | WARNING confirm<br/>• Rich UI for user feedback]
 
-    C[Layer 2: RBAC Enforcement<br/>Kubernetes<br/>• ServiceAccount: k8squest-player<br/>• Namespace: k8squest isolated<br/>• Role: Full access ONLY in k8squest namespace<br/>• ClusterRole: Read-only cluster-wide]
+    C[Layer 2: RBAC Enforcement<br/>Kubernetes<br/>• ServiceAccount: arena-player<br/>• Namespace: arena isolated<br/>• Role: Full access ONLY in arena namespace<br/>• ClusterRole: Read-only cluster-wide]
 
-    D[Layer 3: Namespace Isolation<br/>Kubernetes<br/>• All operations scoped to k8squest namespace<br/>• System namespaces protected kube-system, default<br/>• Resource quotas can limit usage]
+    D[Layer 3: Namespace Isolation<br/>Kubernetes<br/>• All operations scoped to arena namespace<br/>• System namespaces protected kube-system, default<br/>• Resource quotas can limit usage]
 
     A --> B
     B -->|if allowed| C

@@ -17,7 +17,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: shared-pvc
-  namespace: k8squest
+  namespace: arena
 spec:
   accessModes:
     - ReadWriteMany  # ✅ Request multi-pod access
@@ -30,7 +30,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web-servers
-  namespace: k8squest
+  namespace: arena
 spec:
   replicas: 3
   selector:

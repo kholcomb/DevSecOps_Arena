@@ -68,7 +68,7 @@ class ChallengeDeployer(ABC):
 
         Example:
             >>> deployer.deploy_challenge(Path("domains/kubernetes/worlds/world-1/level-1"))
-            (True, "Deployed broken pod to k8squest namespace")
+            (True, "Deployed broken pod to arena namespace")
         """
         raise NotImplementedError("Subclass must implement deploy_challenge()")
 
@@ -88,7 +88,7 @@ class ChallengeDeployer(ABC):
 
         Example:
             >>> deployer.cleanup_challenge(Path("domains/kubernetes/worlds/world-1/level-1"))
-            (True, "Namespace k8squest deleted")
+            (True, "Namespace arena deleted")
         """
         raise NotImplementedError("Subclass must implement cleanup_challenge()")
 

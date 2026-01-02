@@ -187,7 +187,7 @@ kubectl get pods
 ```
 
 **Why it fails:**
-By default, kubectl looks in the `default` namespace. DevSecOps Arena uses the `k8squest` namespace.
+By default, kubectl looks in the `default` namespace. DevSecOps Arena uses the `arena` namespace.
 
 **Correct approach:**
 ```bash
@@ -195,7 +195,7 @@ By default, kubectl looks in the `default` namespace. DevSecOps Arena uses the `
 kubectl get pods -n devsecops-arena
 
 # Or set default namespace for session
-kubectl config set-context --current --namespace=k8squest
+kubectl config set-context --current --namespace=arena
 ```
 
 **Key Learning:**

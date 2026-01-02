@@ -72,7 +72,7 @@ The intentionally broken Kubernetes resources that students must fix.
 - Must be valid YAML syntax
 - Must deploy without syntax errors (broken behavior ≠ malformed YAML)
 - Should demonstrate ONE specific misconfiguration
-- Must use namespace `k8squest` for all namespaced resources
+- Must use namespace `arena` for all namespaced resources
 - Include comments explaining what's wrong (for educational value)
 - Use realistic resource names and configurations
 
@@ -82,7 +82,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: web-app
-  namespace: k8squest
+  namespace: arena
 spec:
   containers:
   - name: web
@@ -108,7 +108,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: web-app
-  namespace: k8squest
+  namespace: arena
 spec:
   securityContext:
     runAsNonRoot: true  #  Require non-root user
@@ -132,7 +132,7 @@ Bash script that returns 0 (success) or 1 (failure). Must be executable.
 ```bash
 #!/bin/bash
 
-NAMESPACE="k8squest"
+NAMESPACE="arena"
 POD_NAME="web-app"
 
 echo " Validating SecurityContext configuration..."
@@ -165,7 +165,7 @@ exit 0
 ```bash
 #!/bin/bash
 
-NAMESPACE="k8squest"
+NAMESPACE="arena"
 ERRORS=0
 
 echo " MULTI-STAGE VALIDATION"
@@ -337,7 +337,7 @@ Apply these in both pod-level and container-level securityContext!
 - Never commit real credentials
 
  **Don't break multiple namespaces**
-- All resources in `k8squest` namespace only
+- All resources in `arena` namespace only
 - Don't affect system namespaces
 
  **Don't make it a guessing game**
@@ -382,7 +382,7 @@ Before submitting a new level, verify:
 - [ ] Applied solution.yaml - verifies it works
 - [ ] Ran validate.sh with both states
 - [ ] Checked for helpful error messages
-- [ ] Verified namespace isolation (k8squest only)
+- [ ] Verified namespace isolation (arena only)
 
 ### Best Practices
 - [ ] Single, clear learning objective
@@ -397,11 +397,11 @@ Before submitting a new level, verify:
 ### Step 1: Setup Fresh Environment
 ```bash
 # Make sure you have a clean cluster
-kind delete cluster --name k8squest
-kind create cluster --name k8squest
+kind delete cluster --name arena
+kind create cluster --name arena
 
-# Create k8squest namespace
-kubectl create namespace k8squest
+# Create arena namespace
+kubectl create namespace arena
 ```
 
 ### Step 2: Test Broken State

@@ -111,7 +111,7 @@ class SafetyGuard(ABC):
             >>> guard.validate_command("kubectl delete namespace kube-system")
             (False, "🚨 BLOCKED: Cannot delete critical system namespaces!", SafetySeverity.CRITICAL)
 
-            >>> guard.validate_command("kubectl delete namespace k8squest", interactive=True)
+            >>> guard.validate_command("kubectl delete namespace arena", interactive=True)
             # Prompts user for confirmation, returns:
             (True, "User confirmed deletion", SafetySeverity.WARNING)
         """

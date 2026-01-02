@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE="k8squest"
+NAMESPACE="arena"
 SECRET="db-credentials"
 POD_NAME="database-client"
 

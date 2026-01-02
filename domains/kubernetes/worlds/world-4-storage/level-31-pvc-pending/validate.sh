@@ -12,7 +12,7 @@ echo ""
 # Stage 1: Check if PVC exists
 echo "📋 Stage 1: Checking if PVC exists..."
 if ! kubectl get pvc app-storage-claim -n devsecops-arena &>/dev/null; then
-    echo -e "${RED}❌ PVC 'app-storage-claim' not found in namespace 'k8squest'${NC}"
+    echo -e "${RED}❌ PVC 'app-storage-claim' not found in namespace 'arena'${NC}"
     echo ""
     echo "💡 Make sure to apply your fixed configuration with the PVC definition."
     exit 1

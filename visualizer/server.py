@@ -82,7 +82,7 @@ class DevSecOps ArenaVisualizerHandler(SimpleHTTPRequestHandler):
             self.send_error(500, f"Error getting diagram: {str(e)}")
 
     def get_k8s_cluster_state(self):
-        """Query Kubernetes cluster for current state in k8squest namespace"""
+        """Query Kubernetes cluster for current state in arena namespace"""
         state = {
             'pods': [],
             'services': [],
@@ -95,7 +95,7 @@ class DevSecOps ArenaVisualizerHandler(SimpleHTTPRequestHandler):
             'statefulsets': []
         }
 
-        namespace = 'k8squest'
+        namespace = 'arena'
 
         try:
             # Get pods with detailed status

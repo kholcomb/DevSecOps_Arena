@@ -22,8 +22,8 @@ Every service gets automatic DNS records:
 
 **Examples:**
 ```
-database-service.k8squest.svc.cluster.local  # Full FQDN
-database-service.k8squest                    # Shortened
+database-service.arena.svc.cluster.local  # Full FQDN
+database-service.arena                    # Shortened
 database-service                             # Same namespace only
 ```
 
@@ -49,12 +49,12 @@ database-service                             # Same namespace only
 
 ### Pattern 1: Same Namespace (Short Name)
 ```yaml
-# Service in namespace: k8squest
+# Service in namespace: arena
 apiVersion: v1
 kind: Service
 metadata:
   name: database-service
-  namespace: k8squest
+  namespace: arena
 
 # Pod in same namespace can use:
 - h database-service  # ✅ Works!
@@ -137,14 +137,14 @@ kubectl exec -it app-client -n devsecops-arena -- nslookup database-service
 # Server: 10.96.0.10
 # Address: 10.96.0.10:53
 # 
-# Name: database-service.k8squest.svc.cluster.local
+# Name: database-service.arena.svc.cluster.local
 # Address: 10.100.200.50
 ```
 
 ### Test 3: Full FQDN
 ```bash
 kubectl exec -it app-client -n devsecops-arena -- \
-  nslookup database-service.k8squest.svc.cluster.local
+  nslookup database-service.arena.svc.cluster.local
 ```
 
 ### Test 4: Check CoreDNS
@@ -229,20 +229,20 @@ kubectl exec debug -- nslookup my-service
 
 ### Service ClusterIP Record:
 ```
-database-service.k8squest.svc.cluster.local → 10.100.200.50 (ClusterIP)
+database-service.arena.svc.cluster.local → 10.100.200.50 (ClusterIP)
 ```
 
 ### Headless Service Records (clusterIP: None):
 ```
-database-service.k8squest.svc.cluster.local → 10.244.1.5 (Pod 1)
+database-service.arena.svc.cluster.local → 10.244.1.5 (Pod 1)
                                             → 10.244.2.8 (Pod 2)
                                             → 10.244.3.2 (Pod 3)
 ```
 
 ### Pod Records (StatefulSet):
 ```
-pod-0.database-service.k8squest.svc.cluster.local → 10.244.1.5
-pod-1.database-service.k8squest.svc.cluster.local → 10.244.2.8
+pod-0.database-service.arena.svc.cluster.local → 10.244.1.5
+pod-1.database-service.arena.svc.cluster.local → 10.244.2.8
 ```
 
 ---

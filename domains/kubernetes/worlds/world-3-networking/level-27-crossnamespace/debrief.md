@@ -12,19 +12,19 @@
 
 ## What You Encountered
 
-You deployed a frontend application in the `k8squest` namespace that needed to call a backend API in the `backend-ns` namespace. Both services were running perfectly, endpoints existed, and network connectivity was fine. Yet every API call from the frontend failed with DNS resolution errors.
+You deployed a frontend application in the `arena` namespace that needed to call a backend API in the `backend-ns` namespace. Both services were running perfectly, endpoints existed, and network connectivity was fine. Yet every API call from the frontend failed with DNS resolution errors.
 
 The culprit? The frontend was using a short service name (`api-service`) that only resolves within the same namespace.
 
 **The Broken Configuration:**
 ```yaml
-# Frontend pod in k8squest namespace
+# Frontend pod in arena namespace
 command: ['sh', '-c', 'wget -q -O- http://api-service']
 ```
 
 **The Problem:**
 - Frontend tries to resolve: `api-service`
-- Kubernetes DNS searches: `api-service.k8squest.svc.cluster.local`
+- Kubernetes DNS searches: `api-service.arena.svc.cluster.local`
 - But service is actually in: `backend-ns` namespace
 - Result: DNS resolution failed - "could not resolve host"
 
@@ -46,17 +46,17 @@ Kubernetes runs an internal DNS server (CoreDNS) that provides service discovery
 │  DNS Records:                                    │
 │  • api-service.backend-ns.svc.cluster.local     │
 │    → 10.96.15.23                                │
-│  • frontend-service.k8squest.svc.cluster.local  │
+│  • frontend-service.arena.svc.cluster.local  │
 │    → 10.96.20.45                                │
 └─────────────────────────────────────────────────┘
                       ▲
                       │ DNS Query
                       │
 ┌─────────────────────┴─────────────────────┐
-│  Pod (in k8squest namespace)              │
+│  Pod (in arena namespace)              │
 │  /etc/resolv.conf:                        │
 │    nameserver 10.96.0.10                  │
-│    search k8squest.svc.cluster.local      │
+│    search arena.svc.cluster.local      │
 │           svc.cluster.local               │
 │           cluster.local                   │
 └───────────────────────────────────────────┘
@@ -69,14 +69,14 @@ When a pod tries to resolve a short name like `api-service`, Kubernetes uses **D
 **Pod's /etc/resolv.conf:**
 ```
 nameserver 10.96.0.10
-search k8squest.svc.cluster.local svc.cluster.local cluster.local
+search arena.svc.cluster.local svc.cluster.local cluster.local
 options ndots:5
 ```
 
 **DNS Resolution Process for "api-service":**
 
-1. **First attempt:** `api-service.k8squest.svc.cluster.local`
-   - Looks for service in k8squest namespace
+1. **First attempt:** `api-service.arena.svc.cluster.local`
+   - Looks for service in arena namespace
    - Service doesn't exist there → NXDOMAIN
 
 2. **Second attempt:** `api-service.svc.cluster.local`
@@ -97,15 +97,15 @@ options ndots:5
 
 **Same Namespace (works with short name):**
 ```
-Frontend in k8squest → api-service → Resolves to: api-service.k8squest.svc.cluster.local ✅
+Frontend in arena → api-service → Resolves to: api-service.arena.svc.cluster.local ✅
 ```
 
 **Different Namespace (needs FQDN):**
 ```
-Frontend in k8squest → api-service → Resolves to: api-service.k8squest.svc.cluster.local ❌
+Frontend in arena → api-service → Resolves to: api-service.arena.svc.cluster.local ❌
                                       (Service is actually in backend-ns!)
 
-Frontend in k8squest → api-service.backend-ns → Resolves correctly ✅
+Frontend in arena → api-service.backend-ns → Resolves correctly ✅
 ```
 
 ---
@@ -477,20 +477,20 @@ api-service.backend-ns.svc.cluster.local
 
 ### DNS Resolution Examples
 
-**Within Same Namespace (k8squest):**
+**Within Same Namespace (arena):**
 
 ```bash
 # All of these work:
 curl http://api-service
-curl http://api-service.k8squest
-curl http://api-service.k8squest.svc
-curl http://api-service.k8squest.svc.cluster.local
+curl http://api-service.arena
+curl http://api-service.arena.svc
+curl http://api-service.arena.svc.cluster.local
 
 # DNS resolution:
-api-service → api-service.k8squest.svc.cluster.local (search domain appended)
+api-service → api-service.arena.svc.cluster.local (search domain appended)
 ```
 
-**Cross-Namespace (k8squest → backend-ns):**
+**Cross-Namespace (arena → backend-ns):**
 
 ```bash
 # These work:
@@ -500,7 +500,7 @@ curl http://api-service.backend-ns.svc.cluster.local
 
 # This FAILS:
 curl http://api-service
-# DNS tries: api-service.k8squest.svc.cluster.local (wrong namespace!)
+# DNS tries: api-service.arena.svc.cluster.local (wrong namespace!)
 ```
 
 **To External Service:**
@@ -521,7 +521,7 @@ kubectl exec frontend-app -n devsecops-arena -- cat /etc/resolv.conf
 Output:
 ```
 nameserver 10.96.0.10
-search k8squest.svc.cluster.local svc.cluster.local cluster.local
+search arena.svc.cluster.local svc.cluster.local cluster.local
 options ndots:5
 ```
 
@@ -535,7 +535,7 @@ options ndots:5
 ```bash
 # "api-service" has 0 dots (< 5)
 # Try search domains:
-#   1. api-service.k8squest.svc.cluster.local
+#   1. api-service.arena.svc.cluster.local
 #   2. api-service.svc.cluster.local
 #   3. api-service.cluster.local
 # Then try as-is: api-service

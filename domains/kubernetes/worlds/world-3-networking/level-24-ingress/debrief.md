@@ -623,7 +623,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: test-ingress
-  namespace: k8squest
+  namespace: arena
 spec:
   rules:
   - host: test.myapp.local
