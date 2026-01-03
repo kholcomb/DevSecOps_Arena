@@ -947,9 +947,9 @@ Look for "2/2" ready replicas!
         """Validate solution using domain validator"""
         console.print("\n[yellow]🔍 Validating your solution...[/yellow]\n")
 
-        # For web security domains, prompt for flag input
+        # For web security and MCP domains, prompt for flag input
         flag = None
-        if self.current_domain.config.id in ['web_security', 'container_security']:
+        if self.current_domain.config.id in ['web_security', 'container_security', 'mcp']:
             flag = Prompt.ask("🚩 Enter the flag you discovered")
 
         # Use domain validator
