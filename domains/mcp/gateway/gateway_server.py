@@ -65,6 +65,7 @@ class MCPGatewayServer:
         self.app.router.add_get('/mcp', self.handle_get_mcp)
         self.app.router.add_get('/health', self.handle_health)
         self.app.router.add_get('/status', self.handle_status)
+        self.app.router.add_post('/admin/register', self.handle_register_backend)
 
     async def handle_health(self, request: web.Request) -> web.Response:
         """
@@ -107,6 +108,54 @@ class MCPGatewayServer:
             "routing": self.router.get_routing_info(),
             "traffic": self.traffic_logger.get_traffic_stats()
         })
+
+    async def handle_register_backend(self, request: web.Request) -> web.Response:
+        """
+        Admin endpoint to register a challenge backend with the gateway.
+
+        Expects JSON body:
+        {
+            "challenge_id": "level-01-token-exposure",
+            "backend_url": "http://localhost:9001"
+        }
+
+        Returns:
+            HTTP 200 with registration confirmation
+        """
+        try:
+            data = await request.json()
+            challenge_id = data.get("challenge_id")
+            backend_url = data.get("backend_url")
+
+            if not challenge_id or not backend_url:
+                return web.json_response({
+                    "success": False,
+                    "error": "Missing required fields: challenge_id, backend_url"
+                }, status=400)
+
+            # Register backend with router
+            self.router.set_active_challenge(challenge_id, backend_url)
+
+            logger.info(f"Registered backend: {challenge_id} -> {backend_url}")
+
+            return web.json_response({
+                "success": True,
+                "challenge_id": challenge_id,
+                "backend_url": backend_url,
+                "message": f"Backend registered successfully"
+            })
+
+        except json.JSONDecodeError:
+            return web.json_response({
+                "success": False,
+                "error": "Invalid JSON body"
+            }, status=400)
+        except Exception as e:
+            logger.error(f"Error registering backend: {e}")
+            return web.json_response({
+                "success": False,
+                "error": str(e)
+            }, status=500)
 
     async def handle_post_mcp(self, request: web.Request) -> web.Response:
         """

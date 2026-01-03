@@ -522,10 +522,7 @@ asyncio.run(main())
 
     def _update_gateway_routing(self, challenge_id: str, backend_url: str) -> Tuple[bool, str]:
         """
-        Update gateway routing configuration.
-
-        For MVP, this is a placeholder - gateway will be manually configured
-        or use file-based routing config in future iterations.
+        Update gateway routing configuration via admin API.
 
         Args:
             challenge_id: Challenge identifier
@@ -534,9 +531,28 @@ asyncio.run(main())
         Returns:
             tuple[bool, str]: (success, message)
         """
-        # For MVP: routing is handled by gateway reading state file
-        # In future: could make HTTP call to gateway admin API
-        return True, f"Routing configured: {challenge_id} -> {backend_url}"
+        try:
+            import requests
+
+            # Call gateway admin endpoint to register backend
+            response = requests.post(
+                f"http://localhost:{self.GATEWAY_PORT}/admin/register",
+                json={
+                    "challenge_id": challenge_id,
+                    "backend_url": backend_url
+                },
+                timeout=5
+            )
+
+            if response.status_code == 200:
+                return True, f"Routing configured: {challenge_id} -> {backend_url}"
+            else:
+                error_msg = response.json().get("error", "Unknown error")
+                return False, f"Failed to register backend: {error_msg}"
+
+        except requests.RequestException as e:
+            logger.warning(f"Could not update gateway routing: {e}")
+            return False, f"Gateway routing update failed: {str(e)}"
 
     # State management
 
