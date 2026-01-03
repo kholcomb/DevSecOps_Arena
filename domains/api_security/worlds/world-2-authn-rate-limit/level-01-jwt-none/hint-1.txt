@@ -1,0 +1,8 @@
+💡 Hint: JWT Structure
+
+JWTs have three parts separated by dots: header.payload.signature
+
+Decode the JWT you get from /api/login (use jwt.io or base64 decode).
+Notice the header has "alg": "HS256" and payload has "role": "user".
+
+What if you create a JWT with "alg": "none" and "role": "admin"?

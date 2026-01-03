@@ -1,0 +1,10 @@
+💡 Hint 1: API Enumeration
+
+The documentation only shows GET endpoints, but REST APIs typically support other HTTP methods:
+- GET (read)
+- POST (create)
+- PUT/PATCH (update)
+- DELETE (delete)
+
+Try using different HTTP methods on the /api/users/<user_id> endpoint.
+What happens if you send a DELETE request?

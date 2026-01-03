@@ -1,0 +1,5 @@
+💡 Hint 1: Understanding the API
+
+Start by exploring the API. Visit http://localhost:4001 to see the available endpoints.
+
+The API has a login endpoint that gives you an API key. Try logging in as 'alice' or 'bob'.

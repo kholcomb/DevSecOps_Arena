@@ -1,0 +1,26 @@
+name: "CORS Misconfiguration"
+description: |
+  An API has overly permissive CORS (Cross-Origin Resource Sharing) headers,
+  allowing any origin to make authenticated requests.
+
+  This is API8:2023 (Security Misconfiguration) in OWASP API Security Top 10:2023.
+
+  API at http://localhost:4006
+
+  Your mission: Exploit CORS to access sensitive data from a cross-origin request.
+
+objective: "Extract the flag by exploiting permissive CORS configuration"
+xp: 120
+difficulty: beginner
+expected_time: "15m"
+
+concepts:
+  - cors
+  - security-misconfiguration
+  - cross-origin
+  - access-control
+
+hints_cost:
+  hint_1: 0
+  hint_2: 10
+  hint_3: 20

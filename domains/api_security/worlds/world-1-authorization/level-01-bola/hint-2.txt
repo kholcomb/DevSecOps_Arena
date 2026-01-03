@@ -1,0 +1,7 @@
+💡 Hint 2: Finding the Vulnerability
+
+Once you have an API key, you can access your own user profile at /api/users/<your_id>.
+
+But what happens if you try to access a DIFFERENT user's ID? Does the API check if you're authorized to view that user's data?
+
+Try accessing user ID 2 (the admin) using your regular user API key.

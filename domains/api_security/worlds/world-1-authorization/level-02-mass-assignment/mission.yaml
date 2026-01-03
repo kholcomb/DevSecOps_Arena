@@ -1,0 +1,29 @@
+name: "Mass Assignment: Privilege Escalation"
+description: |
+  A user profile update API allows users to modify their profile information.
+  However, the API blindly accepts all fields from the request body without filtering
+  which properties users should be allowed to modify.
+
+  This is a Mass Assignment vulnerability, part of API3:2023 (Broken Object Property Level Authorization)
+  in the OWASP API Security Top 10:2023.
+
+  The vulnerable API is accessible at http://localhost:4002
+
+  Your mission: Escalate your privileges from a regular user to an admin by exploiting mass assignment.
+
+objective: "Exploit mass assignment to set your role to 'admin' and extract the admin-only flag"
+xp: 120
+difficulty: beginner
+expected_time: "20m"
+
+concepts:
+  - mass-assignment
+  - broken-object-property-level-authorization
+  - privilege-escalation
+  - parameter-pollution
+  - rest-api
+
+hints_cost:
+  hint_1: 10
+  hint_2: 20
+  hint_3: 30

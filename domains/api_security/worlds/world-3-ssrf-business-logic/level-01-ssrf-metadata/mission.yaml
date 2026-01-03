@@ -1,0 +1,26 @@
+name: "SSRF: Cloud Metadata Service Access"
+description: |
+  An API has a webhook feature that fetches content from user-supplied URLs.
+  However, it doesn't validate or restrict which URLs can be accessed.
+
+  This is API7:2023 (Server-Side Request Forgery) in OWASP API Security Top 10:2023.
+
+  The API is at http://localhost:4005
+
+  Your mission: Use SSRF to access the simulated cloud metadata service and extract credentials.
+
+objective: "Exploit SSRF to access http://metadata-service/secret and extract the flag"
+xp: 120
+difficulty: intermediate
+expected_time: "20m"
+
+concepts:
+  - ssrf
+  - server-side-request-forgery
+  - cloud-metadata
+  - url-validation-bypass
+
+hints_cost:
+  hint_1: 0
+  hint_2: 15
+  hint_3: 30

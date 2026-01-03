@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./app
+    ports:
+      - "4002:5000"
+    environment:
+      - FLAG=ARENA{m4ss_4ss1gnm3nt_pr1v_3sc}
+    restart: unless-stopped

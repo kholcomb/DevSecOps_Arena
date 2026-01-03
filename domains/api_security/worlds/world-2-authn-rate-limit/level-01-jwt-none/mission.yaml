@@ -1,0 +1,27 @@
+name: "JWT None Algorithm Attack"
+description: |
+  An API uses JSON Web Tokens (JWT) for authentication. However, the implementation
+  accepts JWTs with the 'none' algorithm, which means no signature verification is performed.
+
+  This is part of API2:2023 (Broken Authentication) in the OWASP API Security Top 10:2023.
+
+  The vulnerable API is accessible at http://localhost:4004
+
+  Your mission: Forge a JWT token to gain admin access and extract the flag.
+
+objective: "Forge a JWT with algorithm 'none' to authenticate as admin and get the flag"
+xp: 120
+difficulty: intermediate
+expected_time: "25m"
+
+concepts:
+  - jwt
+  - broken-authentication
+  - jwt-none-algorithm
+  - token-forgery
+  - cryptographic-failures
+
+hints_cost:
+  hint_1: 0
+  hint_2: 15
+  hint_3: 30

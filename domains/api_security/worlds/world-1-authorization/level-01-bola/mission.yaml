@@ -1,0 +1,29 @@
+name: "BOLA: Access Other Users' Data"
+description: |
+  A REST API allows users to view their profile information, but the endpoint doesn't
+  properly validate whether the requesting user has permission to access the requested resource.
+
+  This is a classic Broken Object Level Authorization (BOLA) vulnerability, also known as
+  Insecure Direct Object Reference (IDOR). It's the #1 risk in the OWASP API Security Top 10:2023.
+
+  The vulnerable API is accessible at http://localhost:4001
+
+  Your mission: Access another user's profile to extract their secret flag.
+
+objective: "Exploit BOLA to access user ID 2's profile and extract the flag"
+xp: 120
+difficulty: beginner
+expected_time: "15m"
+
+concepts:
+  - bola
+  - idor
+  - broken-object-level-authorization
+  - api-enumeration
+  - rest-api
+
+# Hints are free for the first level of each world
+hints_cost:
+  hint_1: 0
+  hint_2: 0
+  hint_3: 0

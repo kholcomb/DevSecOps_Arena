@@ -1,0 +1,29 @@
+name: "Broken Function Level Authorization"
+description: |
+  A REST API has administrative endpoints that should only be accessible to admin users.
+  However, the API only protects these endpoints through obscurity and client-side restrictions,
+  not through proper server-side authorization checks.
+
+  This is API5:2023 (Broken Function Level Authorization) in the OWASP API Security Top 10:2023.
+  Attackers can bypass UI restrictions and directly call admin functions.
+
+  The vulnerable API is accessible at http://localhost:4003
+
+  Your mission: Discover and access the hidden admin endpoint to extract the flag.
+
+objective: "Find and exploit the hidden admin endpoint to delete a user and extract the flag"
+xp: 120
+difficulty: intermediate
+expected_time: "25m"
+
+concepts:
+  - broken-function-level-authorization
+  - api-enumeration
+  - hidden-endpoints
+  - http-method-tampering
+  - rest-api
+
+hints_cost:
+  hint_1: 10
+  hint_2: 20
+  hint_3: 30

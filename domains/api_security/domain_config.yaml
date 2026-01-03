@@ -1,0 +1,64 @@
+# API Security Domain Configuration
+
+metadata:
+  id: api_security
+  name: "API Security"
+  icon: "🔌"
+  description: |
+    Master API security through hands-on exploitation of REST and GraphQL APIs.
+    Learn to identify and exploit OWASP API Security Top 10:2023 vulnerabilities including
+    BOLA, broken authentication, mass assignment, SSRF, and more.
+
+# World definitions (in order)
+worlds:
+  - world-1-authorization
+  - world-2-authn-rate-limit
+  - world-3-ssrf-business-logic
+  - world-4-config-consumption
+
+# Domain capabilities and requirements
+capabilities:
+  # Deployment backend
+  deployment_backend: docker-compose
+
+  # Requires Docker
+  requires_cluster: false
+
+  # Safety guards enabled
+  safety_enabled: true
+
+  # Docker requirements
+  docker:
+    min_version: "20.10"
+    required_features:
+      - compose
+
+# Learning progression
+progression:
+  total_challenges: 6
+  total_xp: 720
+
+  worlds_info:
+    world-1-authorization:
+      name: "Authorization Flaws"
+      challenges: 3
+      xp: 360
+      description: "BOLA, Mass Assignment, and Function-Level Authorization vulnerabilities"
+
+    world-2-authn-rate-limit:
+      name: "Authentication & Rate Limiting"
+      challenges: 1
+      xp: 120
+      description: "JWT None Algorithm vulnerability"
+
+    world-3-ssrf-business-logic:
+      name: "SSRF & Business Logic"
+      challenges: 1
+      xp: 120
+      description: "Server-Side Request Forgery to access metadata services"
+
+    world-4-config-consumption:
+      name: "Configuration & Consumption"
+      challenges: 1
+      xp: 120
+      description: "CORS misconfiguration allowing cross-origin data theft"

@@ -1,0 +1,8 @@
+💡 Hint 2: HTTP Method Enumeration
+
+The API likely has a DELETE endpoint for removing users, but it's not documented.
+
+Try:
+curl -X DELETE http://localhost:4003/api/users/target -H 'API-Key: user_key_12345'
+
+Even though you're a regular user, the endpoint might not check your authorization level!

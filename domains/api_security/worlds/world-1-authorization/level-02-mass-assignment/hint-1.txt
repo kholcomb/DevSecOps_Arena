@@ -1,0 +1,6 @@
+💡 Hint 1: Explore the API
+
+Visit http://localhost:4002 to see the API documentation.
+
+Use the GET /api/profile endpoint to see your current profile data. Notice the 'role' field.
+What fields are you supposed to be able to update vs. what fields exist in your profile?

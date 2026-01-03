@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./app
+    ports:
+      - "4005:5000"
+    environment:
+      - FLAG=ARENA{ssrf_m3t4d4t4_s3rv1c3}
+    depends_on:
+      - metadata-service
+
+  metadata-service:
+    image: python:3.11-slim
+    command: python -m http.server 80
+    working_dir: /data
+    volumes:
+      - ./metadata:/data
+    environment:
+      - SECRET_DATA={"flag":"ARENA{ssrf_m3t4d4t4_s3rv1c3}","aws_access_key":"AKIAIOSFODNN7EXAMPLE"}
