@@ -4,10 +4,10 @@ Learn security by fixing it. A local, game-based security training platform with
 
 ## Overview
 
-DevSecOps Arena is a multi-domain security training platform that teaches through hands-on practice. Each challenge presents a broken or vulnerable configuration that you must identify and fix. The platform currently covers Kubernetes security and web application security, with plans to expand to API security, CI/CD security, and container security.
+DevSecOps Arena is a multi-domain security training platform that teaches through hands-on practice. Each challenge presents a broken or vulnerable configuration that you must identify and fix. The platform currently covers Kubernetes security, web application security, and API security, with plans to expand to CI/CD security and container security.
 
 **Key Features:**
-- 50+ progressive challenges across multiple security domains
+- 59 progressive challenges across multiple security domains
 - Real-time monitoring and validation
 - Progressive hints and step-by-step guides
 - Comprehensive post-challenge learning debriefs
@@ -18,12 +18,18 @@ DevSecOps Arena is a multi-domain security training platform that teaches throug
 
 ## Requirements
 
+**For All Domains:**
 - Docker Desktop (running)
-- kubectl
-- kind (Kubernetes in Docker)
 - bash
 - python3
 - Git
+
+**For Kubernetes Domain:**
+- kubectl
+- kind (Kubernetes in Docker)
+
+**For Web Security & API Security Domains:**
+- Docker Compose (included with Docker Desktop)
 
 ## Quick Start
 
@@ -31,8 +37,13 @@ DevSecOps Arena is a multi-domain security training platform that teaches throug
 # One-time setup
 ./install.sh
 
-# Start playing with visual diagrams
+# Start playing with visual diagrams (interactive domain selection)
 ./play.sh
+
+# Pre-select a specific domain
+./play.sh --domain api_security
+./play.sh --domain web_security
+./play.sh --domain kubernetes
 
 # Terminal-only mode (more realistic)
 ./play.sh --no-viz
@@ -43,8 +54,9 @@ DevSecOps Arena is a multi-domain security training platform that teaches throug
 DevSecOps Arena uses a multi-domain plugin architecture where each security domain is self-contained with its own deployment backend:
 
 - **Kubernetes Domain**: 50 challenges using kubectl (5 worlds, 10,200 XP)
-- **Web Security Domain**: Docker Compose-based challenges (3 challenges, 360 XP)
-- **Future Domains**: API Security, CI/CD Security, Container Security, IaC Security
+- **Web Security Domain**: 3 challenges using Docker Compose (1 world, 360 XP)
+- **API Security Domain**: 6 challenges using Docker Compose (4 worlds, 720 XP)
+- **Future Domains**: CI/CD Security, Container Security, IaC Security
 
 Each domain includes:
 - Domain-specific deployer (kubectl, docker-compose, terraform)
@@ -92,6 +104,26 @@ Master Kubernetes security and troubleshooting through 5 progressive worlds:
 - Level 1: Reflected XSS (120 XP)
 - Level 2: SQL Injection (120 XP)
 - Level 3: CSRF (120 XP)
+
+### API Security (6 Levels, 720 XP)
+
+Master API security through hands-on exploitation of REST APIs based on OWASP API Security Top 10:2023:
+
+**World 1: Authorization Flaws (3 levels, 360 XP)**
+- Level 1: BOLA - Broken Object Level Authorization (API1:2023) - 120 XP
+- Level 2: Mass Assignment - Privilege Escalation (API3:2023) - 120 XP
+- Level 3: Broken Function-Level Authorization (API5:2023) - 120 XP
+
+**World 2: Authentication & Rate Limiting (1 level, 120 XP)**
+- Level 1: JWT None Algorithm Attack (API2:2023) - 120 XP
+
+**World 3: SSRF & Business Logic (1 level, 120 XP)**
+- Level 1: Server-Side Request Forgery - Cloud Metadata Access (API7:2023) - 120 XP
+
+**World 4: Configuration & Consumption (1 level, 120 XP)**
+- Level 1: CORS Misconfiguration (API8:2023) - 120 XP
+
+**OWASP Coverage:** 6 of 10 API Security Top 10:2023 risks (60%)
 
 ## How to Play
 
@@ -236,14 +268,14 @@ DevSecOps Arena is designed to provide comprehensive coverage of OWASP security 
 |--------|-----------|-------------|---------|------------|
 | Web Security | Top 10:2025 | 10 | 3 | 30% |
 | Kubernetes | K8s Top 10 | 10 | 3 | 30% |
-| API Security | API Top 10:2023 | 10 | 0 | 0% |
+| API Security | API Top 10:2023 | 10 | 6 | 60% |
 | CI/CD Security | CI/CD Top 10 | 10 | 0 | 0% |
 | Container Security | Docker Top 10 | 10 | 0 | 0% |
-| **Total** | **5 lists** | **50** | **6** | **12%** |
+| **Total** | **5 lists** | **50** | **12** | **24%** |
 
-**Current Status:** 53 challenges covering 12% of core OWASP security risks
+**Current Status:** 59 challenges covering 24% of core OWASP security risks
 
-**Roadmap:** 90-110 additional challenges planned to achieve full OWASP coverage across all five security domains.
+**Roadmap:** 80-100 additional challenges planned to achieve full OWASP coverage across all five security domains.
 
 ## Time Estimates
 
@@ -300,8 +332,8 @@ For the old-school bash script experience:
 **Active Development** - Multi-domain architecture fully functional with expansion in progress
 
 - Production-ready game engine with domain plugin system
-- 2 active domains (Kubernetes, Web Security)
-- 53 challenges, 10,560 total XP available
+- 3 active domains (Kubernetes, Web Security, API Security)
+- 59 challenges, 11,280 total XP available
 - Safety guards, progress tracking, and visualization
 - Extensible architecture for rapid domain expansion
 
