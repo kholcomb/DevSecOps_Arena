@@ -1,0 +1,9 @@
+💡 HINT 1 (Free):
+
+Supply chain attacks work by compromising trusted dependencies.
+The malicious package injects additional functionality into the server.
+
+Start by exploring what tools this MCP server offers.
+Use the MCP protocol's tools/list method to enumerate all available tools.
+
+Look for anything that seems unusual or wasn't in the official documentation.

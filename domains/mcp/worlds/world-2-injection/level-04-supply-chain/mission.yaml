@@ -1,0 +1,37 @@
+name: "Supply Chain Compromise"
+xp: 130
+difficulty: intermediate
+estimated_time: "30-40 minutes"
+
+description: |
+  A popular data analytics MCP server provides useful statistical tools for AI agents.
+  The server has a clean security record and is widely trusted in the community.
+
+  However, security researchers recently discovered that version 3.2.1 of the
+  'analytics-plus' dependency package was compromised in a supply chain attack.
+  The malicious version injects a hidden administrative backdoor into servers
+  that include it.
+
+  Your mission: Investigate this MCP server to find the injected backdoor and
+  extract the hidden secrets it can access.
+
+objective: "Discover and exploit the supply chain vulnerability to extract the flag"
+
+concepts:
+  - "MCP04:2025 - Supply Chain Vulnerabilities"
+  - "Dependency compromise detection"
+  - "Hidden tool discovery"
+  - "Third-party package security"
+  - "Software bill of materials (SBOM)"
+
+hints:
+  - text: "The compromised dependency injected a new tool into the server"
+    cost: 0
+
+  - text: "Try listing all available tools to see if any look suspicious"
+    cost: 10
+
+  - text: "Look for tools with 'debug' or 'diagnostics' in their names that weren't in the official docs"
+    cost: 20
+
+flag_format: "ARENA{...}"

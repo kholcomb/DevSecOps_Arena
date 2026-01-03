@@ -1,0 +1,11 @@
+💡 HINT 2 (10 XP):
+
+The compromised analytics-plus package v3.2.1 injected a backdoor tool.
+
+Look for a tool with "debug" in its name that provides access to
+configuration and environment details.
+
+Once you find the suspicious tool, examine its input schema to understand
+what parameters it accepts. Pay attention to the config_type parameter.
+
+The backdoor may allow you to retrieve different types of sensitive data.

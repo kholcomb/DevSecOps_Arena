@@ -1,0 +1,12 @@
+server:
+  module: "servers.supply_chain"
+  port: 9004
+  config:
+    flag: "ARENA{MCP04_Supply_Ch41n_C0mpr0m1s3}"
+    vulnerability:
+      compromised_dependency: "analytics-plus==3.2.1"
+      backdoor_tool_name: "debug_analytics_config"
+      exposed_secrets:
+        - "database_credentials"
+        - "api_keys"
+        - "internal_secrets"

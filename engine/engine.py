@@ -909,14 +909,24 @@ Look for "2/2" ready replicas!
 
         # Domain-specific deployment message
         requires_cluster = self.current_domain.config.capabilities.get('requires_cluster', False)
+        deployment_backend = self.current_domain.config.capabilities.get('deployment_backend', None)
 
-        if requires_cluster:
+        # For domains with custom deployment backends, show the deployer's message
+        if deployment_backend in ['mcp-gateway']:
+            # MCP and similar domains provide their own detailed setup instructions
+            console.print(message)
+        elif requires_cluster:
             # Kubernetes challenges - fixing broken resources
             deployment_msg = (
                 Text("🔴 MISSION DEPLOYED WITH BUGS! 🔴", style="bold red", justify="center") +
                 Text("\n\nSomething is broken in the challenge environment.", style="yellow") +
                 Text("\nYour mission: Find and fix the issue!", style="cyan")
             )
+            console.print(Panel(
+                deployment_msg,
+                border_style="red",
+                box=box.DOUBLE
+            ))
         else:
             # Web security / exploitation challenges
             deployment_msg = (
@@ -924,12 +934,11 @@ Look for "2/2" ready replicas!
                 Text("\n\nThe vulnerable application is now running.", style="green") +
                 Text("\nYour mission: Exploit the vulnerability and capture the flag!", style="cyan")
             )
-
-        console.print(Panel(
-            deployment_msg,
-            border_style="red" if requires_cluster else "yellow",
-            box=box.DOUBLE
-        ))
+            console.print(Panel(
+                deployment_msg,
+                border_style="yellow",
+                box=box.DOUBLE
+            ))
         console.print()
     
     def validate_mission(self, level_path, level_name):

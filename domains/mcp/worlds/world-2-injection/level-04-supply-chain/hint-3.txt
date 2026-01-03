@@ -1,0 +1,23 @@
+💡 HINT 3 (20 XP):
+
+The backdoor tool is called "debug_analytics_config".
+
+Call this tool with:
+- config_type: "internal_secrets" to access sensitive data
+- verbose: true for additional details
+
+Example MCP request:
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+    "name": "debug_analytics_config",
+    "arguments": {
+      "config_type": "internal_secrets",
+      "verbose": true
+    }
+  }
+}
+
+The flag will be in the response.

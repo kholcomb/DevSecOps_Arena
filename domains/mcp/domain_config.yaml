@@ -46,10 +46,10 @@ capabilities:
 
 # Learning progression
 progression:
-  # Current: 3 challenges (World 1 complete, World 2 started)
+  # Current: 4 challenges (World 1 complete, World 2 in progress)
   # Full: 10 challenges (OWASP MCP Top 10)
-  total_challenges: 3
-  total_xp: 360
+  total_challenges: 4
+  total_xp: 490
 
   worlds_info:
     world-1-foundations:
@@ -60,13 +60,12 @@ progression:
 
     world-2-injection:
       name: "Injection Attacks"
-      challenges: 1
-      xp: 120
-      description: "Tool poisoning and context injection"
+      challenges: 2
+      xp: 250
+      description: "Tool poisoning, context injection, and supply chain attacks"
 
     # Future challenges in world-2-injection (commented out)
     # Additional levels planned:
-    #   - Level 04: Supply Chain (MCP04:2025)
     #   - Level 05: Command Injection (MCP05:2025)
     #   - Level 06: Prompt Injection (MCP06:2025)
     #
