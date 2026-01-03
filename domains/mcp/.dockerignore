@@ -1,0 +1,35 @@
+# Docker ignore for MCP services
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Test output
+.pytest_cache/
+*.log
+
+# Generated files
+.start_server.py
+.server_runtime_config.json

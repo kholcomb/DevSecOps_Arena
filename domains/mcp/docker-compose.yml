@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # MCP Gateway - persistent service for routing
+  mcp-gateway:
+    build:
+      context: ../..
+      dockerfile: domains/mcp/Dockerfile
+    container_name: devsecops-arena-mcp-gateway
+    ports:
+      - "8900:8900"
+    networks:
+      - mcp-network
+    command: python3 domains/mcp/gateway/gateway_server.py
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8900/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # MCP Backend - challenge-specific server
+  # This will be started/stopped per challenge
+  mcp-backend:
+    build:
+      context: ../..
+      dockerfile: domains/mcp/Dockerfile
+    container_name: devsecops-arena-mcp-backend
+    # No ports exposed to host - only accessible via gateway within Docker network
+    networks:
+      - mcp-network
+    volumes:
+      # Mount challenge directory for dynamic loading
+      - ./worlds:/app/domains/mcp/worlds:ro
+      - ./servers:/app/domains/mcp/servers:ro
+    environment:
+      - CHALLENGE_PATH=/app/domains/mcp/worlds/world-1-foundations/level-01-token-exposure
+      - BACKEND_PORT=9001
+    # Command will be set dynamically by deployer
+    # For now, use a placeholder
+    command: python3 domains/mcp/servers/token_exposure_sdk.py
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      - mcp-gateway
+    profiles:
+      - challenge  # Only start when explicitly requested
+
+networks:
+  mcp-network:
+    name: devsecops-arena-mcp
+    driver: bridge

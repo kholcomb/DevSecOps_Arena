@@ -209,21 +209,24 @@ class MCPGatewayServer:
             return web.json_response(response, headers={"MCP-Session-Id": session_id})
 
         # Route to backend server
-        success, response = await self.router.route_request(message, session_id)
+        success, response, backend_session_id = await self.router.route_request(message, session_id)
+
+        # Use backend session ID if provided, otherwise use gateway session ID
+        response_session_id = backend_session_id or session_id
 
         # Log response
-        self.traffic_logger.log_response(response, message.get("id"), session_id)
+        self.traffic_logger.log_response(response, message.get("id"), response_session_id)
 
         # Update session
-        self.session_manager.touch_session(session_id)
+        self.session_manager.touch_session(response_session_id)
 
         # Return response
         if "id" in message:
             # Request - return JSON response
-            return web.json_response(response, headers={"MCP-Session-Id": session_id})
+            return web.json_response(response, headers={"MCP-Session-Id": response_session_id})
         else:
             # Notification - return 202 Accepted
-            return web.Response(status=202, headers={"MCP-Session-Id": session_id})
+            return web.Response(status=202, headers={"MCP-Session-Id": response_session_id})
 
     async def _handle_initialize(self, message: Dict[str, Any], session_id: str) -> Dict[str, Any]:
         """
@@ -238,7 +241,7 @@ class MCPGatewayServer:
         """
         # For now, pass initialize through to backend
         # In future, could handle gateway-level capabilities here
-        success, response = await self.router.route_request(message, session_id)
+        success, response, backend_session_id = await self.router.route_request(message, session_id)
         return response
 
     async def handle_get_mcp(self, request: web.Request) -> web.StreamResponse:

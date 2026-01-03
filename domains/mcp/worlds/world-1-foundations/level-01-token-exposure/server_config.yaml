@@ -3,7 +3,7 @@
 
 server:
   # Python module to load (relative to domains/mcp/)
-  module: "servers.token_exposure"
+  module: "servers.token_exposure_sdk"
 
   # Port for backend server
   port: 9001

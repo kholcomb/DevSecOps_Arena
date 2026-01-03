@@ -19,6 +19,7 @@ class RequestRouter:
     - Forward JSON-RPC messages to backends
     - Handle backend health checking
     - Manage backend server registry
+    - Map gateway session IDs to backend session IDs
     """
 
     def __init__(self):
@@ -26,6 +27,7 @@ class RequestRouter:
         self.active_challenge_id: Optional[str] = None
         self.backend_servers: Dict[str, str] = {}  # challenge_id -> backend_url
         self.client = httpx.AsyncClient(timeout=30.0)
+        self.session_map: Dict[str, str] = {}  # gateway_session_id -> backend_session_id
 
     async def close(self):
         """Close HTTP client."""
@@ -93,7 +95,7 @@ class RequestRouter:
         return False
 
     async def route_request(self, json_rpc_msg: Dict[str, Any],
-                          session_id: Optional[str] = None) -> Tuple[bool, Dict[str, Any]]:
+                          session_id: Optional[str] = None) -> Tuple[bool, Dict[str, Any], Optional[str]]:
         """
         Route a JSON-RPC request to the appropriate backend server.
 
@@ -102,9 +104,10 @@ class RequestRouter:
             session_id: Optional session ID for routing (currently uses active challenge)
 
         Returns:
-            tuple[bool, dict]: (success, response_dict)
+            tuple[bool, dict, str|None]: (success, response_dict, backend_session_id)
                 - success: True if request succeeded
                 - response_dict: Backend response or error response
+                - backend_session_id: Session ID from backend (if any)
         """
         backend_url = self.get_active_backend()
 
@@ -117,22 +120,40 @@ class RequestRouter:
                     "data": "Deploy a challenge first using arena deploy"
                 },
                 "id": json_rpc_msg.get("id")
-            }
+            }, None
 
         try:
+            # Prepare headers for backend request
+            headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "MCP-Protocol-Version": "2025-11-25"
+            }
+
+            # For initialize requests, don't send session ID - let backend create one
+            # For other requests, map gateway session ID to backend session ID
+            if json_rpc_msg.get("method") != "initialize" and session_id:
+                # Use mapped backend session ID if available
+                backend_session_id_to_send = self.session_map.get(session_id)
+                if backend_session_id_to_send:
+                    headers["MCP-Session-Id"] = backend_session_id_to_send
+
             # Forward request to backend server
             response = await self.client.post(
                 f"{backend_url}/mcp",
                 json=json_rpc_msg,
-                headers={
-                    "Content-Type": "application/json",
-                    "MCP-Session-Id": session_id or "",
-                    "MCP-Protocol-Version": "2025-11-25"
-                }
+                headers=headers
             )
 
+            # Extract backend session ID from headers
+            backend_session_id = response.headers.get("MCP-Session-Id") or response.headers.get("mcp-session-id")
+
+            # Store session mapping for future requests
+            if backend_session_id and session_id:
+                self.session_map[session_id] = backend_session_id
+
             if response.status_code == 200:
-                return True, response.json()
+                return True, response.json(), backend_session_id
             else:
                 return False, {
                     "jsonrpc": "2.0",
@@ -142,7 +163,7 @@ class RequestRouter:
                         "data": response.text[:500]  # Limit error message size
                     },
                     "id": json_rpc_msg.get("id")
-                }
+                }, None
 
         except httpx.ConnectError as e:
             return False, {
@@ -153,7 +174,7 @@ class RequestRouter:
                     "data": f"Backend at {backend_url} is not responding. Is it running?"
                 },
                 "id": json_rpc_msg.get("id")
-            }
+            }, None
         except httpx.TimeoutException:
             return False, {
                 "jsonrpc": "2.0",
@@ -163,7 +184,7 @@ class RequestRouter:
                     "data": "Backend server took too long to respond"
                 },
                 "id": json_rpc_msg.get("id")
-            }
+            }, None
         except Exception as e:
             return False, {
                 "jsonrpc": "2.0",
@@ -173,7 +194,7 @@ class RequestRouter:
                     "data": str(e)
                 },
                 "id": json_rpc_msg.get("id")
-            }
+            }, None
 
     async def health_check_backend(self, backend_url: str) -> Tuple[bool, str]:
         """

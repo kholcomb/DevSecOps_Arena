@@ -29,11 +29,22 @@ def _load_mcp_module(module_name, file_path):
 
 # Load MCP modules dynamically
 _mcp_path = Path(__file__).parent
-_deployer_mod = _load_mcp_module("mcp_deployer", _mcp_path / "deployer.py")
+
+# Check if Docker should be used (default: yes for easier management)
+import os
+USE_DOCKER = os.environ.get("MCP_USE_DOCKER", "true").lower() in ("true", "1", "yes")
+
+# Load appropriate deployer
+if USE_DOCKER:
+    _deployer_mod = _load_mcp_module("mcp_deployer_docker", _mcp_path / "deployer_docker.py")
+    MCPDeployer = _deployer_mod.MCPDockerDeployer
+else:
+    _deployer_mod = _load_mcp_module("mcp_deployer", _mcp_path / "deployer.py")
+    MCPDeployer = _deployer_mod.MCPDeployer
+
 _safety_mod = _load_mcp_module("mcp_safety", _mcp_path / "safety_guard.py")
 _viz_mod = _load_mcp_module("mcp_visualizer", _mcp_path / "visualizer.py")
 
-MCPDeployer = _deployer_mod.MCPDeployer
 MCPSafetyGuard = _safety_mod.MCPSafetyGuard
 MCPVisualizer = _viz_mod.MCPVisualizer
 

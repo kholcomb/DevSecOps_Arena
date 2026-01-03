@@ -93,15 +93,16 @@ class MCPDeployer(ChallengeDeployer):
 
     def deploy_challenge(self, level_path: Path) -> Tuple[bool, str]:
         """
-        Deploy an MCP security challenge.
+        Deploy an MCP security challenge using Docker.
 
         Steps:
-        1. Ensure gateway is running
-        2. Load server_config.yaml from level
-        3. Start backend server process
-        4. Wait for backend health check
-        5. Update gateway routing
-        6. Save state
+        1. Ensure Docker is running and image is built
+        2. Ensure gateway container is running
+        3. Load server_config.yaml from level
+        4. Start backend container with challenge config
+        5. Wait for backend health check
+        6. Register backend with gateway
+        7. Save state
 
         Args:
             level_path: Path to level directory
@@ -374,9 +375,12 @@ import importlib
 import inspect
 module = importlib.import_module("{module_name}")
 
-# Get server class (assume it's the only class in module ending with "Server")
+# Get server class (look for classes ending with "Server" or "SDK" and defined in this module)
 server_classes = [obj for name, obj in inspect.getmembers(module)
-                  if inspect.isclass(obj) and name.endswith("Server") and hasattr(obj, 'get_server_name')]
+                  if inspect.isclass(obj)
+                  and (name.endswith("Server") or name.endswith("SDK"))
+                  and hasattr(obj, 'get_server_name')
+                  and obj.__module__ == module.__name__]  # Only classes defined in this module
 
 if not server_classes:
     print(f"No server class found in {module_name}")
@@ -385,18 +389,26 @@ if not server_classes:
 ServerClass = server_classes[0]
 
 # Create and start server
-async def main():
+def main():
     server = ServerClass(runtime_config["config"], runtime_config["port"])
-    await server.start()
 
-    # Keep running
-    try:
-        while True:
-            await asyncio.sleep(1)
-    except KeyboardInterrupt:
-        await server.stop()
+    # Check if it's an SDK-based server (has 'run' method)
+    if hasattr(server, 'run'):
+        # SDK-based server - use synchronous run
+        server.run(transport="streamable-http")
+    else:
+        # Legacy server - use async start
+        async def async_main():
+            await server.start()
+            try:
+                while True:
+                    await asyncio.sleep(1)
+            except KeyboardInterrupt:
+                await server.stop()
+        asyncio.run(async_main())
 
-asyncio.run(main())
+if __name__ == "__main__":
+    main()
 """
 
         script_file = level_path.absolute() / ".start_server.py"
