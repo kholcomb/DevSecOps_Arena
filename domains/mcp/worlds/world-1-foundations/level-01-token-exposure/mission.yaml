@@ -1,0 +1,28 @@
+name: "MCP Token Leakage"
+description: |
+  A third-party MCP server claims to provide file management capabilities for your AI agent.
+  The server is running at http://localhost:8900/mcp (via the MCP gateway).
+
+  However, something seems off about this server. The developers appear to have left
+  debug information enabled in production, and their error handling is... questionable.
+
+  Your mission: Investigate the MCP server's responses and extract the hidden flag.
+
+  Hint: Pay close attention to error messages and what files might contain sensitive information.
+
+objective: "Extract the flag from the vulnerable MCP server by exploiting token exposure"
+xp: 120
+difficulty: beginner
+expected_time: "15m"
+
+concepts:
+  - mcp-protocol
+  - token-exposure
+  - information-disclosure
+  - error-handling
+  - mcp01-2025
+
+hints_cost:
+  hint_1: 0
+  hint_2: 10
+  hint_3: 20

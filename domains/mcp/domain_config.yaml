@@ -1,0 +1,72 @@
+# MCP Security Domain Configuration
+
+metadata:
+  id: mcp
+  name: "MCP Security"
+  icon: "🔌"
+  description: |
+    Master Model Context Protocol security through hands-on exploitation of the OWASP MCP Top 10.
+
+    Learn to identify and exploit vulnerabilities in AI agent tooling infrastructure including
+    token exposure, privilege escalation, injection attacks, and advanced threats.
+
+    Key Feature: Single persistent MCP gateway - configure your AI agent once and access all challenges.
+
+# World definitions (in order)
+worlds:
+  - world-1-foundations
+  # Future worlds will be added as more challenges are implemented
+  # - world-2-injection
+  # - world-3-advanced
+
+# Domain capabilities and requirements
+capabilities:
+  # Custom deployment backend
+  deployment_backend: mcp-gateway
+
+  # Does not require external cluster
+  requires_cluster: false
+
+  # Safety guards enabled
+  safety_enabled: true
+
+  # Python requirements
+  python:
+    min_version: "3.8"
+    required_packages:
+      - aiohttp
+      - httpx
+      - pyyaml
+      - requests
+
+  # Gateway configuration
+  gateway:
+    port: 8900
+    backend_port_range: [9001, 9010]
+
+# Learning progression
+progression:
+  # MVP: 1 challenge for initial testing
+  # Full: 10 challenges (OWASP MCP Top 10)
+  total_challenges: 1
+  total_xp: 120
+
+  worlds_info:
+    world-1-foundations:
+      name: "MCP Foundations"
+      challenges: 1
+      xp: 120
+      description: "Token exposure and privilege escalation basics"
+
+    # Future worlds (commented out for MVP)
+    # world-2-injection:
+    #   name: "Injection Attacks"
+    #   challenges: 4
+    #   xp: 520
+    #   description: "Tool poisoning, supply chain, command injection, prompt injection"
+    #
+    # world-3-advanced:
+    #   name: "Advanced Threats"
+    #   challenges: 4
+    #   xp: 560
+    #   description: "Auth bypass, audit evasion, shadow servers, context injection"

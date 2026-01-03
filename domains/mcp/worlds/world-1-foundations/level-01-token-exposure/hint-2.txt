@@ -1,0 +1,5 @@
+The read_file tool accepts a path parameter.
+
+What happens if you don't provide a path? Or provide an invalid one?
+
+Error messages might contain more than just error details...

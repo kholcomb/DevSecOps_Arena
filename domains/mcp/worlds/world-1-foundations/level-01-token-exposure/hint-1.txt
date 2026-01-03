@@ -1,0 +1,3 @@
+Try using the MCP server's tools with invalid inputs.
+
+Servers often leak sensitive information in error messages when they encounter unexpected input.

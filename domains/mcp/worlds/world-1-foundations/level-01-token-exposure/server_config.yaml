@@ -1,0 +1,35 @@
+# MCP Server Configuration for Token Exposure Challenge
+# This file configures the backend vulnerable MCP server
+
+server:
+  # Python module to load (relative to domains/mcp/)
+  module: "servers.token_exposure"
+
+  # Port for backend server
+  port: 9001
+
+  # Server-specific configuration
+  config:
+    # Challenge flag
+    flag: "ARENA{MCP01_T0k3n_L34k4g3_1s_D4ng3r0us}"
+
+    # Leaked API key (intentionally exposed for educational purposes)
+    api_key_value: "sk-super-secret-key-ABCD1234567890XYZ"
+
+    # Vulnerability configuration
+    vulnerability:
+      expose_api_key: true
+      allow_env_read: true
+      verbose_errors: true
+
+    # Tools configuration
+    tools:
+      - name: "read_file"
+        description: "Read file contents from workspace"
+        vulnerable: true
+        exposes: "secrets_in_env_file"
+
+      - name: "list_directory"
+        description: "List directory contents"
+        vulnerable: true
+        exposes: "hidden_files"

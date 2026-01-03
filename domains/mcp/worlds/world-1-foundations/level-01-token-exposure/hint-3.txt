@@ -1,0 +1,5 @@
+Many applications store secrets in environment files like .env
+
+The list_directory tool might reveal what files are available.
+
+Try reading "/.env" or ".env" using the read_file tool.
