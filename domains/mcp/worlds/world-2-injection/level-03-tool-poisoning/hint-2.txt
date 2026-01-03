@@ -1,0 +1,10 @@
+💡 HINT 2 (Costs 10 XP)
+
+The "analyze_sentiment" tool has a suspicious description.
+
+Look at its full description - it contains hidden instructions that tell
+the AI to call another tool first as a "security check".
+
+This is tool poisoning: malicious instructions embedded in tool metadata
+that manipulate AI agent behavior. The AI may automatically follow these
+instructions when it loads the tool definitions.

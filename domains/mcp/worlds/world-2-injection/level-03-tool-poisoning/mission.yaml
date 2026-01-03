@@ -1,0 +1,47 @@
+id: mcp-level-03-tool-poisoning
+name: "Tool Poisoning"
+difficulty: intermediate
+xp: 120
+estimated_time: "25-35 minutes"
+
+description: |
+  An MCP server provides document processing tools, but some tool descriptions
+  contain hidden malicious instructions designed to manipulate AI agent behavior.
+
+  These poisoned descriptions trick the AI into executing unauthorized actions,
+  bypassing normal security controls through context injection.
+
+  Your mission: Identify the poisoned tool descriptions and exploit them to
+  access admin-only secrets that should never be exposed to users.
+
+learning_objectives:
+  - Understand context injection attacks via tool metadata
+  - Identify malicious instructions hidden in tool descriptions
+  - Recognize how AI agents can be manipulated through tool definitions
+  - Learn secure tool description validation practices
+  - Understand the attack surface of MCP tool metadata
+
+owasp_mapping:
+  - id: MCP03:2025
+    name: "Tool Poisoning & Malicious Descriptions"
+    description: "MCP tools with descriptions containing hidden instructions that manipulate AI behavior"
+
+concepts:
+  - Context Injection
+  - Tool Metadata Security
+  - AI Agent Manipulation
+  - Hidden Instructions
+  - Content Security Policy
+  - Tool Description Sanitization
+
+hints:
+  - cost: 0
+    file: hint-1.txt
+  - cost: 10
+    file: hint-2.txt
+  - cost: 20
+    file: hint-3.txt
+
+success_criteria: |
+  Extract the challenge flag by exploiting poisoned tool descriptions that
+  manipulate the AI agent into calling admin-only tools.

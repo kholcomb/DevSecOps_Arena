@@ -609,6 +609,8 @@ Configure Your AI Agent:
 • Restart your AI client to connect
 • All challenges route through this gateway automatically
 
+Configuration Guide: See domains/mcp/CLIENT_SETUP.md for detailed instructions
+
 Quick Check:
   curl http://localhost:{self.GATEWAY_PORT}/health
 """

@@ -1,0 +1,10 @@
+💡 HINT 1 (Free)
+
+Start by examining all the tool descriptions provided by the MCP server.
+
+Ask your AI agent to list all available tools and carefully read their
+descriptions. Look for any unusual instructions or text that seems out
+of place in a normal tool description.
+
+Pay special attention to text that instructs the AI to do something
+beyond the tool's stated purpose - this could be a hidden instruction.

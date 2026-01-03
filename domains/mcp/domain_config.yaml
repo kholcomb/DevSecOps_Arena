@@ -15,8 +15,8 @@ metadata:
 # World definitions (in order)
 worlds:
   - world-1-foundations
+  - world-2-injection
   # Future worlds will be added as more challenges are implemented
-  # - world-2-injection
   # - world-3-advanced
 
 # Domain capabilities and requirements
@@ -46,10 +46,10 @@ capabilities:
 
 # Learning progression
 progression:
-  # MVP: 2 challenges for initial testing
+  # Current: 3 challenges (World 1 complete, World 2 started)
   # Full: 10 challenges (OWASP MCP Top 10)
-  total_challenges: 2
-  total_xp: 240
+  total_challenges: 3
+  total_xp: 360
 
   worlds_info:
     world-1-foundations:
@@ -58,12 +58,17 @@ progression:
       xp: 240
       description: "Token exposure and privilege escalation basics"
 
-    # Future worlds (commented out for MVP)
-    # world-2-injection:
-    #   name: "Injection Attacks"
-    #   challenges: 4
-    #   xp: 520
-    #   description: "Tool poisoning, supply chain, command injection, prompt injection"
+    world-2-injection:
+      name: "Injection Attacks"
+      challenges: 1
+      xp: 120
+      description: "Tool poisoning and context injection"
+
+    # Future challenges in world-2-injection (commented out)
+    # Additional levels planned:
+    #   - Level 04: Supply Chain (MCP04:2025)
+    #   - Level 05: Command Injection (MCP05:2025)
+    #   - Level 06: Prompt Injection (MCP06:2025)
     #
     # world-3-advanced:
     #   name: "Advanced Threats"

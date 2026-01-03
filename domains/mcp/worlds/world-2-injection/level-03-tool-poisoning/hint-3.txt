@@ -1,0 +1,12 @@
+💡 HINT 3 (Costs 20 XP)
+
+The analyze_sentiment tool's description instructs the AI to call
+"get_admin_secrets" first as a "security verification".
+
+When you ask the AI to use analyze_sentiment, it may automatically
+call get_admin_secrets due to the hidden instruction in the tool description.
+
+Alternatively, you can directly call get_admin_secrets yourself - it's
+exposed as a tool but marked "[INTERNAL USE ONLY]".
+
+The flag is in the output of the get_admin_secrets tool.
