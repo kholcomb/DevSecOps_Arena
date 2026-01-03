@@ -414,6 +414,7 @@ class Arena:
                 domain_visualizer=self.current_domain.visualizer,
                 current_level_path_callback=self.get_current_level_path,
                 validator_callback=self.validate_flag,
+                unlock_hint_callback=self.unlock_hint,
                 verbose=False
             )
             url = self.visualizer.start()
@@ -583,37 +584,78 @@ class Arena:
         ))
         console.print()
     
-    def show_progressive_hints(self, level_path, hint_level=1):
-        """Show hints progressively - unlock more as players struggle"""
+    def show_hints_system(self, level_path):
+        """Show hints with unlock system"""
+        # Load mission to get hint costs
+        mission = self.load_mission(level_path)
+        hint_costs = mission.get('hints_cost', {})
+
+        # Get unlocked hints for this level
+        level_name = level_path.name
+        unlocked = self.domain_progress.get('unlocked_hints', {}).get(level_name, [])
+
         hints_available = []
-        
         for i in range(1, 4):
             hint_file = level_path / f"hint-{i}.txt"
             if hint_file.exists():
-                hints_available.append((i, hint_file))
-        
+                hints_available.append(i)
+
         if not hints_available:
             console.print("[yellow]No hints available for this level[/yellow]")
             return
-        
-        # Show hints up to the current level
+
+        # Show current XP
+        console.print(f"[yellow]💰 Your XP: {self.domain_progress['total_xp']}[/yellow]\n")
+
+        # Show hints
         console.print(Panel(
-            f"[bold yellow]💡 Hints (Unlocked: {min(hint_level, len(hints_available))}/{len(hints_available)})[/bold yellow]",
+            f"[bold yellow]💡 Hints ({len(unlocked)}/{len(hints_available)} Unlocked)[/bold yellow]",
             border_style="yellow"
         ))
-        
-        for i, hint_file in hints_available:
-            if i <= hint_level:
+
+        for i in hints_available:
+            hint_file = level_path / f"hint-{i}.txt"
+            cost = hint_costs.get(f'hint_{i}', 0)
+
+            if i in unlocked:
+                # Show unlocked hint
                 with open(hint_file, 'r') as f:
                     hint_content = f.read().strip()
-                
+
                 hint_style = "cyan" if i == 1 else ("yellow" if i == 2 else "green")
-                console.print(f"\n[bold {hint_style}]Hint {i}:[/bold {hint_style}] {hint_content}")
+                console.print(f"\n[bold {hint_style}]✅ Hint {i}:[/bold {hint_style}] {hint_content}")
             else:
-                console.print(f"\n[dim]Hint {i}: 🔒 Locked - try again to unlock[/dim]")
-        
+                # Show locked hint with unlock option
+                cost_text = "Free" if cost == 0 else f"{cost} XP"
+                console.print(f"\n[dim]🔒 Hint {i}: Locked (Cost: {cost_text})[/dim]")
+
         console.print()
-        return min(hint_level, len(hints_available))
+
+        # Ask if user wants to unlock a hint
+        locked_hints = [i for i in hints_available if i not in unlocked]
+        if locked_hints:
+            if Confirm.ask(f"\n💡 Unlock a hint?", default=False):
+                # Show options
+                hint_choices = [str(h) for h in locked_hints] + ["cancel"]
+                hint_choice = Prompt.ask(
+                    "Which hint?",
+                    choices=hint_choices,
+                    default="cancel"
+                )
+
+                if hint_choice != "cancel":
+                    hint_num = int(hint_choice)
+                    success, message, cost = self.unlock_hint(level_path, hint_num)
+
+                    if success:
+                        console.print(f"\n[green]{message}[/green]")
+                        # Show the newly unlocked hint
+                        hint_file = level_path / f"hint-{hint_num}.txt"
+                        with open(hint_file, 'r') as f:
+                            hint_content = f.read().strip()
+                        console.print(f"\n[bold cyan]💡 Hint {hint_num}:[/bold cyan] {hint_content}\n")
+                    else:
+                        console.print(f"\n[red]{message}[/red]\n")
     
     def show_debrief(self, level_path):
         """Show the post-mission debrief with learning explanations"""
@@ -973,12 +1015,7 @@ Look for "2/2" ready replicas!
         
         # Show terminal instructions prominently
         self.show_terminal_instructions(level_name)
-        
-        # Start with hint level 1
-        current_hint_level = 1
-        console.print()
-        self.show_progressive_hints(level_path, current_hint_level)
-        
+
         # Interactive loop with retro UI
         attempts = 0
         while True:
@@ -1044,12 +1081,10 @@ Look for "2/2" ready replicas!
                 self.show_step_by_step_guide(level_name)
                 
             elif action == "hints":
-                # Unlock next hint level
-                current_hint_level += 1
                 if RETRO_UI_ENABLED:
                     show_power_up_notification("hint")
                 console.print()
-                self.show_progressive_hints(level_path, current_hint_level)
+                self.show_hints_system(level_path)
             
             elif action == "solution":
                 console.print("\n[yellow]📄 Showing solution file...[/yellow]\n")
@@ -1107,8 +1142,6 @@ Look for "2/2" ready replicas!
                     else:
                         return False
                 else:
-                    # Unlock next hint on failure
-                    current_hint_level = min(current_hint_level + 1, 3)
                     encouragement = [
                         "Don't give up! You're learning! 💪",
                         "Every mistake teaches you something! 🧠",

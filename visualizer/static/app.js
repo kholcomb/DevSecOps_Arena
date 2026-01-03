@@ -1447,17 +1447,83 @@ async function fetchHints() {
         }
 
         hintsContainer.textContent = '';
+
+        // Show current XP
+        if (data.current_xp !== undefined) {
+            const xpDiv = createElement('div', 'hints-xp-display');
+            xpDiv.textContent = `Your XP: ${data.current_xp}`;
+            hintsContainer.appendChild(xpDiv);
+        }
+
         data.hints.forEach(hint => {
             const hintDiv = createElement('div', 'hint-item');
-            const hintNumber = createElement('div', 'hint-number', `Hint ${hint.number}`);
-            const hintContent = createElement('div', 'hint-content', hint.content);
-            hintDiv.appendChild(hintNumber);
-            hintDiv.appendChild(hintContent);
+
+            if (hint.locked) {
+                // Locked hint - show unlock button
+                hintDiv.classList.add('locked');
+
+                const hintHeader = createElement('div', 'hint-header');
+                const hintNumber = createElement('div', 'hint-number-locked', `Hint ${hint.number} 🔒`);
+                hintHeader.appendChild(hintNumber);
+
+                const unlockBtn = createElement('button', 'unlock-hint-btn');
+                unlockBtn.textContent = hint.cost === 0 ? 'Unlock (Free)' : `Unlock (${hint.cost} XP)`;
+                unlockBtn.setAttribute('data-hint-number', hint.number);
+                unlockBtn.addEventListener('click', () => unlockHint(hint.number));
+                hintHeader.appendChild(unlockBtn);
+
+                hintDiv.appendChild(hintHeader);
+
+                const lockedMsg = createElement('div', 'hint-locked-msg');
+                lockedMsg.textContent = '🔒 Unlock this hint to reveal the content';
+                hintDiv.appendChild(lockedMsg);
+            } else {
+                // Unlocked hint - show content
+                hintDiv.classList.add('unlocked');
+                const hintNumber = createElement('div', 'hint-number', `Hint ${hint.number} ✅`);
+                const hintContent = createElement('div', 'hint-content', hint.content);
+                hintDiv.appendChild(hintNumber);
+                hintDiv.appendChild(hintContent);
+            }
+
             hintsContainer.appendChild(hintDiv);
         });
     } catch (error) {
         console.error('Error fetching hints:', error);
         document.getElementById('hints-list').textContent = 'Error loading hints';
+    }
+}
+
+/**
+ * Unlock a hint
+ */
+async function unlockHint(hintNumber) {
+    try {
+        const response = await fetch('/api/unlock-hint', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ hint_number: hintNumber })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Refresh hints to show unlocked hint
+            await fetchHints();
+
+            // Also refresh game state to update XP display
+            await fetchClusterState();
+
+            // Show success message briefly
+            console.log(data.message);
+        } else {
+            alert(data.message || 'Failed to unlock hint');
+        }
+    } catch (error) {
+        console.error('Error unlocking hint:', error);
+        alert('Error unlocking hint. Please try again.');
     }
 }
 

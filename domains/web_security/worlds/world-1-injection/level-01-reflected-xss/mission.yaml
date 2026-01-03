@@ -18,7 +18,8 @@ concepts:
   - client-side-injection
   - javascript-payloads
 
+# Hints are free for the first level since users start with 0 XP
 hints_cost:
   hint_1: 0
-  hint_2: 10
-  hint_3: 25
+  hint_2: 0
+  hint_3: 0
