@@ -305,15 +305,44 @@ After completing each challenge, you receive a detailed debrief explaining:
 Get stuck or want to retry? Reset individual levels:
 
 ```bash
-python3 engine/reset.py level-1-pods
-python3 engine/reset.py level-2-deployments
+python3 scripts/maintenance/reset.py level-1-pods
+python3 scripts/maintenance/reset.py level-2-deployments
 ```
 
 Or reset everything:
 
 ```bash
-python3 engine/reset.py all
+python3 scripts/maintenance/reset.py all
 ```
+
+## Container Cleanup
+
+DevSecOps Arena automatically cleans up all game containers when you:
+- Press `Ctrl+C` to interrupt the game
+- Type `quit` to exit normally
+- Receive a `SIGTERM` signal
+
+**Automatic Cleanup Handles:**
+- MCP domain containers (gateway + backend)
+- Web Security domain containers
+- API Security domain containers
+- Associated Docker networks
+
+**Manual Cleanup:**
+
+If you need to manually clean up containers (e.g., after a crash):
+
+```bash
+# Clean up all arena containers across all domains
+./scripts/maintenance/cleanup-containers.sh
+
+# Or manually remove specific domain containers
+docker rm -f devsecops-arena-mcp-gateway devsecops-arena-mcp-backend
+docker rm -f $(docker ps -a --filter "name=arena_web" -q)
+docker rm -f $(docker ps -a --filter "name=arena_api" -q)
+```
+
+**Note:** SIGKILL (`kill -9`) cannot be caught, so containers may remain if the process is force-killed. Use the manual cleanup script in this case.
 
 ## OWASP Coverage
 
@@ -376,12 +405,30 @@ For the old-school bash script experience:
 ./engine/start_game.sh
 ```
 
+## Utility Scripts
+
+DevSecOps Arena includes utility scripts for development and maintenance:
+
+- **Development Tools** (`scripts/development/`)
+  - `create_level.sh` - Scaffold new challenge levels
+  - `generate_level.py` - Generate level metadata
+  - `progress_tracker.py` - Track development progress
+
+- **Maintenance Tools** (`scripts/maintenance/`)
+  - `cleanup-containers.sh` - Remove all arena containers
+  - `reset.py` - Reset challenge progress
+  - `audit_levels.sh` - Audit levels for completeness
+  - `test-all-levels.sh` - Run validation tests
+
+See [scripts/README.md](scripts/README.md) for detailed usage instructions.
+
 ## Documentation
 
 - [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Technical architecture with mermaid diagrams
 - [contributing.md](docs/contributing.md) - Detailed contributor guide
 - [SAFETY.md](docs/SAFETY.md) - Comprehensive safety system documentation
 - [50-CHALLENGE-BLUEPRINT.md](docs/50-CHALLENGE-BLUEPRINT.md) - Complete reference for all 50 Kubernetes challenges
+- [scripts/README.md](scripts/README.md) - Utility scripts reference
 
 ## Project Status
 

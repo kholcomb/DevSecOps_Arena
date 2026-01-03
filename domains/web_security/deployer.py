@@ -193,6 +193,33 @@ class DockerComposeDeployer(ChallengeDeployer):
         except Exception as e:
             return False, f"Cleanup error: {str(e)}"
 
+    def cleanup_all_containers(self):
+        """
+        Cleanup all containers for this domain.
+        Called on game exit to ensure no orphaned containers.
+        """
+        try:
+            # Stop all containers with this project prefix
+            result = subprocess.run(
+                ["docker", "ps", "-a", "--filter", f"name={self.project_prefix}", "--format", "{{.Names}}"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+
+            if result.returncode == 0 and result.stdout.strip():
+                container_names = result.stdout.strip().split('\n')
+                for container in container_names:
+                    subprocess.run(
+                        ["docker", "rm", "-f", container],
+                        capture_output=True,
+                        timeout=10
+                    )
+                print(f"Cleaned up {len(container_names)} container(s) for {self.project_prefix}")
+
+        except Exception as e:
+            print(f"Warning: Error during container cleanup: {e}")
+
     def get_status(self, level_path: Path) -> Dict[str, Any]:
         """
         Get current status of Docker Compose challenge containers.

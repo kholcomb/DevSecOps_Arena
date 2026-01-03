@@ -37,6 +37,7 @@ class MCPDockerDeployer(ChallengeDeployer):
     GATEWAY_PORT = 8900
     BACKEND_PORT_START = 9001
     DOCKER_COMPOSE_FILE = Path(__file__).parent / "docker-compose.yml"
+    VERSION_FILE = Path(__file__).parent / "VERSION"
     MCP_NETWORK = "devsecops-arena-mcp"
 
     # Container names
@@ -53,6 +54,17 @@ class MCPDockerDeployer(ChallengeDeployer):
         super().__init__(domain_config)
         self.mcp_dir = Path(__file__).parent
         self.arena_root = self.mcp_dir.parent.parent
+        self.version = self._read_version()
+        self.image_name = f"devsecops-arena-mcp:{self.version}"
+
+    def _read_version(self) -> str:
+        """Read version from VERSION file."""
+        try:
+            with open(self.VERSION_FILE, 'r') as f:
+                return f.read().strip()
+        except Exception:
+            logger.warning("Could not read VERSION file, using 'dev'")
+            return "dev"
 
     def health_check(self) -> Tuple[bool, str]:
         """
@@ -172,6 +184,42 @@ class MCPDockerDeployer(ChallengeDeployer):
             logger.error(f"Error cleaning up challenge: {e}", exc_info=True)
             return False, f"Cleanup error: {str(e)}"
 
+    def cleanup_all_containers(self):
+        """
+        Cleanup all MCP containers (backend and gateway).
+        Called on game exit or interrupt to ensure no orphaned containers.
+        """
+        logger.info("Cleaning up all MCP containers...")
+        try:
+            # Stop backend container
+            self._stop_backend_container()
+
+            # Stop gateway container
+            try:
+                subprocess.run(
+                    ["docker", "rm", "-f", self.GATEWAY_CONTAINER],
+                    capture_output=True,
+                    timeout=10
+                )
+                logger.info(f"Stopped gateway container: {self.GATEWAY_CONTAINER}")
+            except Exception as e:
+                logger.warning(f"Error stopping gateway container: {e}")
+
+            # Clean up network if no other containers using it
+            try:
+                subprocess.run(
+                    ["docker", "network", "rm", self.MCP_NETWORK],
+                    capture_output=True,
+                    timeout=5
+                )
+                logger.info(f"Removed network: {self.MCP_NETWORK}")
+            except Exception:
+                # Network might still be in use or already removed, that's okay
+                pass
+
+        except Exception as e:
+            logger.error(f"Error during full cleanup: {e}")
+
     def get_status(self, level_path: Path) -> Dict[str, Any]:
         """
         Get status of MCP challenge deployment.
@@ -207,31 +255,33 @@ class MCPDockerDeployer(ChallengeDeployer):
     # Docker management methods
 
     def _build_image(self) -> Tuple[bool, str]:
-        """Build MCP Docker image."""
+        """Build MCP Docker image with semantic versioning."""
         try:
             # Check if image exists
             result = subprocess.run(
-                ["docker", "images", "-q", "devsecops-arena-mcp"],
+                ["docker", "images", "-q", self.image_name],
                 capture_output=True,
                 text=True
             )
 
             if result.stdout.strip():
-                logger.info("Docker image already exists")
-                return True, "Image ready"
+                logger.info(f"Docker image {self.image_name} already exists")
+                return True, f"Image ready ({self.version})"
 
-            # Build image using docker-compose
-            logger.info("Building Docker image (this may take a minute)...")
+            # Build image using docker-compose with IMAGE_TAG env var
+            logger.info(f"Building Docker image {self.image_name} (this may take a minute)...")
+            env = {**subprocess.os.environ, "IMAGE_TAG": self.version}
             result = subprocess.run(
                 ["docker-compose", "-f", str(self.DOCKER_COMPOSE_FILE), "build"],
                 cwd=str(self.arena_root),
                 capture_output=True,
                 text=True,
-                timeout=300
+                timeout=300,
+                env=env
             )
 
             if result.returncode == 0:
-                return True, "Image built successfully"
+                return True, f"Image built successfully ({self.version})"
             else:
                 return False, f"Build failed: {result.stderr[:500]}"
 
@@ -241,22 +291,24 @@ class MCPDockerDeployer(ChallengeDeployer):
     def _ensure_gateway_running(self) -> Tuple[bool, str]:
         """Ensure gateway container is running."""
         if self._is_container_running(self.GATEWAY_CONTAINER):
-            return True, "Gateway already running"
+            return True, f"Gateway already running ({self.version})"
 
-        # Start gateway using docker-compose
+        # Start gateway using docker-compose with IMAGE_TAG env var
         try:
+            env = {**subprocess.os.environ, "IMAGE_TAG": self.version}
             subprocess.run(
                 ["docker-compose", "-f", str(self.DOCKER_COMPOSE_FILE), "up", "-d", "mcp-gateway"],
                 cwd=str(self.arena_root),
                 check=True,
-                capture_output=True
+                capture_output=True,
+                env=env
             )
 
             # Wait for gateway to be ready
             time.sleep(3)
 
             if self._is_container_running(self.GATEWAY_CONTAINER):
-                return True, "Gateway started"
+                return True, f"Gateway started ({self.version})"
             else:
                 return False, "Gateway failed to start"
 
@@ -288,7 +340,7 @@ class MCPDockerDeployer(ChallengeDeployer):
                     "-v", f"{level_path}:/app/challenge:ro",
                     "-w", "/app",
                     "-e", f"PYTHONPATH=/app",
-                    "devsecops-arena-mcp:latest",
+                    self.image_name,
                     "python3", f"challenge/.start_server.py"
                 ],
                 capture_output=True,

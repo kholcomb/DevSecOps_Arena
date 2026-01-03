@@ -13,6 +13,8 @@ import subprocess
 import time
 import argparse
 import webbrowser
+import signal
+import atexit
 from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
@@ -1167,8 +1169,9 @@ Look for "2/2" ready replicas!
                     return True
                     
             elif action == "quit":
-                self.cleanup_current_level()
-                console.print("\n[yellow]👋 Thanks for playing DevSecOps Arena! Progress saved.[/yellow]\n")
+                console.print("\n[yellow]👋 Thanks for playing DevSecOps Arena![/yellow]")
+                cleanup_on_exit(self)
+                console.print("[green]Progress saved![/green]\n")
                 sys.exit(0)
     
     def play_world(self, world_name):
@@ -1225,6 +1228,39 @@ Look for "2/2" ready replicas!
         time.sleep(2)
         
         return True  # World completed successfully
+
+
+def cleanup_on_exit(game_instance=None):
+    """
+    Cleanup function called on exit or signal interrupt.
+    Ensures all game containers are properly cleaned up.
+    """
+    try:
+        if game_instance:
+            console.print("\n[yellow]Cleaning up game containers...[/yellow]")
+            game_instance.cleanup_current_level()
+            game_instance.stop_visualizer()
+
+            # Additional cleanup for Docker-based domains
+            if hasattr(game_instance, 'current_domain') and game_instance.current_domain:
+                deployer = game_instance.current_domain.deployer
+                # Check if this is a Docker deployer with cleanup_all method
+                if hasattr(deployer, 'cleanup_all_containers'):
+                    deployer.cleanup_all_containers()
+
+            console.print("[green]Cleanup complete![/green]")
+    except Exception as e:
+        console.print(f"[yellow]Cleanup warning: {e}[/yellow]")
+
+
+def signal_handler(signum, frame):
+    """Handle SIGTERM and SIGINT signals for graceful shutdown."""
+    import __main__
+    console.print(f"\n[yellow]Received signal {signum}, shutting down gracefully...[/yellow]")
+    if hasattr(__main__, 'game_instance') and __main__.game_instance:
+        cleanup_on_exit(__main__.game_instance)
+    sys.exit(0)
+
 
 def main():
     # Parse command line arguments
@@ -1321,15 +1357,21 @@ if __name__ == "__main__":
         import __main__
         __main__.game_instance = None
 
+        # Register signal handlers for graceful shutdown
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+
+        # Register cleanup function to run on normal exit
+        atexit.register(lambda: cleanup_on_exit(__main__.game_instance) if hasattr(__main__, 'game_instance') else None)
+
         main()
     except KeyboardInterrupt:
         console.print("\n\n[yellow]👋 Game interrupted. Cleaning up...[/yellow]")
         if hasattr(__main__, 'game_instance') and __main__.game_instance:
-            __main__.game_instance.cleanup_current_level()
+            cleanup_on_exit(__main__.game_instance)
         console.print("[yellow]Progress saved![/yellow]\n")
         sys.exit(0)
     finally:
         # Clean up resources if game was started
         if hasattr(__main__, 'game_instance') and __main__.game_instance:
-            __main__.game_instance.stop_visualizer()
-            __main__.game_instance.cleanup_current_level()
+            cleanup_on_exit(__main__.game_instance)

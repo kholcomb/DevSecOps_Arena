@@ -13,8 +13,9 @@ console = Console()
 
 def reset_level(world, level):
     """Reset a specific level to initial state"""
-    base_dir = Path(__file__).parent.parent
-    level_path = base_dir / "worlds" / world / level
+    # Navigate to project root (scripts/maintenance -> project root)
+    base_dir = Path(__file__).parent.parent.parent
+    level_path = base_dir / "domains" / "kubernetes" / "worlds" / world / level
     
     if not level_path.exists():
         console.print(f"[red]Error: Level not found: {world}/{level}[/red]")
@@ -84,12 +85,12 @@ def main():
     if len(sys.argv) < 2:
         console.print("[bold]DevSecOps Arena Reset Tool[/bold]\n")
         console.print("Usage:")
-        console.print("  python3 engine/reset.py <level-name>")
-        console.print("  python3 engine/reset.py all")
+        console.print("  python3 scripts/maintenance/reset.py <level-name>")
+        console.print("  python3 scripts/maintenance/reset.py all")
         console.print("\nExamples:")
-        console.print("  python3 engine/reset.py level-1-pods")
-        console.print("  python3 engine/reset.py level-2-deployments")
-        console.print("  python3 engine/reset.py all")
+        console.print("  python3 scripts/maintenance/reset.py level-1-pods")
+        console.print("  python3 scripts/maintenance/reset.py level-2-deployments")
+        console.print("  python3 scripts/maintenance/reset.py all")
         return
     
     if sys.argv[1] == "all":

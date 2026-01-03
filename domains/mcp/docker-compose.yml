@@ -1,8 +1,7 @@
-version: '3.8'
-
 services:
   # MCP Gateway - persistent service for routing
   mcp-gateway:
+    image: devsecops-arena-mcp:${IMAGE_TAG:-dev}
     build:
       context: ../..
       dockerfile: domains/mcp/Dockerfile
@@ -22,6 +21,7 @@ services:
   # MCP Backend - challenge-specific server
   # This will be started/stopped per challenge
   mcp-backend:
+    image: devsecops-arena-mcp:${IMAGE_TAG:-dev}
     build:
       context: ../..
       dockerfile: domains/mcp/Dockerfile

@@ -22,6 +22,7 @@ The MCP domain now uses Docker containers for easier deployment and lifecycle ma
 │  - Persistent across challenges         │
 │  - Routes requests to backends          │
 │  - Session management                   │
+│  - Image: devsecops-arena-mcp:1.0.0     │
 └─────────────┬───────────────────────────┘
               │ HTTP
               │
@@ -30,8 +31,18 @@ The MCP domain now uses Docker containers for easier deployment and lifecycle ma
 │  - Challenge-specific vulnerable server │
 │  - FastMCP SDK-based                    │
 │  - Starts/stops with challenge          │
+│  - Image: devsecops-arena-mcp:1.0.0     │
 └─────────────────────────────────────────┘
 ```
+
+## Semantic Versioning
+
+The MCP Docker images use semantic versioning (MAJOR.MINOR.PATCH):
+- **Version file**: `domains/mcp/VERSION`
+- **Current version**: 1.0.0
+- **Image tag**: `devsecops-arena-mcp:1.0.0`
+
+The deployer automatically reads the version from the VERSION file and uses it for all Docker operations.
 
 ## Usage
 
@@ -55,15 +66,18 @@ The game engine will automatically:
 If you need to manage containers manually:
 
 ```bash
-# Build the image
+# Build the image (uses version from VERSION file)
 cd domains/mcp
-docker-compose build
+IMAGE_TAG=$(cat VERSION) docker-compose build
+
+# Or build with a specific version
+IMAGE_TAG=1.0.0 docker-compose build
 
 # Start gateway only
-docker-compose up -d mcp-gateway
+IMAGE_TAG=$(cat VERSION) docker-compose up -d mcp-gateway
 
 # Start both gateway and backend
-docker-compose --profile challenge up -d
+IMAGE_TAG=$(cat VERSION) docker-compose --profile challenge up -d
 
 # View logs
 docker-compose logs -f mcp-gateway
@@ -149,11 +163,11 @@ docker stop $(docker ps -q --filter "publish=8900")
 # Stop all MCP containers
 docker-compose down
 
-# Remove images
-docker rmi devsecops-arena-mcp:latest
+# Remove images (check VERSION file for current version)
+docker rmi devsecops-arena-mcp:$(cat domains/mcp/VERSION)
 
 # Rebuild and start fresh
-docker-compose build
+IMAGE_TAG=$(cat domains/mcp/VERSION) docker-compose -f domains/mcp/docker-compose.yml build
 ./play.sh --domain mcp
 ```
 
@@ -164,13 +178,21 @@ docker-compose build
 After modifying server code:
 
 ```bash
-# Rebuild image
-docker-compose build
+# Bump version in VERSION file if needed (MAJOR.MINOR.PATCH)
+echo "1.0.1" > domains/mcp/VERSION
+
+# Rebuild image with new version
+IMAGE_TAG=$(cat domains/mcp/VERSION) docker-compose -f domains/mcp/docker-compose.yml build
 
 # Restart containers
 docker-compose down
-docker-compose up -d mcp-gateway
+IMAGE_TAG=$(cat domains/mcp/VERSION) docker-compose -f domains/mcp/docker-compose.yml up -d mcp-gateway
 ```
+
+**Version Bumping Guidelines:**
+- **MAJOR**: Breaking changes to MCP protocol or API
+- **MINOR**: New features, new challenges, non-breaking changes
+- **PATCH**: Bug fixes, documentation updates
 
 ### Inspecting Running Containers
 
