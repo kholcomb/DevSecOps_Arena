@@ -36,10 +36,12 @@ class EngineDaemon:
         logger.info("🚀 Starting DevSecOps Arena Engine Daemon")
 
         # Initialize Arena instance
-        logger.info(f"   Initializing Arena (domain={self.domain or 'all'})...")
+        # Default to 'mcp' domain if not specified (daemon mode needs a default)
+        domain = self.domain if self.domain else 'mcp'
+        logger.info(f"   Initializing Arena (domain={domain})...")
         self.arena = Arena(
             enable_visualizer=False,  # Visualizer runs separately
-            domain=self.domain
+            domain=domain
         )
 
         logger.info(f"   Arena initialized successfully")

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Engine API Server - Core game engine with REST API
   engine:
@@ -9,7 +7,7 @@ services:
     image: devsecops-arena-engine:${IMAGE_TAG:-dev}
     container_name: devsecops-arena-engine
     ports:
-      - "5000:5000"
+      - "5001:5000"
     volumes:
       # Mount progress file for persistence
       - ./progress.json:/app/data/progress.json

@@ -21,8 +21,8 @@ COPY engine/ /app/engine/
 # Copy domains for challenge metadata and deployment
 COPY domains/ /app/domains/
 
-# Copy RBAC if exists
-COPY rbac/ /app/rbac/ 2>/dev/null || true
+# Copy RBAC files
+COPY rbac/ /app/rbac/
 
 # Create progress directory
 RUN mkdir -p /app/data

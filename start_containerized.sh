@@ -65,7 +65,7 @@ sleep 5
 echo -e "\n${BLUE}📊 Service Status:${NC}"
 
 if docker ps | grep -q "devsecops-arena-engine.*Up"; then
-    echo -e "${GREEN}✓${NC} Engine API:     http://localhost:5000"
+    echo -e "${GREEN}✓${NC} Engine API:     http://localhost:5001"
 else
     echo -e "${RED}✗${NC} Engine API:     Not running"
 fi
@@ -89,7 +89,7 @@ echo -e "  4. Restart:         ${YELLOW}$COMPOSE_CMD restart${NC}\n"
 echo -e "${BLUE}🔍 Troubleshooting:${NC}"
 echo -e "  View engine logs:      ${YELLOW}$COMPOSE_CMD logs engine${NC}"
 echo -e "  View visualizer logs:  ${YELLOW}$COMPOSE_CMD logs visualizer${NC}"
-echo -e "  Check API health:      ${YELLOW}curl http://localhost:5000/health${NC}\n"
+echo -e "  Check API health:      ${YELLOW}curl http://localhost:5001/health${NC}\n"
 
 # Ask if user wants to follow logs
 read -p "$(echo -e ${YELLOW}Follow logs now? [y/N]:${NC} )" -n 1 -r

@@ -71,8 +71,8 @@ This script will:
 Once started, access the arena via:
 
 - **Visualizer UI**: http://localhost:8080
-- **Engine API**: http://localhost:5000
-- **Health Check**: http://localhost:5000/health
+- **Engine API**: http://localhost:5001
+- **Health Check**: http://localhost:5001/health
 
 ## Manual Docker Compose Commands
 
@@ -191,7 +191,7 @@ docker-compose logs visualizer
 
 ```bash
 # Test engine health
-curl http://localhost:5000/health
+curl http://localhost:5001/health
 
 # Check if engine is running
 docker ps | grep engine

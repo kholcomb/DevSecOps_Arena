@@ -63,7 +63,7 @@ For a fully containerized, OS-agnostic deployment:
 ./start_containerized.sh
 
 # Access the visualizer at http://localhost:8080
-# Engine API available at http://localhost:5000
+# Engine API available at http://localhost:5001
 ```
 
 **Benefits:**
