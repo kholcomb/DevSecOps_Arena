@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Web Application Security Domain
+API Security Domain
 
-A domain focused on web application vulnerabilities and exploitation.
-This domain teaches OWASP Top 10 vulnerabilities through hands-on challenges.
+A domain focused on API security vulnerabilities and exploitation.
+This domain teaches OWASP API Security Top 10:2023 through hands-on challenges.
 """
 
 from pathlib import Path
@@ -14,22 +14,26 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from domains._base import Domain
 
-# Import web security-specific components
+# Import API security-specific components
+# Reuse shared Docker Compose components
 from domains.web_security.deployer import DockerComposeDeployer
 from domains.web_security.safety_guard import WebSecuritySafetyGuard
 from domains._base.docker_compose_visualizer import DockerComposeVisualizer
 from domains._base.validator import BashScriptValidator
 
 
-class WebSecurityDomain(Domain):
+class APISecurityDomain(Domain):
     """
-    Web Application Security Domain.
+    API Security Domain.
 
-    This domain contains challenges focused on web application vulnerabilities:
-    - World 1: Injection Attacks (XSS, SQL injection, CSRF)
+    This domain contains challenges focused on API security vulnerabilities:
+    - World 1: Authorization Flaws (BOLA, Mass Assignment, Function-Level Authorization)
+    - World 2: Authentication & Rate Limiting (JWT vulnerabilities)
+    - World 3: SSRF & Business Logic (Server-Side Request Forgery)
+    - World 4: Configuration & Consumption (CORS, security misconfiguration)
 
     Challenges are deployed using Docker Compose and focus on identifying
-    and exploiting common web vulnerabilities.
+    and exploiting common API security vulnerabilities.
     """
 
     def create_deployer(self):
@@ -45,7 +49,7 @@ class WebSecurityDomain(Domain):
         """
         Create bash script validator.
 
-        Web security challenges use standard validate.sh scripts.
+        API security challenges use standard validate.sh scripts.
 
         Returns:
             BashScriptValidator instance
@@ -54,22 +58,22 @@ class WebSecurityDomain(Domain):
 
     def create_safety_guard(self):
         """
-        Create web security safety guard.
+        Create API security safety guard.
 
         Provides minimal restrictions as Docker Compose provides
         network isolation by default.
 
         Returns:
-            WebSecuritySafetyGuard instance
+            WebSecuritySafetyGuard instance (reused for API security)
         """
         return WebSecuritySafetyGuard(self.config.__dict__)
 
     def create_visualizer(self):
         """
-        Create web application architecture visualizer.
+        Create API architecture visualizer.
 
         Provides visualization of:
-        - Running containers and services
+        - Running API containers and services
         - Network architecture
         - Port mappings
         - Service dependencies
@@ -83,19 +87,19 @@ class WebSecurityDomain(Domain):
         return DockerComposeVisualizer(config_dict)
 
 
-def load_domain(domain_path: Path) -> WebSecurityDomain:
+def load_domain(domain_path: Path) -> APISecurityDomain:
     """
-    Factory function to load the Web Security domain.
+    Factory function to load the API Security domain.
 
     Args:
-        domain_path: Path to domains/web_security/ directory
+        domain_path: Path to domains/api_security/ directory
 
     Returns:
-        WebSecurityDomain instance
+        APISecurityDomain instance
 
     Example:
-        >>> domain = load_domain(Path("domains/web_security"))
+        >>> domain = load_domain(Path("domains/api_security"))
         >>> domain.config.id
-        'web_security'
+        'api_security'
     """
-    return WebSecurityDomain(domain_path)
+    return APISecurityDomain(domain_path)

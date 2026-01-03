@@ -36,7 +36,9 @@ class DockerComposeDeployer(ChallengeDeployer):
             domain_config: Configuration from domain_config.yaml
         """
         super().__init__(domain_config)
-        self.project_prefix = "arena_web"
+        # Use domain id for dynamic prefix, default to 'web' for backwards compatibility
+        domain_id = domain_config.get('id', 'web_security')
+        self.project_prefix = f"arena_{domain_id.replace('_security', '')}"
 
     def health_check(self) -> tuple[bool, str]:
         """
