@@ -46,16 +46,16 @@ capabilities:
 
 # Learning progression
 progression:
-  # MVP: 1 challenge for initial testing
+  # MVP: 2 challenges for initial testing
   # Full: 10 challenges (OWASP MCP Top 10)
-  total_challenges: 1
-  total_xp: 120
+  total_challenges: 2
+  total_xp: 240
 
   worlds_info:
     world-1-foundations:
       name: "MCP Foundations"
-      challenges: 1
-      xp: 120
+      challenges: 2
+      xp: 240
       description: "Token exposure and privilege escalation basics"
 
     # Future worlds (commented out for MVP)

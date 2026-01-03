@@ -1,0 +1,12 @@
+💡 HINT 2 (Costs 10 XP)
+
+The server exposes several "admin only" tools but doesn't actually check
+if you have admin permissions before executing them.
+
+Try calling tools like:
+- list_all_users (should be admin-only)
+- create_admin_user (should be admin-only)
+- get_system_flag (should be admin-only)
+
+Even though you're a standard user, the server may allow you to execute these
+privileged operations due to missing authorization checks.

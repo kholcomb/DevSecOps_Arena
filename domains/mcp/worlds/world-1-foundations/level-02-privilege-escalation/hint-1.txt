@@ -1,0 +1,9 @@
+💡 HINT 1 (Free)
+
+Start by understanding your current permissions.
+
+Try calling the MCP server's tools to see what information you can access as
+a standard user. Pay attention to tool descriptions - some may indicate they
+are "admin only" but might not actually enforce that restriction.
+
+Look for tools that mention administrative functions or system-level access.

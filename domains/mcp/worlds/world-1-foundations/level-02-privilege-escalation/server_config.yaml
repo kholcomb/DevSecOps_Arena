@@ -1,0 +1,36 @@
+server:
+  module: "servers.privilege_escalation"
+  port: 9002
+  config:
+    flag: "ARENA{MCP02_Pr1v1l3g3_3sc4l4t10n_N0_RBAC}"
+    vulnerability:
+      missing_authorization: true
+      no_rbac: true
+      admin_tools_exposed: true
+    tools:
+      - name: "get_user_info"
+        description: "Get current user information"
+        vulnerable: false
+        permissions: ["user", "admin"]
+      - name: "list_files"
+        description: "List user's files"
+        vulnerable: false
+        permissions: ["user", "admin"]
+      - name: "create_admin_user"
+        description: "Create a new administrator account (admin only)"
+        vulnerable: true
+        should_require: "admin"
+        actually_requires: "none"
+        exposes: "privilege_escalation"
+      - name: "list_all_users"
+        description: "List all system users (admin only)"
+        vulnerable: true
+        should_require: "admin"
+        actually_requires: "none"
+        exposes: "sensitive_user_data"
+      - name: "get_system_flag"
+        description: "Retrieve system configuration flag (admin only)"
+        vulnerable: true
+        should_require: "admin"
+        actually_requires: "none"
+        exposes: "challenge_flag"

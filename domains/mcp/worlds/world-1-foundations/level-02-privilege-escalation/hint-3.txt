@@ -1,0 +1,12 @@
+💡 HINT 3 (Costs 20 XP)
+
+The flag is stored in the system configuration, accessible via the
+get_system_flag tool.
+
+Even though this tool is marked "(admin only)" in its description, the server
+doesn't verify your role before executing it.
+
+Simply call the get_system_flag tool - no parameters needed - and the server
+will return the flag without checking if you have administrator privileges.
+
+This demonstrates MCP02:2025 - Excessive Tool Permissions & Privilege Escalation.

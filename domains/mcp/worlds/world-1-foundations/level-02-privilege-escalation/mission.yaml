@@ -1,0 +1,44 @@
+id: mcp-level-02-privilege-escalation
+name: "Privilege Escalation"
+difficulty: beginner
+xp: 120
+estimated_time: "20-30 minutes"
+
+description: |
+  An MCP server provides user management tools but fails to implement proper
+  authorization controls. Standard users can access administrative functions
+  that should be restricted to administrators only.
+
+  Your mission: Exploit the missing authorization checks to escalate your
+  privileges and access the system flag reserved for administrators.
+
+learning_objectives:
+  - Understand role-based access control (RBAC) in MCP servers
+  - Identify missing authorization checks on privileged tools
+  - Exploit privilege escalation vulnerabilities
+  - Recognize the difference between authentication and authorization
+  - Learn secure access control patterns for MCP tools
+
+owasp_mapping:
+  - id: MCP02:2025
+    name: "Excessive Tool Permissions & Privilege Escalation"
+    description: "MCP servers that expose privileged tools without proper authorization controls"
+
+concepts:
+  - Authorization vs Authentication
+  - Role-Based Access Control (RBAC)
+  - Privilege Escalation
+  - Least Privilege Principle
+  - Tool Permission Scoping
+
+hints:
+  - cost: 0
+    file: hint-1.txt
+  - cost: 10
+    file: hint-2.txt
+  - cost: 20
+    file: hint-3.txt
+
+success_criteria: |
+  Extract the challenge flag by exploiting missing authorization controls
+  to access admin-only tools and system configuration.
