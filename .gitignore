@@ -35,3 +35,7 @@ kubeconfig
 
 # Development
 Plan.md
+
+# MCP Domain - Generated files
+.server_runtime_config.json
+.start_server.py
