@@ -4,10 +4,10 @@ Learn security by fixing it. A local, game-based security training platform with
 
 ## Overview
 
-DevSecOps Arena is a multi-domain security training platform that teaches through hands-on practice. Each challenge presents a broken or vulnerable configuration that you must identify and fix. The platform currently covers Kubernetes security, web application security, and API security, with plans to expand to CI/CD security and container security.
+DevSecOps Arena is a multi-domain security training platform that teaches through hands-on practice. Each challenge presents a broken or vulnerable configuration that you must identify and fix. The platform currently covers Kubernetes security, web application security, API security, and Model Context Protocol (MCP) security, with plans to expand to CI/CD security and container security.
 
 **Key Features:**
-- 59 progressive challenges across multiple security domains
+- 60 progressive challenges across multiple security domains
 - Real-time monitoring and validation
 - Progressive hints and step-by-step guides
 - Comprehensive post-challenge learning debriefs
@@ -31,6 +31,10 @@ DevSecOps Arena is a multi-domain security training platform that teaches throug
 **For Web Security & API Security Domains:**
 - Docker Compose (included with Docker Desktop)
 
+**For MCP Security Domain:**
+- Python 3.8+ with pip
+- AI client supporting MCP protocol (e.g., Claude Desktop)
+
 ## Quick Start
 
 ```bash
@@ -44,6 +48,7 @@ DevSecOps Arena is a multi-domain security training platform that teaches throug
 ./play.sh --domain api_security
 ./play.sh --domain web_security
 ./play.sh --domain kubernetes
+./play.sh --domain mcp
 
 # Terminal-only mode (more realistic)
 ./play.sh --no-viz
@@ -56,6 +61,7 @@ DevSecOps Arena uses a multi-domain plugin architecture where each security doma
 - **Kubernetes Domain**: 50 challenges using kubectl (5 worlds, 10,200 XP)
 - **Web Security Domain**: 3 challenges using Docker Compose (1 world, 360 XP)
 - **API Security Domain**: 6 challenges using Docker Compose (4 worlds, 720 XP)
+- **MCP Security Domain**: 1 challenge using MCP gateway (1 world, 120 XP) - *10 challenges planned*
 - **Future Domains**: CI/CD Security, Container Security, IaC Security
 
 Each domain includes:
@@ -124,6 +130,30 @@ Master API security through hands-on exploitation of REST APIs based on OWASP AP
 - Level 1: CORS Misconfiguration (API8:2023) - 120 XP
 
 **OWASP Coverage:** 6 of 10 API Security Top 10:2023 risks (60%)
+
+### Model Context Protocol (MCP) Security (1 Level, 120 XP)
+
+Master MCP security by exploiting AI agent vulnerabilities based on OWASP MCP Top 10:2025. Learn to identify and exploit security flaws in Model Context Protocol servers that connect AI agents to tools and resources.
+
+**World 1: Foundations (1 level, 120 XP)**
+- Level 1: Token Exposure - API Key Leakage (MCP01:2025) - 120 XP
+  - Exploit error messages and debug information leaking sensitive tokens
+  - Access configuration files containing API keys and secrets
+  - Demonstrate information disclosure vulnerabilities in MCP servers
+
+**Architecture:** Persistent MCP gateway on port 8900 that you configure once with your AI client (Claude Desktop, etc.). All challenges route through this gateway automatically - no reconfiguration needed when switching between challenges.
+
+**Key Concepts:**
+- Model Context Protocol (MCP) fundamentals
+- JSON-RPC 2.0 message format
+- HTTP/SSE transport mechanisms
+- AI agent tool interaction patterns
+- Information disclosure vulnerabilities
+- Secret management best practices
+
+**OWASP Coverage:** 1 of 10 MCP Security Top 10:2025 risks (10%) - *9 more challenges planned*
+
+**Setup:** After deploying an MCP challenge, configure your AI client once with `http://localhost:8900/mcp`. See `domains/mcp/CLIENT_SETUP.md` for detailed configuration instructions.
 
 ## How to Play
 
@@ -269,13 +299,14 @@ DevSecOps Arena is designed to provide comprehensive coverage of OWASP security 
 | Web Security | Top 10:2025 | 10 | 3 | 30% |
 | Kubernetes | K8s Top 10 | 10 | 3 | 30% |
 | API Security | API Top 10:2023 | 10 | 6 | 60% |
+| MCP Security | MCP Top 10:2025 | 10 | 1 | 10% |
 | CI/CD Security | CI/CD Top 10 | 10 | 0 | 0% |
 | Container Security | Docker Top 10 | 10 | 0 | 0% |
-| **Total** | **5 lists** | **50** | **12** | **24%** |
+| **Total** | **6 lists** | **60** | **13** | **22%** |
 
-**Current Status:** 59 challenges covering 24% of core OWASP security risks
+**Current Status:** 60 challenges covering 22% of core OWASP security risks
 
-**Roadmap:** 80-100 additional challenges planned to achieve full OWASP coverage across all five security domains.
+**Roadmap:** 90-100 additional challenges planned to achieve full OWASP coverage across all six security domains.
 
 ## Time Estimates
 
@@ -332,8 +363,8 @@ For the old-school bash script experience:
 **Active Development** - Multi-domain architecture fully functional with expansion in progress
 
 - Production-ready game engine with domain plugin system
-- 3 active domains (Kubernetes, Web Security, API Security)
-- 59 challenges, 11,280 total XP available
+- 4 active domains (Kubernetes, Web Security, API Security, MCP Security)
+- 60 challenges, 11,400 total XP available
 - Safety guards, progress tracking, and visualization
 - Extensible architecture for rapid domain expansion
 
