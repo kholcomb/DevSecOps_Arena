@@ -385,7 +385,8 @@ class VulnerableMCPServer(ABC):
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
 
-        self.site = web.TCPSite(self.runner, 'localhost', self.port)
+        # Bind to 0.0.0.0 to allow connections from other Docker containers
+        self.site = web.TCPSite(self.runner, '0.0.0.0', self.port)
         await self.site.start()
 
         logger.info(f"{self.get_server_name()} started on http://localhost:{self.port}")

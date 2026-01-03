@@ -7,6 +7,7 @@ Runs on port 8900 and routes requests to challenge-specific backend servers.
 """
 
 from aiohttp import web
+import aiohttp_cors
 import asyncio
 import json
 import logging
@@ -55,6 +56,7 @@ class MCPGatewayServer:
 
         self.app = web.Application()
         self._setup_routes()
+        self._setup_cors()
 
         self.runner: Optional[web.AppRunner] = None
         self.site: Optional[web.TCPSite] = None
@@ -66,6 +68,21 @@ class MCPGatewayServer:
         self.app.router.add_get('/health', self.handle_health)
         self.app.router.add_get('/status', self.handle_status)
         self.app.router.add_post('/admin/register', self.handle_register_backend)
+
+    def _setup_cors(self):
+        """Setup CORS for browser-based MCP clients (like Inspector)."""
+        cors = aiohttp_cors.setup(self.app, defaults={
+            "*": aiohttp_cors.ResourceOptions(
+                allow_credentials=True,
+                expose_headers="*",
+                allow_headers="*",
+                allow_methods=["GET", "POST", "OPTIONS"]
+            )
+        })
+
+        # Add CORS to all routes
+        for route in list(self.app.router.routes()):
+            cors.add(route)
 
     async def handle_health(self, request: web.Request) -> web.Response:
         """
@@ -174,10 +191,26 @@ class MCPGatewayServer:
             return web.Response(status=400, text=msg)
 
         # Get or create session
+        # Try header first, then cookie as fallback for clients that don't support custom headers
         session_id = headers.get('MCP-Session-Id', '').strip()
+        if not session_id:
+            # Try to get session from cookie
+            cookie_header = request.headers.get('Cookie', '')
+            if 'mcp-session-id=' in cookie_header:
+                for cookie in cookie_header.split(';'):
+                    if 'mcp-session-id=' in cookie:
+                        session_id = cookie.split('=')[1].strip()
+                        break
+
         if not session_id:
             session_id = self.session_manager.create_session()
             logger.info(f"Created new session: {session_id}")
+        else:
+            # Validate existing session
+            if not self.session_manager.get_session(session_id):
+                logger.warning(f"Invalid session ID provided: {session_id}, creating new session")
+                session_id = self.session_manager.create_session()
+                logger.info(f"Created new session: {session_id}")
 
         # Parse JSON-RPC message
         try:
@@ -206,7 +239,11 @@ class MCPGatewayServer:
         if message.get("method") == "initialize":
             response = await self._handle_initialize(message, session_id)
             self.traffic_logger.log_response(response, message.get("id"), session_id)
-            return web.json_response(response, headers={"MCP-Session-Id": session_id})
+            # Return session in both header and cookie for maximum compatibility
+            # Use SameSite=Lax for HTTP (SameSite=None requires Secure=True/HTTPS)
+            resp = web.json_response(response, headers={"MCP-Session-Id": session_id})
+            resp.set_cookie('mcp-session-id', session_id, httponly=False, samesite='Lax', max_age=3600)
+            return resp
 
         # Route to backend server
         success, response, backend_session_id = await self.router.route_request(message, session_id)
@@ -222,11 +259,15 @@ class MCPGatewayServer:
 
         # Return response
         if "id" in message:
-            # Request - return JSON response
-            return web.json_response(response, headers={"MCP-Session-Id": response_session_id})
+            # Request - return JSON response with session in header and cookie
+            resp = web.json_response(response, headers={"MCP-Session-Id": response_session_id})
+            resp.set_cookie('mcp-session-id', response_session_id, httponly=False, samesite='Lax', max_age=3600)
+            return resp
         else:
             # Notification - return 202 Accepted
-            return web.Response(status=202, headers={"MCP-Session-Id": response_session_id})
+            resp = web.Response(status=202, headers={"MCP-Session-Id": response_session_id})
+            resp.set_cookie('mcp-session-id', response_session_id, httponly=False, samesite='Lax', max_age=3600)
+            return resp
 
     async def _handle_initialize(self, message: Dict[str, Any], session_id: str) -> Dict[str, Any]:
         """
@@ -299,7 +340,8 @@ class MCPGatewayServer:
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
 
-        self.site = web.TCPSite(self.runner, 'localhost', self.port)
+        # Bind to 0.0.0.0 to allow external connections (required for Docker port forwarding)
+        self.site = web.TCPSite(self.runner, '0.0.0.0', self.port)
         await self.site.start()
 
         logger.info(f"MCP Gateway started on http://localhost:{self.port}/mcp")

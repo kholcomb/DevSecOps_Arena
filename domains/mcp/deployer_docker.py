@@ -330,14 +330,18 @@ class MCPDockerDeployer(ChallengeDeployer):
 
             # Start backend container
             # Note: No port mapping (-p) because backend is only accessible via gateway within Docker network
+            # Ensure paths are absolute for Docker volume mounts
+            servers_path = (self.mcp_dir / "servers").resolve()
+            level_path_abs = level_path.resolve()
+
             result = subprocess.run(
                 [
                     "docker", "run", "-d",
                     "--name", self.BACKEND_CONTAINER,
                     "--network", self.MCP_NETWORK,
                     # No -p flag - backend not exposed to host
-                    "-v", f"{self.mcp_dir}/servers:/app/domains/mcp/servers:ro",
-                    "-v", f"{level_path}:/app/challenge:ro",
+                    "-v", f"{servers_path}:/app/servers:ro",
+                    "-v", f"{level_path_abs}:/app/challenge:ro",
                     "-w", "/app",
                     "-e", f"PYTHONPATH=/app",
                     self.image_name,

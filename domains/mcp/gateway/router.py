@@ -137,6 +137,33 @@ class RequestRouter:
                 backend_session_id_to_send = self.session_map.get(session_id)
                 if backend_session_id_to_send:
                     headers["MCP-Session-Id"] = backend_session_id_to_send
+                else:
+                    # No backend mapping for this gateway session
+                    # Auto-initialize with backend first
+                    init_response = await self.client.post(
+                        f"{backend_url}/mcp",
+                        json={
+                            "jsonrpc": "2.0",
+                            "id": 0,
+                            "method": "initialize",
+                            "params": {
+                                "protocolVersion": "2024-11-05",
+                                "capabilities": {},
+                                "clientInfo": {"name": "mcp-gateway", "version": "1.0"}
+                            }
+                        },
+                        headers={
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                            "MCP-Protocol-Version": "2025-11-25"
+                        }
+                    )
+
+                    if init_response.status_code == 200:
+                        new_backend_session = init_response.headers.get("MCP-Session-Id") or init_response.headers.get("mcp-session-id")
+                        if new_backend_session:
+                            self.session_map[session_id] = new_backend_session
+                            headers["MCP-Session-Id"] = new_backend_session
 
             # Forward request to backend server
             response = await self.client.post(

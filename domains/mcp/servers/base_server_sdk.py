@@ -10,6 +10,7 @@ Reference: https://github.com/modelcontextprotocol/python-sdk
 
 from abc import ABC, abstractmethod
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from typing import Dict, Any, Callable
 import logging
 
@@ -38,10 +39,16 @@ class VulnerableMCPServerSDK(ABC):
         self.port = port
         self.flag = config.get('flag', 'ARENA{PLACEHOLDER_FLAG}')
 
-        # Create FastMCP server
+        # Create FastMCP server with disabled DNS rebinding protection
+        # This is safe because backend is only accessible within Docker network
+        transport_security = TransportSecuritySettings(
+            enable_dns_rebinding_protection=False
+        )
+
         self.mcp = FastMCP(
             name=self.get_server_name(),
-            json_response=True
+            json_response=True,
+            transport_security=transport_security
         )
 
         # Register tools
@@ -96,12 +103,12 @@ class VulnerableMCPServerSDK(ABC):
                     "port": self.port
                 })
 
-            uvicorn.run(app, host="127.0.0.1", port=self.port, log_level="info")
+            uvicorn.run(app, host="0.0.0.0", port=self.port, log_level="info")
         elif transport == "sse":
             # SSE transport
             import uvicorn
             app = self.mcp.sse_app()
-            uvicorn.run(app, host="127.0.0.1", port=self.port, log_level="info")
+            uvicorn.run(app, host="0.0.0.0", port=self.port, log_level="info")
         elif transport == "stdio":
             # Stdio transport (for direct AI client connection)
             import asyncio

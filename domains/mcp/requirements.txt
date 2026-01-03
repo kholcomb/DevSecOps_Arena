@@ -5,6 +5,7 @@ mcp>=1.25.0
 
 # HTTP server and client
 aiohttp>=3.9.0
+aiohttp-cors>=0.7.0
 httpx>=0.27.0
 
 # YAML support for config files
