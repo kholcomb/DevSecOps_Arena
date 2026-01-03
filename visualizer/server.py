@@ -11,18 +11,59 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 import os
+import sys
+
+# Import API client for containerized mode
+try:
+    from api_client import ArenaAPIClient
+except ImportError:
+    ArenaAPIClient = None
 
 
 class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
     """HTTP handler for DevSecOps Arena visualization server"""
 
-    def __init__(self, *args, game_state_callback=None, domain_visualizer=None, current_level_path=None, validator_callback=None, unlock_hint_callback=None, **kwargs):
+    def __init__(self, *args, game_state_callback=None, domain_visualizer=None, current_level_path=None, validator_callback=None, unlock_hint_callback=None, api_client=None, **kwargs):
+        # Support both callback mode (legacy) and API client mode (containerized)
         self.game_state_callback = game_state_callback
         self.domain_visualizer = domain_visualizer
         self.current_level_path = current_level_path
         self.validator_callback = validator_callback
         self.unlock_hint_callback = unlock_hint_callback
+        self.api_client = api_client
         super().__init__(*args, **kwargs)
+
+    def _get_game_state(self):
+        """Get game state using callback or API client"""
+        if self.api_client:
+            return self.api_client.get_game_state()
+        elif self.game_state_callback:
+            return self.game_state_callback()
+        return {}
+
+    def _get_current_level_path(self):
+        """Get current level path using callback or API client"""
+        if self.api_client:
+            return self.api_client.get_current_level_path()
+        elif self.current_level_path and callable(self.current_level_path):
+            return self.current_level_path()
+        return None
+
+    def _validate_flag(self, level_path, flag):
+        """Validate flag using callback or API client"""
+        if self.api_client:
+            return self.api_client.validate_flag(level_path, flag)
+        elif self.validator_callback and callable(self.validator_callback):
+            return self.validator_callback(level_path, flag)
+        return False, "No validator available"
+
+    def _unlock_hint(self, level_path, hint_number):
+        """Unlock hint using callback or API client"""
+        if self.api_client:
+            return self.api_client.unlock_hint(level_path, hint_number)
+        elif self.unlock_hint_callback and callable(self.unlock_hint_callback):
+            return self.unlock_hint_callback(level_path, hint_number)
+        return False, "No hint unlock available", None
 
     def do_GET(self):
         """Handle GET requests"""
@@ -57,16 +98,14 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
     def serve_cluster_state(self):
         """Serve current environment state and game progress"""
         try:
-            # Get game state from callback
-            game_state = {}
-            if self.game_state_callback:
-                game_state = self.game_state_callback()
+            # Get game state using helper (supports callback or API client)
+            game_state = self._get_game_state()
 
             # Get domain-specific environment state
             env_state = {}
             if self.domain_visualizer:
                 # Use domain visualizer to get state
-                level_path = self.current_level_path() if self.current_level_path and callable(self.current_level_path) else None
+                level_path = self._get_current_level_path()
                 viz_data = self.domain_visualizer.get_visualization_data(level_path)
                 # Extract resources for backward compatibility with frontend
                 env_state = viz_data.get('resources', {})
@@ -152,9 +191,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
     def serve_level_diagram(self):
         """Serve diagram configuration for current level"""
         try:
-            game_state = {}
-            if self.game_state_callback:
-                game_state = self.game_state_callback()
+            # Get game state using helper (supports callback or API client)
+            game_state = self._get_game_state()
 
             current_level = game_state.get('current_level', '')
             current_world = game_state.get('current_world', '')
@@ -354,9 +392,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
     def serve_hints(self):
         """Serve hints for current level with lock status and costs"""
         try:
-            level_path = None
-            if self.current_level_path and callable(self.current_level_path):
-                level_path = self.current_level_path()
+            # Get current level using helper (supports callback or API client)
+            level_path = self._get_current_level_path()
 
             if not level_path:
                 self.send_response(200)
@@ -366,10 +403,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({'hints': [], 'message': 'No level loaded'}).encode())
                 return
 
-            # Get game state to check unlocked hints
-            game_state = {}
-            if self.game_state_callback and callable(self.game_state_callback):
-                game_state = self.game_state_callback()
+            # Get game state using helper (supports callback or API client)
+            game_state = self._get_game_state()
 
             unlocked_hints = game_state.get('unlocked_hints', {})
             level_name = level_path.name
@@ -422,9 +457,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
     def serve_solution(self):
         """Serve solution for current level"""
         try:
-            level_path = None
-            if self.current_level_path and callable(self.current_level_path):
-                level_path = self.current_level_path()
+            # Get current level using helper (supports callback or API client)
+            level_path = self._get_current_level_path()
 
             if not level_path:
                 self.send_response(200)
@@ -485,9 +519,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
     def serve_debrief(self):
         """Serve debrief/learning content for current level"""
         try:
-            level_path = None
-            if self.current_level_path and callable(self.current_level_path):
-                level_path = self.current_level_path()
+            # Get current level using helper (supports callback or API client)
+            level_path = self._get_current_level_path()
 
             if not level_path:
                 self.send_response(200)
@@ -538,10 +571,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
                 }).encode())
                 return
 
-            # Get current level path
-            level_path = None
-            if self.current_level_path and callable(self.current_level_path):
-                level_path = self.current_level_path()
+            # Get current level using helper (supports callback or API client)
+            level_path = self._get_current_level_path()
 
             if not level_path:
                 self.send_response(400)
@@ -554,20 +585,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
                 }).encode())
                 return
 
-            # Validate flag using validator callback
-            if not self.validator_callback or not callable(self.validator_callback):
-                self.send_response(500)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps({
-                    'success': False,
-                    'message': 'Validator not available'
-                }).encode())
-                return
-
-            # Call validator with flag
-            success, message = self.validator_callback(level_path, flag)
+            # Validate flag using helper (supports callback or API client)
+            success, message = self._validate_flag(level_path, flag)
 
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -604,10 +623,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
                 }).encode())
                 return
 
-            # Get current level path
-            level_path = None
-            if self.current_level_path and callable(self.current_level_path):
-                level_path = self.current_level_path()
+            # Get current level using helper (supports callback or API client)
+            level_path = self._get_current_level_path()
 
             if not level_path:
                 self.send_response(400)
@@ -620,28 +637,8 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
                 }).encode())
                 return
 
-            # Unlock hint using callback
-            if not self.unlock_hint_callback or not callable(self.unlock_hint_callback):
-                self.send_response(500)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps({
-                    'success': False,
-                    'message': 'Unlock callback not available'
-                }).encode())
-                return
-
-            # Call unlock callback
-            success, message, cost = self.unlock_hint_callback(level_path, hint_number)
-
-            # Read hint content if successful
-            hint_content = None
-            if success:
-                hint_file = level_path / f"hint-{hint_number}.txt"
-                if hint_file.exists():
-                    with open(hint_file, 'r') as f:
-                        hint_content = f.read().strip()
+            # Unlock hint using helper (supports callback or API client)
+            success, message, hint_content = self._unlock_hint(level_path, hint_number)
 
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
@@ -725,13 +722,14 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
 class VisualizationServer:
     """DevSecOps Arena visualization server manager"""
 
-    def __init__(self, port=8080, game_state_callback=None, domain_visualizer=None, current_level_path_callback=None, validator_callback=None, unlock_hint_callback=None, verbose=False):
+    def __init__(self, port=8080, game_state_callback=None, domain_visualizer=None, current_level_path_callback=None, validator_callback=None, unlock_hint_callback=None, api_client=None, verbose=False):
         self.port = port
         self.game_state_callback = game_state_callback
         self.domain_visualizer = domain_visualizer
         self.current_level_path_callback = current_level_path_callback
         self.validator_callback = validator_callback
         self.unlock_hint_callback = unlock_hint_callback
+        self.api_client = api_client
         self.verbose = verbose
         self.server = None
         self.thread = None
@@ -745,7 +743,7 @@ class VisualizationServer:
         # Change to visualizer/static directory to serve files
         os.chdir(Path(__file__).parent / 'static')
 
-        # Create handler with game state callback and domain visualizer
+        # Create handler with callbacks (legacy mode) or API client (containerized mode)
         def handler(*args, **kwargs):
             return DevSecOpsArenaVisualizerHandler(
                 *args,
@@ -754,6 +752,7 @@ class VisualizationServer:
                 current_level_path=self.current_level_path_callback,
                 validator_callback=self.validator_callback,
                 unlock_hint_callback=self.unlock_hint_callback,
+                api_client=self.api_client,
                 **kwargs
             )
 
