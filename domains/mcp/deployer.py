@@ -603,14 +603,18 @@ asyncio.run(main())
 
 Gateway URL: http://localhost:{self.GATEWAY_PORT}/mcp
 
-Configure Your AI Agent:
-• Add this MCP server to your AI client (Claude Desktop, etc.)
-• Use HTTP transport with the gateway URL above
-• Restart your AI client to connect
-• All challenges route through this gateway automatically
+How to Connect:
 
-Configuration Guide: See domains/mcp/CLIENT_SETUP.md for detailed instructions
-
-Quick Check:
+Option 1 - Test with curl (Recommended):
   curl http://localhost:{self.GATEWAY_PORT}/health
+
+Option 2 - Use MCP Inspector (Visual UI):
+  npx @modelcontextprotocol/inspector http://localhost:{self.GATEWAY_PORT}/mcp
+
+Option 3 - Custom MCP Client:
+  Connect to http://localhost:{self.GATEWAY_PORT}/mcp via HTTP/SSE transport
+
+📖 Full Configuration Guide: domains/mcp/CLIENT_SETUP.md
+
+All challenges route through this gateway - no reconfiguration needed!
 """
