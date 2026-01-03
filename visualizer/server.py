@@ -686,6 +686,20 @@ class DevSecOpsArenaVisualizerHandler(SimpleHTTPRequestHandler):
                     {'from': 'webapp', 'to': 'database', 'label': 'SQL'}
                 ]
             }
+        elif domain == 'mcp':
+            return {
+                'title': 'MCP Challenge Architecture',
+                'nodes': [
+                    {'id': 'ai_agent', 'type': 'client', 'label': 'AI Agent\n(Claude)', 'x': 100, 'y': 200, 'status': 'info'},
+                    {'id': 'gateway', 'type': 'gateway', 'label': 'MCP Gateway\nPort 8900', 'x': 300, 'y': 200, 'status': 'healthy'},
+                    {'id': 'backend', 'type': 'service', 'label': 'Vulnerable\nMCP Server', 'x': 500, 'y': 200, 'status': 'warning'}
+                ],
+                'connections': [
+                    {'from': 'ai_agent', 'to': 'gateway', 'label': 'HTTP/SSE\nJSON-RPC 2.0'},
+                    {'from': 'gateway', 'to': 'backend', 'label': 'Proxy\nto Challenge'}
+                ],
+                'description': 'Configure your AI agent once at http://localhost:8900/mcp to access all MCP challenges'
+            }
         else:
             return {
                 'title': 'Challenge Environment',
