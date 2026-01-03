@@ -1,0 +1,11 @@
+💡 HINT 1 (Free):
+
+Command injection vulnerabilities occur when user input is passed directly
+to shell commands without proper sanitization.
+
+The server provides tools that execute shell commands like convert, tar, grep, etc.
+Try calling these tools with unexpected input containing shell metacharacters.
+
+Common injection characters: ; && || | ` $ ( )
+
+Start by listing the available tools and examining what parameters they accept.

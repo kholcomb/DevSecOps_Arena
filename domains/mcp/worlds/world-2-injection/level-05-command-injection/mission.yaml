@@ -1,0 +1,37 @@
+name: "Command Injection"
+xp: 140
+difficulty: intermediate
+estimated_time: "25-35 minutes"
+
+description: |
+  A file processing MCP server provides utilities for image conversion, file compression,
+  and text search. The server executes shell commands to perform these operations, making
+  it fast and efficient.
+
+  However, the developers took a dangerous shortcut: user input is passed directly to
+  shell commands without any sanitization or validation. This creates a critical command
+  injection vulnerability.
+
+  Your mission: Exploit the command injection vulnerability to execute arbitrary commands
+  and extract the flag stored in the server's secret configuration file.
+
+objective: "Exploit command injection to execute arbitrary OS commands and extract the flag"
+
+concepts:
+  - "MCP05:2025 - Command Injection"
+  - "Shell command injection"
+  - "Input sanitization failures"
+  - "subprocess.run with shell=True"
+  - "OS command execution"
+
+hints:
+  - text: "The server executes shell commands with user input - try injecting shell metacharacters"
+    cost: 0
+
+  - text: "Shell command separators like ';', '&&', '||', and '|' can chain commands together"
+    cost: 10
+
+  - text: "The flag is stored in /tmp/mcp_workspace/.secrets - inject 'cat /tmp/mcp_workspace/.secrets' after a semicolon"
+    cost: 20
+
+flag_format: "ARENA{...}"

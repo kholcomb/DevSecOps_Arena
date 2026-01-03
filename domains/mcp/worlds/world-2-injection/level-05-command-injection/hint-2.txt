@@ -1,0 +1,15 @@
+💡 HINT 2 (10 XP):
+
+The semicolon (;) is a command separator in Unix shells.
+It allows you to run multiple commands sequentially.
+
+For example, if a tool expects: filename.txt
+You can inject: filename.txt; cat /etc/passwd
+
+Try the search_files tool with a pattern parameter containing:
+pattern: "FLAG; cat /tmp/mcp_workspace/.secrets"
+
+Or try convert_image with input_file:
+input_file: "test.jpg; cat /tmp/mcp_workspace/.secrets"
+
+The flag is in /tmp/mcp_workspace/.secrets

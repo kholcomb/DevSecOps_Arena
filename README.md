@@ -61,7 +61,7 @@ DevSecOps Arena uses a multi-domain plugin architecture where each security doma
 - **Kubernetes Domain**: 50 challenges using kubectl (5 worlds, 10,200 XP)
 - **Web Security Domain**: 3 challenges using Docker Compose (1 world, 360 XP)
 - **API Security Domain**: 6 challenges using Docker Compose (4 worlds, 720 XP)
-- **MCP Security Domain**: 4 challenges using MCP gateway (2 worlds, 490 XP) - *10 challenges planned*
+- **MCP Security Domain**: 5 challenges using MCP gateway (2 worlds, 630 XP) - *10 challenges planned*
 - **Future Domains**: CI/CD Security, Container Security, IaC Security
 
 Each domain includes:
@@ -131,7 +131,7 @@ Master API security through hands-on exploitation of REST APIs based on OWASP AP
 
 **OWASP Coverage:** 6 of 10 API Security Top 10:2023 risks (60%)
 
-### Model Context Protocol (MCP) Security (4 Levels, 490 XP)
+### Model Context Protocol (MCP) Security (5 Levels, 630 XP)
 
 Master MCP security by exploiting AI agent vulnerabilities based on OWASP MCP Top 10:2025. Learn to identify and exploit security flaws in Model Context Protocol servers that connect AI agents to tools and resources.
 
@@ -146,7 +146,7 @@ Master MCP security by exploiting AI agent vulnerabilities based on OWASP MCP To
   - Escalate from standard user to administrator without permission checks
   - Exploit lack of role-based access control (RBAC) implementation
 
-**World 2: Injection Attacks (2 levels, 250 XP)**
+**World 2: Injection Attacks (3 levels, 390 XP)**
 - Level 3: Tool Poisoning - Context Injection (MCP03:2025) - 120 XP
   - Discover malicious instructions hidden in tool descriptions
   - Manipulate AI agent behavior through poisoned tool metadata
@@ -156,6 +156,11 @@ Master MCP security by exploiting AI agent vulnerabilities based on OWASP MCP To
   - Identify backdoor tools injected by compromised packages
   - Exploit hidden administrative access in third-party dependencies
   - Demonstrate supply chain attack vectors in MCP servers
+
+- Level 5: Command Injection - Unsanitized Shell Execution (MCP05:2025) - 140 XP
+  - Exploit shell command injection through user-controlled tool parameters
+  - Chain shell commands using metacharacters (`;`, `&&`, `||`, `|`)
+  - Execute arbitrary OS commands to read sensitive files and extract secrets
 
 **Architecture:** Persistent MCP gateway on port 8900 that you configure once with your AI client (Claude Desktop, etc.). All challenges route through this gateway automatically - no reconfiguration needed when switching between challenges.
 
@@ -167,9 +172,11 @@ Master MCP security by exploiting AI agent vulnerabilities based on OWASP MCP To
 - Information disclosure vulnerabilities
 - Context injection and tool poisoning
 - Supply chain security
+- Command injection and shell metacharacters
+- Input sanitization and validation
 - Secret management best practices
 
-**OWASP Coverage:** 4 of 10 MCP Security Top 10:2025 risks (40%) - *6 more challenges planned*
+**OWASP Coverage:** 5 of 10 MCP Security Top 10:2025 risks (50%) - *5 more challenges planned*
 
 **Setup:** After deploying an MCP challenge, configure your AI client once with `http://localhost:8900/mcp`. See `domains/mcp/CLIENT_SETUP.md` for detailed configuration instructions.
 
@@ -317,14 +324,14 @@ DevSecOps Arena is designed to provide comprehensive coverage of OWASP security 
 | Web Security | Top 10:2025 | 10 | 3 | 30% |
 | Kubernetes | K8s Top 10 | 10 | 3 | 30% |
 | API Security | API Top 10:2023 | 10 | 6 | 60% |
-| MCP Security | MCP Top 10:2025 | 10 | 4 | 40% |
+| MCP Security | MCP Top 10:2025 | 10 | 5 | 50% |
 | CI/CD Security | CI/CD Top 10 | 10 | 0 | 0% |
 | Container Security | Docker Top 10 | 10 | 0 | 0% |
-| **Total** | **6 lists** | **60** | **16** | **27%** |
+| **Total** | **6 lists** | **60** | **17** | **28%** |
 
-**Current Status:** 63 challenges covering 27% of core OWASP security risks
+**Current Status:** 64 challenges covering 28% of core OWASP security risks
 
-**Roadmap:** 87-97 additional challenges planned to achieve full OWASP coverage across all six security domains.
+**Roadmap:** 86-96 additional challenges planned to achieve full OWASP coverage across all six security domains.
 
 ## Time Estimates
 
@@ -382,7 +389,7 @@ For the old-school bash script experience:
 
 - Production-ready game engine with domain plugin system
 - 4 active domains (Kubernetes, Web Security, API Security, MCP Security)
-- 63 challenges, 11,770 total XP available
+- 64 challenges, 11,910 total XP available
 - Safety guards, progress tracking, and visualization
 - Extensible architecture for rapid domain expansion
 

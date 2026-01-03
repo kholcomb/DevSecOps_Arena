@@ -1,0 +1,13 @@
+server:
+  module: "servers.command_injection"
+  port: 9005
+  config:
+    flag: "ARENA{MCP05_C0mm4nd_1nj3ct10n_PWN3D}"
+    vulnerability:
+      shell_execution: true
+      input_sanitization: false
+      vulnerable_tools:
+        - "convert_image"
+        - "compress_files"
+        - "search_files"
+        - "get_file_info"

