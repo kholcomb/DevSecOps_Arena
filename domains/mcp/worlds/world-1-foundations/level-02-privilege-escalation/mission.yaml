@@ -12,6 +12,8 @@ description: |
   Your mission: Exploit the missing authorization checks to escalate your
   privileges and access the system flag reserved for administrators.
 
+objective: "Exploit missing authorization controls to escalate privileges and extract the admin flag"
+
 learning_objectives:
   - Understand role-based access control (RBAC) in MCP servers
   - Identify missing authorization checks on privileged tools

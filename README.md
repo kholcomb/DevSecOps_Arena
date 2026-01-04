@@ -54,6 +54,26 @@ DevSecOps Arena is a multi-domain security training platform that teaches throug
 ./play.sh --no-viz
 ```
 
+## Containerized Deployment (Alternative Setup)
+
+For a fully containerized, OS-agnostic deployment:
+
+```bash
+# Start engine and visualizer in containers
+./start_containerized.sh
+
+# Access the visualizer at http://localhost:8080
+# Engine API available at http://localhost:5001
+```
+
+**Benefits:**
+- ✅ Works on macOS, Linux, and Windows
+- ✅ No Python dependencies on host
+- ✅ Isolated environment
+- ✅ Easy to deploy and manage
+
+See [CONTAINERIZED_SETUP.md](CONTAINERIZED_SETUP.md) for detailed documentation.
+
 ## Architecture
 
 DevSecOps Arena uses a multi-domain plugin architecture where each security domain is self-contained with its own deployment backend:

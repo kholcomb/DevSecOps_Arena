@@ -1,0 +1,61 @@
+services:
+  # Engine API Server - Core game engine with REST API
+  engine:
+    build:
+      context: .
+      dockerfile: engine/Dockerfile
+    image: devsecops-arena-engine:${IMAGE_TAG:-dev}
+    container_name: devsecops-arena-engine
+    ports:
+      - "5001:5000"
+    volumes:
+      # Mount progress file for persistence
+      - ./progress.json:/app/data/progress.json
+      # Mount domains for challenge metadata
+      - ./domains:/app/domains:ro
+      # Mount docker socket for challenge deployment (if needed)
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - arena-network
+    environment:
+      - ENGINE_API_PORT=5000
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # Visualization Server - Global UI for all domains
+  visualizer:
+    build:
+      context: .
+      dockerfile: visualizer/Dockerfile
+    image: devsecops-arena-visualizer:${IMAGE_TAG:-dev}
+    container_name: devsecops-arena-visualizer
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount domains for visualization metadata
+      - ./domains:/app/domains:ro
+    networks:
+      - arena-network
+    environment:
+      - VISUALIZER_PORT=8080
+      - ENGINE_API_URL=http://engine:5000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      engine:
+        condition: service_healthy
+    restart: unless-stopped
+
+networks:
+  # Global arena network for cross-domain communication
+  arena-network:
+    name: devsecops-arena
+    driver: bridge
